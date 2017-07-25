@@ -1,0 +1,31 @@
+{
+  "name": "metax-deck-builder",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "elm-live ./Main.elm --pushstate",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phated/metax-deck-builder.git"
+  },
+  "keywords": [],
+  "author": "Blaine Bublitz <blaine.bublitz@gmail.com> (https://github.com/phated)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phated/metax-deck-builder/issues"
+  },
+  "homepage": "https://github.com/phated/metax-deck-builder#readme",
+  "devDependencies": {
+    "budo": "^10.0.3",
+    "elm": "^0.18.0",
+    "elm-live": "^2.7.4"
+  },
+  "dependencies": {
+    "history": "^4.6.3",
+    "inu": "^3.1.4",
+    "pull-pushable": "^2.1.1"
+  }
+}
