@@ -4,8 +4,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Navigation exposing (..)
-
 import Json.Decode as Decode
+
 
 main : Program Never Model Msg
 main =
@@ -14,7 +14,7 @@ main =
         , view = view
         , update = update
         , subscriptions = subscriptions
-    }
+        }
 
 
 type alias Model =
@@ -30,28 +30,30 @@ type Msg
     | UrlChange Location
 
 
-update : Msg -> Model -> (Model, Cmd Msg)
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Msg1 ->
-            (model, Cmd.none)
+            ( model, Cmd.none )
 
         Msg2 ->
-            (model, Cmd.none)
+            ( model, Cmd.none )
 
         UrlChange location ->
             let
-                test = Debug.log "location" location
+                test =
+                    Debug.log "location" location
             in
-                ({model | location = location}, Cmd.none)
+                ( { model | location = location }, Cmd.none )
 
         NavigateTo pathname ->
-            (model, newUrl pathname)
+            ( model, newUrl pathname )
 
 
 view : Model -> Html Msg
 view model =
     applicationShell model
+
 
 viewSample : Model -> Html Msg
 viewSample model =
@@ -59,35 +61,42 @@ viewSample model =
         [ text model.text
         , text " "
         , text model.location.pathname
-        , a [ href "/test"
-            , onNavigate (NavigateTo "/test") ]
+        , a
+            [ href "/test"
+            , onNavigate (NavigateTo "/test")
+            ]
             [ text "Test" ]
         ]
+
 
 applicationShell : Model -> Html Msg
 applicationShell model =
     div [ class "pane-root" ]
         [ nav [ class "navbar" ]
-              [ a [ class "navitem"
-                  , href "/"
-                  , onNavigate (NavigateTo "/")
-                  ]
-                  [ text "Cards" ]
-              , a [ class "navitem"
-                  , href "/deck"
-                  , onNavigate (NavigateTo "/deck")
-                  ]
-                  [ text "Deck" ]
-              ]
+            [ a
+                [ class "navitem"
+                , href "/"
+                , onNavigate (NavigateTo "/")
+                ]
+                [ text "Cards" ]
+            , a
+                [ class "navitem"
+                , href "/deck"
+                , onNavigate (NavigateTo "/deck")
+                ]
+                [ text "Deck" ]
+            ]
         , div [ class "pane-container" ]
-              [ div [ id "card-list-pane"
-                    , class "pane"
-                    ]
-                    []
-              , div [ id "deck-list-pane"
-                    , class "pane"
-                    ]
-                    []
+            [ div
+                [ id "card-list-pane"
+                , class "pane"
+                ]
+                []
+            , div
+                [ id "deck-list-pane"
+                , class "pane"
+                ]
+                []
             ]
         ]
 
@@ -97,9 +106,10 @@ subscriptions model =
     Sub.none
 
 
-init : Location -> (Model, Cmd Msg)
+init : Location -> ( Model, Cmd Msg )
 init location =
-    (Model "hello" location, Cmd.none)
+    ( Model "hello" location, Cmd.none )
+
 
 onNavigate : Msg -> Attribute Msg
 onNavigate msg =
