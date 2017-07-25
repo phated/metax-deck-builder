@@ -1,4 +1,4 @@
-module Hello exposing (Model, Msg, update, view, subscriptions, init)
+module MetaX exposing (Model, Msg, update, view, subscriptions, init)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -86,17 +86,17 @@ applicationShell model =
                 ]
                 [ text "Deck" ]
             ]
-        , div [ class "pane-container" ]
+        , div [ classList [ ( "pane-container", True ), ( "is-deck", model.location.pathname == "/deck" ) ] ]
             [ div
                 [ id "card-list-pane"
                 , class "pane"
                 ]
-                []
+                [ text "Card List" ]
             , div
                 [ id "deck-list-pane"
                 , class "pane"
                 ]
-                []
+                [ text "Deck List" ]
             ]
         ]
 

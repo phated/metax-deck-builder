@@ -1,0 +1,74 @@
+body {
+  display: block;
+  margin: 0;
+}
+
+.navbar {
+  box-sizing: border-box;
+  /*padding: 10px 8px 5px;*/
+  background: #303030;
+  height: 50px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 10px 10px 10px #808080;
+  color: #fff;
+  font-size: 20px;
+  line-height: 25px;
+  display: flex;
+  z-index: 10;
+}
+
+.navitem {
+  flex-grow: 1;
+  text-align: center;
+  flex-basis: 0;
+  border-right: 1px solid grey;
+  padding: 10px 8px 5px;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navitem.selected {
+  background: #444;
+  /*color: #32a1f9;*/
+}
+
+.navitem:last-child {
+  border-right-color: transparent;
+}
+
+.pane-root {
+  overflow: hidden;
+}
+
+.pane-container {
+  display: flex;
+  will-change: transform;
+  transform: translate3d(0%, 0, 0);
+  padding-bottom: 50px;
+  height: 100vh;
+  box-sizing: border-box;
+  transition: transform .3s;
+}
+
+.is-deck {
+  transform: translate3d(-100%, 0, 0);
+}
+
+.pane {
+  width: 100%;
+  flex-shrink: 0;
+  overflow-x: auto;
+  align-self: flex-start;
+  height: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+  /*
+    Ref https://github.com/hammerjs/hammer.js/issues/1056 and
+    https://github.com/hammerjs/hammer.js/issues/1050
+  */
+  touch-action: pan-y;
+}
