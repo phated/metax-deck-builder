@@ -3,32 +3,49 @@ body {
   margin: 0;
 }
 
-.navbar {
+.navbar-top,
+.navbar-bottom {
   box-sizing: border-box;
   /*padding: 10px 8px 5px;*/
   background: #303030;
   height: 50px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  box-shadow: 0 10px 10px 10px #808080;
   color: #fff;
   font-size: 20px;
   line-height: 25px;
   display: flex;
   z-index: 10;
 }
-
 .navitem {
-  flex-grow: 1;
   text-align: center;
-  flex-basis: 0;
-  border-right: 1px solid grey;
-  padding: 10px 8px 5px;
-  color: #fff;
   text-decoration: none;
+  color: #fff;
   cursor: pointer;
+}
+
+.navbar-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.navbar-top .logo {
+  margin-right: 20px;
+  padding: 10px;
+}
+
+.navbar-bottom {
+  box-shadow: 0 10px 10px 10px #808080;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.navbar-bottom .navitem {
+  flex-grow: 1;
+  flex-basis: 0;
+
+  padding: 10px 8px 5px;
+  border-right: 1px solid grey;
 }
 
 .navitem.selected {
@@ -48,7 +65,7 @@ body {
   display: flex;
   will-change: transform;
   transform: translate3d(0%, 0, 0);
-  padding-bottom: 50px;
+  padding: 50px 0;
   height: 100vh;
   box-sizing: border-box;
   transition: transform .3s;
@@ -66,9 +83,150 @@ body {
   height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
-  /*
-    Ref https://github.com/hammerjs/hammer.js/issues/1056 and
-    https://github.com/hammerjs/hammer.js/issues/1050
-  */
-  touch-action: pan-y;
+}
+
+/* Non-mobiled */
+@media only screen and (min-width: 768px) {
+  .navbar-bottom {
+    display: none;
+  }
+
+  .pane-container {
+    padding-bottom: 0;
+  }
+
+  .is-deck {
+    transform: none;
+  }
+
+  #card-list-pane {
+    flex-shrink: 1;
+    border-right: 1px solid #d3d3d3;
+  }
+
+  #deck-list-pane {
+    flex-shrink: 2;
+  }
+}
+
+.list-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between; */
+  padding: 8px 0;
+  min-height: 70px;
+  border-bottom: 1px solid #d3d3d3
+}
+
+.card-details {
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.card-thumbnail {
+  border-radius: 3px;
+  max-width: 100%;
+  /* max-height: 53px; */
+  max-height: 100px;
+}
+
+.card-text {
+  padding: 0 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  transition: max-height 2s;
+}
+.card-title {
+  flex-grow: 1;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.card-effect img {
+  max-width: 12px;
+}
+.card-effect img.upscale {
+  max-width: 17px;
+}
+
+.card-stats {
+  flex-direction: column;
+  display: flex;
+  white-space: nowrap;
+  text-align: right;
+}
+.card-stat-mp {
+  flex-grow: 1;
+}
+.card-stats img {
+  max-width: 20px;
+  vertical-align: middle;
+}
+.card-stats .stat {
+  margin-left: 5px;
+  font-size: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.stepper-container {
+  display: flex;
+}
+
+.count-container {
+  flex-grow: 1;
+  margin: auto;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* Consider https://github.com/gmertk/GMStepper style */
+.stepper-button {
+  border: 2px solid #303030;
+  background: #303030;
+  color: #fff;
+  width: 25%;
+  height: 30px;
+  outline: none;
+}
+.stepper-button:disabled {
+  background: #d3d3d3;
+  color: #303030;
+}
+.stepper-decrement {
+  border-radius: 5px 0 0 5px;
+  border-right-width: 1px;
+}
+.stepper-increment {
+  border-radius: 0 5px 5px 0;
+  border-left-width: 1px;
+}
+
+/* From https://github.com/mladenplavsic/css-ripple-effect */
+.ripple:not(:disabled) {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+}
+.ripple:not(:disabled):after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform .25s, opacity .5s;
+}
+.ripple:not(:disabled):active:after {
+  transform: scale(0, 0);
+  opacity: .2;
+  transition: 0s;
 }
