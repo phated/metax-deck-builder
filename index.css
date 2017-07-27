@@ -183,24 +183,29 @@ body {
 
 /* Consider https://github.com/gmertk/GMStepper style */
 .stepper-button {
-  border: 2px solid #303030;
+  border: none;
+  /* border: 2px solid #303030; */
   background: #303030;
   color: #fff;
   width: 25%;
   height: 30px;
   outline: none;
+  /* TODO: replace with icons */
+  font-size: 20px;
+  font-weight: 900;
 }
 .stepper-button:disabled {
   background: #d3d3d3;
   color: #303030;
+  /* border-color: #909090; */
 }
 .stepper-decrement {
+  border-right: 1px solid #d3d3d3;
   border-radius: 5px 0 0 5px;
-  border-right-width: 1px;
 }
 .stepper-increment {
+  border-left: 1px solid #d3d3d3;
   border-radius: 0 5px 5px 0;
-  border-left-width: 1px;
 }
 
 /* From https://github.com/mladenplavsic/css-ripple-effect */

@@ -6,14 +6,18 @@ import Html.Events exposing (..)
 import Navigation exposing (..)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
-import Json.Decode exposing (int, string, bool, list, nullable, succeed, Decoder)
+import Json.Encode as Encode
+import Json.Helpers as Json
+import Json.Decode exposing (int, string, bool, list, nullable, succeed, decodeValue, decodeString, dict, Decoder, Value)
 import Json.Decode.Pipeline exposing (decode, required, optional)
 
 import Http
 
-main : Program Never Model Msg
+import Ports
+
+main : Program Value Model Msg
 main =
-    Navigation.program UrlChange
+    Navigation.programWithFlags UrlChange
         { init = init
         , view = view
         , update = update
@@ -42,8 +46,7 @@ type alias Deck =
     Dict String Int
 
 type alias Model =
-    { text : String
-    , location : Location
+    { location : Location
     , cards : Cards
     , deck : Deck
     }
@@ -123,6 +126,12 @@ decrement value =
         Nothing ->
             Just 0
 
+saveDeck : Deck -> Cmd Msg
+saveDeck deck =
+    Json.encodeMap Encode.string Encode.int deck
+        |> Encode.encode 0
+        |> Just
+        |> Ports.storeSession
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -157,7 +166,7 @@ update msg model =
             let
                 deck = maybeIncrement cardId model.deck
             in
-                ( { model | deck = deck }, Cmd.none )
+                ( { model | deck = deck }, saveDeck deck )
 
         Decrement cardId ->
             let
@@ -208,13 +217,20 @@ isPositive : Int -> Bool
 isPositive num =
     num >= 0
 
-stepper : Card -> Int -> Html Msg
-stepper card count =
-    div [ class "stepper-container"]
-        [ div [ class "count-container" ] [ text ("In Deck: " ++ toString count) ]
-        , button [ class "stepper-button stepper-decrement ripple", disabled True, onClick (Decrement card.id) ] [ text "-" ]
-        , button [ class "stepper-button stepper-increment ripple", onClick (Increment card.id) ] [ text "+" ]
-        ]
+stepper : Card -> Deck -> Html Msg
+stepper card deck =
+    let
+        count = Maybe.withDefault 0 (Dict.get card.id deck)
+
+        decrementDisabled = (count == 0)
+
+        incrementDisabled = (count == 3)
+    in
+        div [ class "stepper-container"]
+            [ div [ class "count-container" ] [ text ("In Deck: " ++ toString count) ]
+            , button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.id) ] [ text "-" ]
+            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card.id) ] [ text "+" ]
+            ]
 
 mpView : Int -> Html Msg
 mpView stat =
@@ -241,8 +257,10 @@ cardEffect effect =
         hasPlay = contains (regex "PLAY") effect
         hasPush = contains (regex "PUSH") effect
         hasConstant = contains (regex "CONSTANT") effect
+        hasAttack = contains (regex "ATTACK") effect
+        hasDefend = contains (regex "DEFEND") effect
 
-        scrubbedEffect = replace Regex.All (regex "PLAY|PUSH|CONSTANT") (\_ -> "") effect
+        scrubbedEffect = replace Regex.All (regex "PLAY|PUSH|CONSTANT|ATTACK|DEFEND") (\_ -> "") effect
     in
         if hasPlay then
             div [ class "card-effect" ]
@@ -257,6 +275,16 @@ cardEffect effect =
         else if hasConstant then
             div [ class "card-effect" ]
                 [ img [ class "upscale", src "/icons/constant.png" ] []
+                , text scrubbedEffect
+                ]
+        else if hasAttack then
+            div [ class "card-effect" ]
+                [ img [ src "/icons/attack.png" ] []
+                , text scrubbedEffect
+                ]
+        else if hasDefend then
+            div [ class "card-effect" ]
+                [ img [ src "/icons/defend.png" ] []
                 , text scrubbedEffect
                 ]
         else
@@ -281,15 +309,12 @@ cardDetails card =
 
 cardView : Model -> Card -> Html Msg
 cardView model card =
-    let
-        count = Maybe.withDefault 0 (Dict.get card.id model.deck)
-    in
-        div [ id card.id
-            , class "list-item"
-            ]
-            [ cardDetails card
-            , stepper card count
-            ]
+    div [ id card.id
+        , class "list-item"
+        ]
+        [ cardDetails card
+        , stepper card model.deck
+        ]
 
 deckListPane : Model -> Html Msg
 deckListPane model =
@@ -318,10 +343,21 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
+deckDecoder : Value -> Deck
+deckDecoder session =
+    session
+        |> decodeValue string
+        |> Result.andThen (decodeString (dict int))
+        |> Result.withDefault Dict.empty
 
-init : Location -> ( Model, Cmd Msg )
-init location =
-    ( Model "hello" location [] Dict.empty, getCards )
+init : Value -> Location -> ( Model, Cmd Msg )
+init session location =
+    ( { location = location
+      , cards = []
+      , deck = deckDecoder session
+      },
+      getCards
+    )
 
 
 onNavigate : Msg -> Attribute Msg

@@ -5,5 +5,17 @@
 
 <body>
 	<script src="elm.js"></script>
-	<script>Elm.MetaX.fullscreen()</script>
+<script>
+	var app = Elm.MetaX.fullscreen(localStorage.session || null);
+
+	app.ports.storeSession.subscribe(function(session) {
+		localStorage.session = session;
+	});
+
+	window.addEventListener("storage", function(event) {
+		if (event.storageArea === localStorage && event.key === "session") {
+			app.ports.onSessionChange.send(event.newValue);
+		}
+	}, false);
+</script>
 </body>
