@@ -1,0 +1,1 @@
+sips --matchTo '/System/Library/ColorSync/Profiles/Generic RGB Profile.icc' *.jpg
