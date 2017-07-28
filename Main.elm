@@ -300,7 +300,7 @@ cardEffect effect =
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ img [ class "card-thumbnail", src card.image_url ] []
+        [ img [ class "card-thumbnail", src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
         , div [ class "card-text" ]
                 [ div [ class "card-title" ] [ text card.title ]
                 , cardEffect card.effect
