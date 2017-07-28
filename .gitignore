@@ -60,3 +60,5 @@ typings/
 # elm stuff
 elm-stuff/
 elm.js
+
+.DS_Store
