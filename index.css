@@ -109,6 +109,29 @@ body {
   }
 }
 
+.list-item-header {
+  font-weight: 700;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #d3d3d3;
+}
+
+.list-item-sub-header {
+  text-align: center;
+  padding: 4px;
+  border-bottom: 1px solid #d3d3d3;
+}
+.list-item-warning {
+  text-align: center;
+   padding: 4px;
+  /* background: #ebcccc; */
+   background: #f4adad;
+  /* color: #a94442; */
+  color: #852725;
+  border-radius: 0 0 3px 3px;
+}
+
 .list-item {
   box-sizing: border-box;
   display: flex;
@@ -175,10 +198,22 @@ body {
 }
 
 .count-container {
+  order: 2;
   flex-grow: 1;
-  margin: auto;
-  text-align: center;
   font-weight: 700;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 2px solid #303030;
+  border-bottom: 2px solid #303030;
+}
+.stepper-decrement:disabled ~ .count-container {
+  /* TODO: prefixes?  */
+  border-image: linear-gradient(270deg, #303030, #d3d3d3) 1;
+}
+.stepper-increment:disabled ~ .count-container {
+  /* TODO: prefixes?  */
+  border-image: linear-gradient(90deg, #303030, #d3d3d3) 1;
 }
 
 /* Consider https://github.com/gmertk/GMStepper style */
@@ -200,11 +235,13 @@ body {
   /* border-color: #909090; */
 }
 .stepper-decrement {
-  border-right: 1px solid #d3d3d3;
+  order: 1;
+  /* border-right: 1px solid #d3d3d3; */
   border-radius: 5px 0 0 5px;
 }
 .stepper-increment {
-  border-left: 1px solid #d3d3d3;
+  order: 3;
+  /* border-left: 1px solid #d3d3d3; */
   border-radius: 0 5px 5px 0;
 }
 

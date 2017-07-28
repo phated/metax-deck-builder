@@ -75,15 +75,15 @@ cardDecoder =
         |> required "image_url" string
         |> required "is_final" bool
 
-decoder : Decoder Cards
-decoder =
+cardListDecoder : Decoder Cards
+cardListDecoder =
     list cardDecoder
 
 getCards : Cmd Msg
 getCards =
     let
         request =
-            Http.get "/data/metax.normalized.json" decoder
+            Http.get "/data/metax.normalized.json" cardListDecoder
     in
         Http.send CardsLoaded request
 
@@ -133,6 +133,10 @@ saveDeck deck =
         |> Just
         |> Ports.storeSession
 
+notZero : String -> Int -> Bool
+notZero _ count =
+    count /= 0
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -170,9 +174,9 @@ update msg model =
 
         Decrement cardId ->
             let
-                deck = maybeDecrement cardId model.deck
+                deck = Dict.filter notZero (maybeDecrement cardId model.deck)
             in
-                ( { model | deck = deck }, Cmd.none )
+                ( { model | deck = deck }, saveDeck deck )
 
 
 view : Model -> Html Msg
@@ -201,10 +205,14 @@ navbarTop model =
 
 navbarBottom : Model -> Html Msg
 navbarBottom model =
-    nav [ class "navbar-bottom" ]
-        [ linkTo "/" [ text "Cards" ]
-        , linkTo "/deck" [ text "Deck" ]
-        ]
+    let
+        deckContents = (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
+        deckSize = sum deckContents
+    in
+        nav [ class "navbar-bottom" ]
+            [ linkTo "/" [ text "Cards" ]
+            , linkTo "/deck" [ text ("Deck (" ++ (toString deckSize) ++ ")") ]
+            ]
 
 cardListPane : Model -> Html Msg
 cardListPane model =
@@ -217,19 +225,17 @@ isPositive : Int -> Bool
 isPositive num =
     num >= 0
 
-stepper : Card -> Deck -> Html Msg
-stepper card deck =
+stepper : (Card, Int) -> Html Msg
+stepper (card, count) =
     let
-        count = Maybe.withDefault 0 (Dict.get card.id deck)
-
         decrementDisabled = (count == 0)
 
         incrementDisabled = (count == 3)
     in
         div [ class "stepper-container"]
-            [ div [ class "count-container" ] [ text ("In Deck: " ++ toString count) ]
-            , button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.id) ] [ text "-" ]
+            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.id) ] [ text "-" ]
             , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card.id) ] [ text "+" ]
+            , div [ class "count-container" ] [ text (toString count) ]
             ]
 
 mpView : Int -> Html Msg
@@ -240,11 +246,11 @@ mpView stat =
         div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
 
 statView : String -> Maybe Int -> Html Msg
-statView label stat =
+statView icon stat =
     case stat of
         Maybe.Just stat ->
             div []
-                [ img [ src ("/icons/" ++ label ++ ".png") ] []
+                [ img [ src ("/icons/" ++ icon ++ ".png") ] []
                 , span [ class "stat" ] [ text (toString stat) ]
                 ]
         Maybe.Nothing ->
@@ -309,19 +315,216 @@ cardDetails card =
 
 cardView : Model -> Card -> Html Msg
 cardView model card =
-    div [ id card.id
-        , class "list-item"
-        ]
-        [ cardDetails card
-        , stepper card model.deck
-        ]
+    let
+        count = Maybe.withDefault 0 (Dict.get card.id model.deck)
+    in
+        div [ id card.id
+            , class "list-item"
+            ]
+            [ cardDetails card
+            , stepper (card, count)
+            ]
+
+idMatches : String -> Card -> Bool
+idMatches cardId card =
+    card.id == cardId
+
+lookup : Model -> String -> Maybe Card
+lookup model cardId =
+    List.filter (idMatches cardId) model.cards
+        |> List.head
+
+byType : String -> (Maybe Card, Int) -> Bool
+byType cardType (card, _) =
+    case card of
+        Just card ->
+            card.card_type == cardType
+        Nothing ->
+            False
+
+byTitle : String -> (Maybe Card, Int) -> Bool
+byTitle cardTitle (card, _) =
+    case card of
+        Just card ->
+            card.title == cardTitle
+        Nothing ->
+            False
+
+byMulti : String -> (Maybe Card, Int) -> Bool
+byMulti rank (card, _) =
+    case card of
+        Just card ->
+            contains (regex ("(?:(?:Strength|Intelligence|Special)\\/){1,3}\\D+" ++ rank ++ "$")) card.title
+            -- contains ("[Strength|Intelligence|Special]\/" card.title
+        Nothing ->
+            False
+
+sectionHeader : String -> Int -> List (Html Msg)
+sectionHeader title count =
+    List.singleton (div [ class "list-item-header"] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
+
+sectionSubHeader : String -> Int -> List (Html Msg)
+sectionSubHeader title count =
+    List.singleton (div [ class "list-item-sub-header"] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
+
+sum : List (Maybe Card, Int) -> Int
+sum cards =
+    (List.sum (List.map Tuple.second cards))
+
+charactersView : List (Maybe Card, Int) -> List (Html Msg)
+charactersView characters =
+    if List.length characters > 0 then
+        List.concat
+            [ sectionHeader "Characters" (sum characters)
+            , (List.map deckCardView characters)
+            ]
+    else
+        []
+
+
+eventsView : List (Maybe Card, Int) -> List (Html Msg)
+eventsView events =
+    if List.length events > 0 then
+        List.concat
+            [ sectionHeader "Events" (sum events)
+            , (List.map deckCardView events)
+            ]
+    else
+        []
+
+bcWarningView : List (Html Msg)
+bcWarningView =
+    List.singleton (div [ class "list-item-warning" ] [ text "You have too many Battle Cards at this Type/Rank" ])
+
+battleCardSubSection : String -> List (Maybe Card, Int) -> List (Html Msg)
+battleCardSubSection title cards =
+    if List.length cards > 0 then
+        let
+            warning = if sum cards > 3 then bcWarningView else []
+        in
+            List.concat
+                [ sectionSubHeader title (sum cards)
+                , warning
+                , (List.map deckCardView cards)
+                ]
+    else
+        []
+
+battleCardView : List (Maybe Card, Int) -> List (Html Msg)
+battleCardView battle =
+    if List.length battle > 0 then
+        let
+            -- Strength
+            str1 = Tuple.first <| List.partition (byTitle "Strength 1") battle
+            str2 = Tuple.first <| List.partition (byTitle "Strength 2") battle
+            str3 = Tuple.first <| List.partition (byTitle "Strength 3") battle
+            str4 = Tuple.first <| List.partition (byTitle "Strength 4") battle
+            str5 = Tuple.first <| List.partition (byTitle "Strength 5") battle
+            str6 = Tuple.first <| List.partition (byTitle "Strength 6") battle
+            str7 = Tuple.first <| List.partition (byTitle "Strength 7") battle
+            -- Intelligence
+            int1 = Tuple.first <| List.partition (byTitle "Intelligence 1") battle
+            int2 = Tuple.first <| List.partition (byTitle "Intelligence 2") battle
+            int3 = Tuple.first <| List.partition (byTitle "Intelligence 3") battle
+            int4 = Tuple.first <| List.partition (byTitle "Intelligence 4") battle
+            int5 = Tuple.first <| List.partition (byTitle "Intelligence 5") battle
+            int6 = Tuple.first <| List.partition (byTitle "Intelligence 6") battle
+            int7 = Tuple.first <| List.partition (byTitle "Intelligence 7") battle
+            -- Special
+            sp1 = Tuple.first <| List.partition (byTitle "Special 1") battle
+            sp2 = Tuple.first <| List.partition (byTitle "Special 2") battle
+            sp3 = Tuple.first <| List.partition (byTitle "Special 3") battle
+            sp4 = Tuple.first <| List.partition (byTitle "Special 4") battle
+            sp5 = Tuple.first <| List.partition (byTitle "Special 5") battle
+            sp6 = Tuple.first <| List.partition (byTitle "Special 6") battle
+            sp7 = Tuple.first <| List.partition (byTitle "Special 7") battle
+            -- Multi
+            multi1 = Tuple.first <| List.partition (byMulti "1") battle
+            multi2 = Tuple.first <| List.partition (byMulti "2") battle
+            multi3 = Tuple.first <| List.partition (byMulti "3") battle
+            multi4 = Tuple.first <| List.partition (byMulti "4") battle
+            multi5 = Tuple.first <| List.partition (byMulti "5") battle
+            multi6 = Tuple.first <| List.partition (byMulti "6") battle
+            multi7 = Tuple.first <| List.partition (byMulti "7") battle
+        in
+            List.concat
+                [ sectionHeader "Battle Cards" (sum battle)
+                -- Strength
+                , battleCardSubSection "Strength - Rank 1" str1
+                , battleCardSubSection "Strength - Rank 2" str2
+                , battleCardSubSection "Strength - Rank 3" str3
+                , battleCardSubSection "Strength - Rank 4" str4
+                , battleCardSubSection "Strength - Rank 5" str5
+                , battleCardSubSection "Strength - Rank 6" str6
+                , battleCardSubSection "Strength - Rank 7" str7
+                -- Intelligence
+                , battleCardSubSection "Intelligence - Rank 1" int1
+                , battleCardSubSection "Intelligence - Rank 2" int2
+                , battleCardSubSection "Intelligence - Rank 3" int3
+                , battleCardSubSection "Intelligence - Rank 4" int4
+                , battleCardSubSection "Intelligence - Rank 5" int5
+                , battleCardSubSection "Intelligence - Rank 6" int6
+                , battleCardSubSection "Intelligence - Rank 7" int7
+                -- Special
+                , battleCardSubSection "Special - Rank 1" sp1
+                , battleCardSubSection "Special - Rank 2" sp2
+                , battleCardSubSection "Special - Rank 3" sp3
+                , battleCardSubSection "Special - Rank 4" sp4
+                , battleCardSubSection "Special - Rank 5" sp5
+                , battleCardSubSection "Special - Rank 6" sp6
+                , battleCardSubSection "Special - Rank 7" sp7
+                -- Multi
+                , battleCardSubSection "Multi - Rank 1" multi1
+                , battleCardSubSection "Multi - Rank 2" multi2
+                , battleCardSubSection "Multi - Rank 3" multi3
+                , battleCardSubSection "Multi - Rank 4" multi4
+                , battleCardSubSection "Multi - Rank 5" multi5
+                , battleCardSubSection "Multi - Rank 6" multi6
+                , battleCardSubSection "Multi - Rank 7" multi7
+                ]
+    else
+        []
+
+deckSectionView : List (Maybe Card, Int) -> List (Html Msg)
+deckSectionView cards =
+    let
+        characters = Tuple.first <| List.partition (byType "Character") cards
+        events = Tuple.first <| List.partition (byType "Event") cards
+        battle = Tuple.first <| List.partition (byType "Battle") cards
+    in
+        List.concat
+            [ charactersView characters
+            , eventsView events
+            , battleCardView battle
+            ]
+
+deckCardView : (Maybe Card, Int) -> Html Msg
+deckCardView card =
+    case card of
+        (Just card, count) ->
+            div [ id ("deck_" ++ card.id)
+                , class "list-item"
+                ]
+                [ div [ class "card-details" ]
+                      [ div [ class "card-title" ]
+                            [ text ("(" ++ card.id ++ ") ")
+                            , text card.title
+                            ]
+                      ]
+                , stepper (card, count)
+                ]
+
+        (Nothing, _) ->
+            div [] []
+
 
 deckListPane : Model -> Html Msg
 deckListPane model =
     div [ id "deck-list-pane"
         , class "pane"
         ]
-        [ text "Deck List" ]
+        -- TODO: use |> operator
+        (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
 
 paneContainer : Model -> Html Msg
 paneContainer model =
@@ -354,6 +557,7 @@ init : Value -> Location -> ( Model, Cmd Msg )
 init session location =
     ( { location = location
       , cards = []
+        -- TODO: avoid loading a deck list before cards are loaded
       , deck = deckDecoder session
       },
       getCards
