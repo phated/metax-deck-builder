@@ -6,7 +6,7 @@
   "scripts": {
     "start": "elm-live ./Main.elm --output=elm.js --pushstate",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "from-csv": "csvtojson data/metax-db.csv > data/metax.normalized.json",
+    "from-csv": "./data/to-json.js > data/metax.normalized.json",
     "elm-make": "elm-make ./Main.elm --output=elm.js --yes"
   },
   "repository": {

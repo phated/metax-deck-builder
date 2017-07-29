@@ -36,7 +36,6 @@ type alias Card =
     , intelligence : Maybe Int
     , special : Maybe Int
     , image_url : String
-    , is_final : Bool
     }
 
 type alias Cards =
@@ -73,7 +72,6 @@ cardDecoder =
         |> required "intelligence" (nullable int)
         |> required "special" (nullable int)
         |> required "image_url" string
-        |> required "is_final" bool
 
 cardListDecoder : Decoder Cards
 cardListDecoder =
@@ -86,15 +84,6 @@ getCards =
             Http.get "/data/metax.normalized.json" cardListDecoder
     in
         Http.send CardsLoaded request
-
-isFinal : Card -> Bool
-isFinal card =
-    card.is_final == True
-
--- TODO: Remove hack
-filterCards : Cards -> Cards
-filterCards cards =
-    List.filter isFinal cards
 
 maybeIncrement : String -> Deck -> Deck
 maybeIncrement cardId deck =
@@ -154,11 +143,7 @@ update msg model =
         --     ( model, fetch )
 
         CardsLoaded (Ok cards) ->
-            let
-                -- TODO: Remove hack around unfinalized cards
-                finalCards = filterCards cards
-            in
-                ( { model | cards = finalCards }, Cmd.none )
+            ( { model | cards = cards }, Cmd.none )
 
         CardsLoaded (Err err) ->
             let

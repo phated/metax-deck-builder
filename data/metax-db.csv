@@ -1,236 +1,239 @@
-id,title,card_type,trait,mp,effect,strength,intelligence,special,,image_url,is_final
-C1-JL,Alfred Pennyworth - Butler,Character,Hero,1,PUSH: Place this card on top of its owner's deck to search your deck for a Character and place it in your hand.,1,,,,http://metax.surge.sh/C1-JL.jpg,TRUE
-C2-JL,Amanda Waller - The Wall,Character,Hero,4,CONSTANT: Your Villain Characters may Link to a Team Attack for 0 MP on the turn they enter play.,3,,5,,http://metax.surge.sh/C2-JL.jpg,TRUE
-C3-JL,,,,,,,,,,http://metax.surge.sh/C3-JL.jpg,
-C4-JL,,,,,,,,,,http://metax.surge.sh/C4-JL.jpg,
-C5-JL,Deadman - Boston Brand,Character,Hero,2,PLAY: Place a Battle Card from your discard pile into your hand.,2,,5,,http://metax.surge.sh/C5-JL.jpg,TRUE
-C6-JL,Firestorm - Nuclear Man,Character,Hero,2,PUSH: KO this card to KO target Character.,3,,6,,http://metax.surge.sh/C6-JL.jpg,TRUE
-C7-JL,,,,,,,,,,http://metax.surge.sh/C7-JL.jpg,
-C8-JL,Martian Manhunter - J'onn J'onzz,Character,Hero,3,CONSTANT: This card may use any Battle Card when defending.,5,5,,,http://metax.surge.sh/C8-JL.jpg,TRUE
-C9-JL,,,,,,,,,,http://metax.surge.sh/C9-JL.jpg,
-C10-JL,Starfire - Koriand'r,Character,Hero,1,PLAY: Attach a Battle Card with a rank of 7 from your discard pile to target Character.,,4,6,,http://metax.surge.sh/C10-JL.jpg,TRUE
-C11-JL,Superboy - Kon-El,Character,Hero,3,"PLAY: Choose an attached Battle Card, then return it to its owner's hand or discard it.",6,,5,,http://metax.surge.sh/C11-JL.jpg,TRUE
-C12-JL,Mister Freeze - Victor Fries,Character,Villain,3,CONSTANT: Characters with a rank of 7 have their effects negated and cannot defend.,4,,5,,http://metax.surge.sh/C12-JL.jpg,TRUE
-C13-JL,Bane - Professional Criminal,Character,Villain,3,PLAY: Discard the top 2 cards of your opponent's deck.,6,5,,,http://metax.surge.sh/C13-JL.jpg,TRUE
-C14-JL,Scarecrow - Jonathan Crane,Character,Villain,2,"CONSTANT: Whenever this card pushes to attack, your opponent loses 2 MP.",,3,5,,http://metax.surge.sh/C14-JL.jpg,TRUE
-C15-JL,,,,,,,,,,http://metax.surge.sh/C15-JL.jpg,
-C16-JL,Poison Ivy - Pamela Isley,Character,Villain,2,"CONSTANT: At the start of your turn, gain 2 MP.",,3,5,,http://metax.surge.sh/C16-JL.jpg,TRUE
-C17-JL,Ra's Al Ghul - The Demon's Head,Character,Villain,0,PLAY: You may play a Character from your discard pile with a maximum rank of 5 or less.,3,6,,,http://metax.surge.sh/C17-JL.jpg,TRUE
-C18-JL,Absence of Fear,Event,,-5,"Your opponent shuffles his or her hand into his or her deck, then draws 5 cards.",,,,,http://metax.surge.sh/C18-JL.jpg,TRUE
-C19-JL,Leap Into Action,Event,,-2,Search your deck for a Hero Character with a rank of 7 or a Battle Card with a rank of 7 and place it in your hand.,,,,,http://metax.surge.sh/C19-JL.jpg,TRUE
-C20-JL,Birds of a Feather,Event,,-1,Each player draws 2 cards.,,,,,http://metax.surge.sh/C20-JL.jpg,TRUE
-C21-JL,Disgraced,Event,,-5,"KO target Character with a ""constant"" effect, or draw 2 cards if there are no Characters with a ""constant"" effect in play.",,,,,http://metax.surge.sh/C21-JL.jpg,TRUE
-C22-JL,Echolocation,Event,,-4,Look at your opponent's hand and choose a card. Your opponent discards that card.,,,,,http://metax.surge.sh/C22-JL.jpg,TRUE
-C23-JL,,,,,,,,,,http://metax.surge.sh/C23-JL.jpg,
-C24-JL,Injustice,Event,,-1,Characters lose all effects until the end of your next turn. Draw a card.,,,,,http://metax.surge.sh/C24-JL.jpg,TRUE
-C25-JL,Battle Frenzy,Event,,-4,"At the end of your turn, draw a card for each Battle Card played this turn.",,,,,http://metax.surge.sh/C25-JL.jpg,TRUE
-C26-JL,Lose the Battle to Win the War,Event,,-2,"Return an attached Battle Card to its owner's hand, then shuffle this card into its owner's deck.",,,,,http://metax.surge.sh/C26-JL.jpg,TRUE
-C27-JL,Overboard,Event,,-2,Discard a Character from your hand with a maximum rank of 5 or less to draw 2 cards.,,,,,http://metax.surge.sh/C27-JL.jpg,TRUE
-C28-JL,Combat Mastery,Event,,-1,"Until the end of your next turn, your Characters may use any Battle Cards. Draw a card.",,,,,http://metax.surge.sh/C28-JL.jpg,TRUE
-C29-JL,Resurrection of Power,Event,,0,"KO any number of Characters you control, then draw a card for each Character KO'd this way.",,,,,http://metax.surge.sh/C29-JL.jpg,TRUE
-C30-JL,Reinforcements,Event,,-2,"Shuffle 2 Battle Cards from your discard pile into your deck, then draw a card.",,,,,http://metax.surge.sh/C30-JL.jpg,TRUE
-C31-JL,Strength 1,Battle,,2,"Draw a card, then discard a card from your hand.",1,,,,http://metax.surge.sh/C31-JL.jpg,TRUE
-C32-JL,Intelligence 1,Battle,,2,ATTACK: This attack can only be defended by Characters with an Intelligence Stat.,,1,,,http://metax.surge.sh/C32-JL.jpg,TRUE
-C33-JL,Special 1,Battle,,0,Draw a card.,,,1,,http://metax.surge.sh/C33-JL.jpg,TRUE
-C34-JL,Special 1,Battle,,2,"DEFEND: Until the end of the turn, Battle Cards cannot be attached to the Character using this card.",,,1,,http://metax.surge.sh/C34-JL.jpg,TRUE
-C35-JL,Strength 2,Battle,,2,"If this card is used by a Hero Character, you may discard an attached Battle Card.",2,,,,http://metax.surge.sh/C35-JL.jpg,TRUE
-C36-JL,Strength 2,Battle,,2,"DEFEND: If this card KO's a Character, gain 2 MP.",2,,,,http://metax.surge.sh/C36-JL.jpg,TRUE
-C37-JL,Strength 2,Battle,,3,Each player draws a card.,2,,,,http://metax.surge.sh/C37-JL.jpg,TRUE
-C38-JL,,,,,,,,,,http://metax.surge.sh/C38-JL.jpg,
-C39-JL,Special 2,Battle,,1,Negate the effects of target Character until the end of your next turn.,,,2,,http://metax.surge.sh/C39-JL.jpg,TRUE
-C40-JL,Strength 3,Battle,,0,"Discard the top 2 cards of your deck, then draw a card.",3,,,,http://metax.surge.sh/C40-JL.jpg,TRUE
-C41-JL,Special 7,Battle,,0,"If you control ""Batman"", ""Superman"" and ""Wonder Woman"", draw 3 cards.",,,7,,http://metax.surge.sh/C41-JL.jpg,TRUE
-C42-JL,,,,,,,,,,http://metax.surge.sh/C42-JL.jpg,
-C43-JL,,,,,,,,,,http://metax.surge.sh/C43-JL.jpg,
-C44-JL,,,,,,,,,,http://metax.surge.sh/C44-JL.jpg,
-C45-JL,Strength 4,Battle,,0,"ATTACK: If this card gains a VP, draw a card.",4,,,,http://metax.surge.sh/C45-JL.jpg,FALSE
-C46-JL,,,,,,,,,,http://metax.surge.sh/C46-JL.jpg,
-C47-JL,,,,,,,,,,http://metax.surge.sh/C47-JL.jpg,
-C48-JL,Special 4,Battle,,2,Each player discards a card from their hand.,,,4,,http://metax.surge.sh/C48-JL.jpg,TRUE
-C49-JL,Special 4,Battle,,0,Your Characters that entered play this turn may attack.,,,4,,http://metax.surge.sh/C49-JL.jpg,TRUE
-C50-JL,Strength 5,Battle,,1,ATTACK: This attack can only be defended by a Character with a maximum rank of 5 or less.,5,,,,http://metax.surge.sh/C50-JL.jpg,TRUE
-C51-JL,,,,,,,,,,http://metax.surge.sh/C51-JL.jpg,
-C52-JL,,,,,,,,,,http://metax.surge.sh/C52-JL.jpg,
-C53-JL,,,,,,,,,,http://metax.surge.sh/C53-JL.jpg,
-C54-JL,,,,,,,,,,http://metax.surge.sh/C54-JL.jpg,
-C55-JL,Intelligence 6,Battle,,-1,Look at your opponent's hand.,,6,,,http://metax.surge.sh/C55-JL.jpg,TRUE
-C56-JL,Special 6,Battle,,-2,DEFEND: Draw a card for each Character with a rank of 7 in the Battle Zone.,,,6,,http://metax.surge.sh/C56-JL.jpg,TRUE
-C57-JL,Strength 7,Battle,,-2,The next Battle Card you play this turn has its MP cost reduced to 0.,7,,,,http://metax.surge.sh/C57-JL.jpg,TRUE
-C58-JL,Intelligence 7,Battle,,-1,"Look at the top 3 cards of your deck, then place them on the top or bottom of your deck in any order.",,7,,,http://metax.surge.sh/C58-JL.jpg,TRUE
-C59-JL,Strength 3,Battle,,-2,Target Character cannot defend this turn.,3,,,,http://metax.surge.sh/C59-JL.jpg,TRUE
-C60-JL,,,,,,,,,,http://metax.surge.sh/C60-JL.jpg,
-U61-JL,Batgirl - Barbara Gordon,Character,Hero,3,CONSTANT: This card may Link to a Team Attack for 0 MP.,4,5,,,http://metax.surge.sh/U61-JL.jpg,TRUE
-U62-JL,Batman - Dark Knight,Character,Hero,3,PLAY: Push target Character.,2,7,6,,http://metax.surge.sh/U62-JL.jpg,TRUE
-U63-JL,Blue Beetle - Ted Kord,Character,Hero,4,PLAY: You may play another Character with a maximum rank of 5 or less.,3,5,,,http://metax.surge.sh/U63-JL.jpg,TRUE
-U64-JL,Vixen - Mari McCabe,Character,Hero,2,"CONSTANT: Whenever you discard 1 or more cards from your hand, draw a card.",3,,5,,http://metax.surge.sh/U64-JL.jpg,TRUE
-U65-JL,Cyborg - Victor Stone,Character,Hero,3,"PLAY: Draw 2 cards, then discard 2 cards from your hand.",4,,5,,http://metax.surge.sh/U65-JL.jpg,TRUE
-U66-JL,,,,,,,,,,http://metax.surge.sh/U66-JL.jpg,
-U67-JL,Green Lantern - Hal Jordan,Character,Hero,2,PUSH: Draw a card.,,3,6,,http://metax.surge.sh/U67-JL.jpg,TRUE
-U68-JL,Nightwing - Dick Grayson,Character,Hero,3,"CONSTANT: Whenever this card leads a Team Attack, gain 1 VP.",,4,6,,http://metax.surge.sh/U68-JL.jpg,TRUE
-U69-JL,Krypto - The Super Dog,Character,Hero,2,"CONSTANT: At the end of each player's turn, that player draws a card.",,,5,,http://metax.surge.sh/U69-JL.jpg,TRUE
-U70-JL,,,,,,,,,,http://metax.surge.sh/U70-JL.jpg,
-U71-JL,Supergirl - Teen of Tomorrow,Character,Hero,0,PLAY: Each player reveals his or her hand and discards all Events revealed.,6,6,,,http://metax.surge.sh/U71-JL.jpg,FALSE
-U72-JL,Superman - Man of Steel,Character,Hero,2,PLAY: Draw a card.,7,3,5,,http://metax.surge.sh/U72-JL.jpg,TRUE
-U73-JL,Brainiac - Collector of Worlds,Character,Villain,1,PUSH: KO a different Character you control to gain 4 MP.,1,7,,,http://metax.surge.sh/U73-JL.jpg,TRUE
-U74-JL,Harley Quinn - Former Psychiatrist,Character,Villain,3,"CONSTANT: When this card is KO'd by Damage during the Battle Step, gain 1 VP.",2,4,5,,http://metax.surge.sh/U74-JL.jpg,TRUE
-U75-JL,Sinestro - Intergalactic Criminal,Character,Villain,1,"PLAY: The next time your opponent would draw 1 card, skip it.",3,,6,,http://metax.surge.sh/U75-JL.jpg,TRUE
-U76-JL,,,,,,,,,,http://metax.surge.sh/U76-JL.jpg,
-U77-JL,Victorious,Event,,-9,Gain control of target Character.,,,,,http://metax.surge.sh/U77-JL.jpg,TRUE
-U78-JL,Unexpected Turnaround,Event,,-8,Return all Characters to their owner's hands.,,,,,http://metax.surge.sh/U78-JL.jpg,TRUE
-U79-JL,Transfer of Power,Event,,-3,"Use the ""when played"" effect of target Hero Character, then draw a card.",,,,,http://metax.surge.sh/U79-JL.jpg,TRUE
-U80-JL,Don't Go It Alone,Event,,0,You may Link a Character this turn for 0 MP.,,,,,http://metax.surge.sh/U80-JL.jpg,TRUE
-U81-JL,Point Blank,Event,,-4,"Draw 3 cards, then discard 2 cards from your hand unless you discard a Character with a rank of 7.",,,,,http://metax.surge.sh/U81-JL.jpg,TRUE
-U82-JL,Joke's On You,Event,,-1,"Place 2 Battle Cards from your discard pile into your hand, then discard a random card from your hand.",,,,,http://metax.surge.sh/U82-JL.jpg,TRUE
-U83-JL,Passion for the Hunt,Event,,-2,Search your deck for a Battle Card and place it in your hand.,,,,,http://metax.surge.sh/U83-JL.jpg,TRUE
-U84-JL,Power Corrupts,Event,,-3,Attacks from target Character cannot be defended this turn.,,,,,http://metax.surge.sh/U84-JL.jpg,TRUE
-U85-JL,Push and Pull,Event,,-4,"If you control at least two Characters with a maximum rank of 5 or less, draw 3 cards.",,,,,http://metax.surge.sh/U85-JL.jpg,TRUE
-U86-JL,Rebirth,Event,,-1,Shuffle 3 non-Event cards from your discard pile into your deck.,,,,,http://metax.surge.sh/U86-JL.jpg,TRUE
-U87-JL,Upper Hand,Event,,-4,Draw 2 cards.,,,,,http://metax.surge.sh/U87-JL.jpg,TRUE
-U88-JL,Sleight of Hand,Event,,0,"Look at your opponent's VP pile and choose a card, then swap this card facedown with the chosen card.",,,,,http://metax.surge.sh/U88-JL.jpg,TRUE
-U89-JL,Paralysis,Event,,-4,Characters cannoy attack until the end of your next turn.,,,,,http://metax.surge.sh/U89-JL.jpg,TRUE
-U90-JL,Strength in Numbers,Event,,-1,"If you perform a Team Attack this turn, draw 2 cards.",,,,,http://metax.surge.sh/U90-JL.jpg,TRUE
-U91-JL,Meta Superiority,Event,,-2,Attach a Battle Card from your hand to target Character.,,,,,http://metax.surge.sh/U91-JL.jpg,TRUE
-U92-JL,Strength/Intelligence/Special 1,Battle,,0,"ATTACK: If you gain a VP from this attack, you may pay -1 MP to return this card to its owner's hand.",1,1,1,,http://metax.surge.sh/U92-JL.jpg,TRUE
-U93-JL,Intelligence 4,Battle,,-1,"DEFEND: If this card is used by a Villain Character, place a Character from a discard pile on top of its owner's deck.",,4,,,http://metax.surge.sh/U93-JL.jpg,TRUE
-U94-JL,,,,,,,,,,http://metax.surge.sh/U94-JL.jpg,
-U95-JL,Strength/Intelligence/Special 5,Battle,,-2,"If this card is used in a Team Attack, draw 2 cards.",5,5,5,,http://metax.surge.sh/U95-JL.jpg,TRUE
-U96-JL,Intelligence 6,Battle,,-3,DEFEND: Target an attacking Character. KO that Character at the end of the turn.,,6,,,http://metax.surge.sh/U96-JL.jpg,TRUE
-U97-JL,Special 6,Battle,,-2,Draw a card.,,,6,,http://metax.surge.sh/U97-JL.jpg,TRUE
-U98-JL,Strength 7,Battle,,-1,DEFEND: Discard the top 3 cards of your deck to push up to 2 target Characters.,7,,,,http://metax.surge.sh/U98-JL.jpg,TRUE
-U99-JL,Intelligence 7,Battle,,-2,ATTACK: This attack cannot be defended.,,7,,,http://metax.surge.sh/U99-JL.jpg,TRUE
-U100-JL,Special 7,Battle,,-1,DEFEND: Discard all Battle Cards attached to the Character using this card.,,,7,,http://metax.surge.sh/U100-JL.jpg,TRUE
-R101-JL,Aquaman - Arthur Curry,Character,Hero,3,CONSTANT: This card cannot be targeted.,6,,5,,http://metax.surge.sh/R101-JL.jpg,TRUE
-R102-JL,Atom - Ray Palmer,Character,Hero,4,"CONSTANT: At the end of your turn, return target Character with a rank of 7 to its owner's hand.",1,,1,,http://metax.surge.sh/R102-JL.jpg,TRUE
-R103-JL,Doctor Fate - Agent of the Lords of Order,Character,Hero,0,PLAY: You may KO this card to place a random card from your opponent's VP pile into your hand.,1,,7,,http://metax.surge.sh/R103-JL.jpg,TRUE
-R104-JL,John Constantine - Occult Detective,Character,Hero,2,"CONSTANT: Negate all ""when played"" effects.",,5,6,,http://metax.surge.sh/R104-JL.jpg,TRUE
-R105-JL,Shazam - Captain Marvel,Character,Hero,3,PUSH: Return this card to its owner's hand.,7,,5,,http://metax.surge.sh/R105-JL.jpg,TRUE
-R106-JL,The Flash - Scarlet Speedster,Character,Hero,1,PLAY: This card may attack on the turn it enters play.,2,,6,,http://metax.surge.sh/R106-JL.jpg,TRUE
-R107-JL,Wonder Woman - Amazon Princess,Character,Hero,2,PUSH: Discard a card from your hand to KO target Character with a rank of 7.,6,4,6,,http://metax.surge.sh/R107-JL.jpg,TRUE
-R108-JL,Zatanna - Magician,Character,Hero,1,"CONSTANT: At the beginning of your turn, shuffle this card into its owner's deck to shuffle target Character into its owner's deck.",2,,6,,http://metax.surge.sh/R108-JL.jpg,TRUE
-R109-JL,Bizarro - Imperfect Duplicate,Character,Villain,0,PLAY: Gain the effects of target Character (until Bizzarro leaves play).,,5,5,,http://metax.surge.sh/R109-JL.jpg,TRUE
-R110-JL,Black Adam - Teth-Adam,Character,Villain,5,PLAY: Discard a card from your hand.,7,,6,,http://metax.surge.sh/R110-JL.jpg,TRUE
-R111-JL,,,,,,,,,,http://metax.surge.sh/R111-JL.jpg,
-R112-JL,Deathstroke - Slade Wilson,Character,Villain,1,PLAY: KO target pushed Character.,4,4,6,,http://metax.surge.sh/R112-JL.jpg,TRUE
-R113-JL,Doomsday - Destroyer,Character,Villain,2,CONSTANT: Negate the effects of Battle Cards.,7,1,,,http://metax.surge.sh/R113-JL.jpg,TRUE
-R114-JL,Lex Luther - CEO of Lexcorp,Character,Villain,2,PLAY: KO target Character with a rank of 7.,,7,5,,http://metax.surge.sh/R114-JL.jpg,TRUE
-R115-JL,The Joker - Clown Prince of Crime,Character,Villain,2,"PLAY: Each player shuffles their hand into their deck, then draws the same amount of cards back.",,6,6,,http://metax.surge.sh/R115-JL.jpg,TRUE
-R116-JL,,,,,,,,,,http://metax.surge.sh/R116-JL.jpg,
-R117-JL,,,,,,,,,,http://metax.surge.sh/R117-JL.jpg,
-R118-JL,Evil Parade,Event,,-7,KO all Characters.,,,,,http://metax.surge.sh/R118-JL.jpg,TRUE
-R119-JL,Knockout,Event,,-5,KO a Character you control to KO target Character.,,,,,http://metax.surge.sh/R119-JL.jpg,TRUE
-R120-JL,Microscopic Victory,Event,,-9,Gain 1 VP.,,,,,http://metax.surge.sh/R120-JL.jpg,TRUE
-R121-JL,Showdown,Event,,-6,"Each player chooses a Character under their control, then all other Characters are KO'd.",,,,,http://metax.surge.sh/R121-JL.jpg,TRUE
-R122-JL,Right on Target,Event,,-6,Return target Character to its owner's hand.,,,,,http://metax.surge.sh/R122-JL.jpg,TRUE
-R123-JL,Ingenuity,Event,,-5,"Discard your hand, then draw 5 cards.",,,,,http://metax.surge.sh/R123-JL.jpg,TRUE
-R124-JL,Teleportation,Event,,-5,Return a Character you control to your hand to return target Character to its owner's hand.,,,,,http://metax.surge.sh/R124-JL.jpg,TRUE
-R125-JL,With Friends Like These,Event,,-4,KO all Characters with Damage attached and shuffle those attached Battle Cards into their owner's decks.,,,,,http://metax.surge.sh/R125-JL.jpg,TRUE
-R126-JL,Inherent Weakness,Event,,-5,Attach a Battle Card from your discard pile to target Character.,,,,,http://metax.surge.sh/R126-JL.jpg,TRUE
-R127-JL,Intelligence 1,Battle,,-1,"Draw 3 cards, then place 2 cards from your hand on top of your deck.",,1,,,http://metax.surge.sh/R127-JL.jpg,TRUE
-R128-JL,,,,,,,,,,http://metax.surge.sh/R128-JL.jpg,
-R129-JL,Intelligence 3,Battle,,3,DEFEND: Push target Character.,,3,,,http://metax.surge.sh/R129-JL.jpg,TRUE
-R130-JL,,,,,,,,,,http://metax.surge.sh/R130-JL.jpg,
-R131-JL,,,,,,,,,,http://metax.surge.sh/R131-JL.jpg,
-R132-JL,Strength 5,Battle,,0,"DEFEND: At the end of the turn, KO any Characters that Team Attacked this turn.",5,,,,http://metax.surge.sh/R132-JL.jpg,TRUE
-R133-JL,Strength/Intelligence 5,Battle,,-1,The next Battle Card you play this turn has its MP cost reduced by -1.,5,5,,,http://metax.surge.sh/R133-JL.jpg,TRUE
-R134-JL,,,,,,,,,,http://metax.surge.sh/R134-JL.jpg,
-R135-JL,,,,,,,,,,http://metax.surge.sh/R135-JL.jpg,
-R136-JL,Strength 6,Battle,,-1,ATTACK: Push target Character.,6,,,,http://metax.surge.sh/R136-JL.jpg,TRUE
-R137-JL,Strength 7,Battle,,-2,ATTACK: Your opponent discards a card from their hand.,7,,,,http://metax.surge.sh/R137-JL.jpg,TRUE
-R138-JL,Intelligence 7,Battle,,-2,DEFEND: Your opponent loses 5 MP.,,7,,,http://metax.surge.sh/R138-JL.jpg,TRUE
-R139-JL,Special 7,Battle,,-3,"ATTACK: If this attack gains a VP, gain an additional VP.",,,7,,http://metax.surge.sh/R139-JL.jpg,TRUE
-R140-JL,Strength/Intelligence/Special 7,Battle,,3,Your opponent gains a VP.,7,7,7,,http://metax.surge.sh/R140-JL.jpg,TRUE
-XR141-JL,Wonder Woman - Princess Diana of Themyscira,Character,Hero,2,"CONSTANT: Whenever a Character's ""push"" effect is activated, negate that effect, KO that Character, and KO this card.",5,,7,,http://metax.surge.sh/XR141-JL.jpg,TRUE
-XR142-JL,Darkseid - Ruler of Apokolips,Character,Villain,0,PLAY: Your opponent discards a random card from their hand.,7,5,,,http://metax.surge.sh/XR142-JL.jpg,TRUE
-XR143-JL,Harley Quinn - Dr. Harleen Quinzel,Character,Villain,1,PUSH: KO this card to gain 1 VP.,2,,6,,http://metax.surge.sh/XR143-JL.jpg,TRUE
-XR144-JL,The Joker - Certifiably Insane,Character,Villain,3,"PLAY: Search your deck for a ""Harley Quinn"" and place it in your hand.",2,7,4,,http://metax.surge.sh/XR144-JL.jpg,TRUE
-UR145-JL,Batman - The Caped Crusader,Character,Hero,2,"PLAY: Look at the top 3 cards of a player's deck, then discard 1 of them and return the other 2 in any order.",,7,7,,http://metax.surge.sh/UR145-JL.jpg,TRUE
-UR146-JL,Superman - Last Son of Krypton,Character,Hero,3,CONSTANT: Attacking does not cause this card to push.,7,,7,,http://metax.surge.sh/UR146-JL.jpg,TRUE
-P1-JL,,,,,,,,,,http://metax.surge.sh/P1-JL.jpg,
-P2-JL,Victorious,Event,,-9,Gain control of target Character.,,,,,http://metax.surge.sh/P2-JL.jpg,TRUE
-P3-JL,Strength/Intelligence/Special 4,Battle,,0,,4,4,4,,http://metax.surge.sh/P3-JL.jpg,FALSE
-P4-JL,,,,,,,,,,http://metax.surge.sh/P4-JL.jpg,
-P5-JL,,,,,,,,,,http://metax.surge.sh/P5-JL.jpg,
-P6-JL,,,,,,,,,,http://metax.surge.sh/P6-JL.jpg,
-P7-JL,,,,,,,,,,http://metax.surge.sh/P7-JL.jpg,
-P8-JL,,,,,,,,,,http://metax.surge.sh/P8-JL.jpg,
-P9-JL,Aquaman - King of the Seven Seas,Character,Hero,3,CONSTANT: This card cannot be targeted.,5,,5,,http://metax.surge.sh/P9-JL.jpg,FALSE
-P10-JL,,,,,,,,,,http://metax.surge.sh/P10-JL.jpg,
-P11-JL,,,,,,,,,,http://metax.surge.sh/P11-JL.jpg,
-P12-JL,,,,,,,,,,http://metax.surge.sh/P12-JL.jpg,
-P13-JL,Shazam - Captain Marvel,Character,Hero,3,PUSH: Return this card to its owner's hand.,7,,5,,http://metax.surge.sh/P13-JL.jpg,TRUE
-P14-JL,,,,,,,,,,http://metax.surge.sh/P14-JL.jpg,
-P15-JL,,,,,,,,,,http://metax.surge.sh/P15-JL.jpg,
-P16-JL,,,,,,,,,,http://metax.surge.sh/P16-JL.jpg,
-P17-JL,Paralysis,Event,,-4,Characters cannot attack until the end of your next turn.,,,,,http://metax.surge.sh/P17-JL.jpg,FALSE
-P18-JL,Strength/Intelligence/Special 5,Battle,,-2,"If this card is used in a Team Attack, draw 2 cards.",5,5,5,,http://metax.surge.sh/P18-JL.jpg,TRUE
-S1-JL,Harley Quinn - Former Psychiatrist,Character,Villain,3,"CONSTANT: When this card is KO'd by damage during the Battle Step, gain 1 VP.",2,4,5,,http://metax.surge.sh/S1-JL.jpg,TRUE
-S2-JL,Brainiac - Collector of Worlds,Character,Villain,1,PUSH: KO a different Character you control to gain 4 MP.,1,7,,,http://metax.surge.sh/S2-JL.jpg,TRUE
-S3-JL,Sinestro - Intergalactic Criminal,Character,Villain,1,"PLAY: The next time your opponent would draw 1 card, skip it.",3,,6,,http://metax.surge.sh/S3-JL.jpg,TRUE
-S4-JL,Solomon Grundy - Cyrus Gold,Character,Villain,1,CONSTANT: This card can only be KO'd by 8 points of Damage.,6,,,,http://metax.surge.sh/S4-JL.jpg,TRUE
-S5-JL,Joke's On You,Event,,-1,"Place 2 Battle Cards from your discard pile into your hand, then discard a random card from your hand.",,,,,http://metax.surge.sh/S5-JL.jpg,TRUE
-S6-JL,,,,,,,,,,http://metax.surge.sh/S6-JL.jpg,
-S7-JL,Overcharged,Event,,-3,"Each player chooses a Character under his or her control, then switch control of those Characters.",,,,,http://metax.surge.sh/S7-JL.jpg,FALSE
-S8-JL,,,,,,,,,,http://metax.surge.sh/S8-JL.jpg,
-S9-JL,Strength 3,Battle,,1,,3,,,,http://metax.surge.sh/S9-JL.jpg,TRUE
-S10-JL,,,,,,,,,,http://metax.surge.sh/S10-JL.jpg,
-S11-JL,,,,,,,,,,http://metax.surge.sh/S11-JL.jpg,
-S12-JL,,,,,,,,,,http://metax.surge.sh/S12-JL.jpg,
-S13-JL,,,,,,,,,,http://metax.surge.sh/S13-JL.jpg,
-S14-JL,Intelligence 2,Battle,,2,,,2,,,http://metax.surge.sh/S14-JL.jpg,TRUE
-S15-JL,Intelligence 1,Battle,,3,,,1,,,http://metax.surge.sh/S15-JL.jpg,TRUE
-S16-JL,,,,,,,,,,http://metax.surge.sh/S16-JL.jpg,
-S17-JL,Special 5,Battle,,-1,,,,5,,http://metax.surge.sh/S17-JL.jpg,TRUE
-S18-JL,,,,,,,,,,http://metax.surge.sh/S18-JL.jpg,
-S19-JL,Superman - Man of Steel,Character,Hero,2,PLAY: Draw a card.,7,3,5,,http://metax.surge.sh/S19-JL.jpg,TRUE
-S20-JL,,,,,,,,,,http://metax.surge.sh/S20-JL.jpg,
-S21-JL,,,,,,,,,,http://metax.surge.sh/S21-JL.jpg,
-S22-JL,,,,,,,,,,http://metax.surge.sh/S22-JL.jpg,
-S23-JL,Rebirth,Event,,-1,Shuffle 3 non-Event cards from your discard pile into your deck.,,,,,http://metax.surge.sh/S23-JL.jpg,TRUE
-S24-JL,Passion for the Hunt,Event,,-2,Search your deck for a Battle Card and place it in your hand.,,,,,http://metax.surge.sh/S24-JL.jpg,TRUE
-S25-JL,Power Corrupts,Event,,-3,Attacks from target Character cannot be defended this turn.,,,,,http://metax.surge.sh/S25-JL.jpg,FALSE
-S26-JL,,,,,,,,,,http://metax.surge.sh/S26-JL.jpg,
-S27-JL,,,,,,,,,,http://metax.surge.sh/S27-JL.jpg,
-S28-JL,,,,,,,,,,http://metax.surge.sh/S28-JL.jpg,
-S29-JL,,,,,,,,,,http://metax.surge.sh/S29-JL.jpg,
-S30-JL,,,,,,,,,,http://metax.surge.sh/S30-JL.jpg,
-S31-JL,,,,,,,,,,http://metax.surge.sh/S31-JL.jpg,
-S32-JL,,,,,,,,,,http://metax.surge.sh/S32-JL.jpg,
-S33-JL,Intelligence 1,Battle,,3,,,1,,,http://metax.surge.sh/S33-JL.jpg,TRUE
-S34-JL,,,,,,,,,,http://metax.surge.sh/S34-JL.jpg,
-S35-JL,,,,,,,,,,http://metax.surge.sh/S35-JL.jpg,
-S36-JL,Special 1,Battle,,3,,,,1,,http://metax.surge.sh/S36-JL.jpg,TRUE
-S37-JL,,,,,,,,,,http://metax.surge.sh/S37-JL.jpg,
-S38-JL,Green Lantern - Hal Jordan,Character,Hero,2,PUSH: Draw a card.,,3,6,,http://metax.surge.sh/S38-JL.jpg,TRUE
-S39-JL,,,,,,,,,,http://metax.surge.sh/S39-JL.jpg,
-S40-JL,Vixen - Mari McCabe,Character,Hero,2,"CONSTANT: Whenever you discard 1 or more cards from your hand, draw a card.",3,,5,,http://metax.surge.sh/S40-JL.jpg,TRUE
-S41-JL,,,,,,,,,,http://metax.surge.sh/S41-JL.jpg,
-S42-JL,Strength in Numbers,Event,,-1,"If you perform a Team Attack this turn, draw 2 cards.",,,,,http://metax.surge.sh/S42-JL.jpg,TRUE
-S43-JL,,,,,,,,,,http://metax.surge.sh/S43-JL.jpg,
-S44-JL,,,,,,,,,,http://metax.surge.sh/S44-JL.jpg,
-S45-JL,Strength 3,Battle,,1,,3,,,,http://metax.surge.sh/S45-JL.jpg,FALSE
-S46-JL,,,,,,,,,,http://metax.surge.sh/S46-JL.jpg,
-S47-JL,Strength 1,Battle,,3,,1,,,,http://metax.surge.sh/S47-JL.jpg,TRUE
-S48-JL,Intelligence 5,Battle,,-1,,,5,,,http://metax.surge.sh/S48-JL.jpg,FALSE
-S49-JL,Intelligence 3,Battle,,1,,,3,,,http://metax.surge.sh/S49-JL.jpg,TRUE
-S50-JL,Intelligence 1,Battle,,3,,,1,,,http://metax.surge.sh/S50-JL.jpg,TRUE
-S51-JL,Special 6,Battle,,-2,,,,6,,http://metax.surge.sh/S51-JL.jpg,TRUE
-S52-JL,,,,,,,,,,http://metax.surge.sh/S52-JL.jpg,
-S53-JL,Special 4,Battle,,0,,,,4,,http://metax.surge.sh/S53-JL.jpg,TRUE
-S54-JL,,,,,,,,,,http://metax.surge.sh/S54-JL.jpg,
-S55-JL,Batman - Dark Knight,Character,Hero,3,PLAY: Push target Character.,2,7,6,,http://metax.surge.sh/S55-JL.jpg,TRUE
-S56-JL,Batgirl - Barbara Gordon,Character,Hero,3,CONSTANT: This card may Link to a Team Attack for 0 MP.,4,5,,,http://metax.surge.sh/S56-JL.jpg,TRUE
-S57-JL,Nightwing - Dick Grayson,Character,Hero,3,"CONSTANT: Whenever this card leads a Team Attack, gain 1 VP.",,4,6,,http://metax.surge.sh/S57-JL.jpg,TRUE
-S58-JL,,,,,,,,,,http://metax.surge.sh/S58-JL.jpg,
-S59-JL,Don't Go It Alone,Event,,0,You may Link a Character this turn for 0 MP.,,,,,http://metax.surge.sh/S59-JL.jpg,FALSE
-S60-JL,,,,,,,,,,http://metax.surge.sh/S60-JL.jpg,
-S61-JL,Upper Hand,Event,,-4,Draw 2 cards.,,,,,http://metax.surge.sh/S61-JL.jpg,TRUE
-S62-JL,Strength 4,Battle,,0,,4,,,,http://metax.surge.sh/S62-JL.jpg,TRUE
-S63-JL,,,,,,,,,,http://metax.surge.sh/S63-JL.jpg,
-S64-JL,,,,,,,,,,http://metax.surge.sh/S64-JL.jpg,
-S65-JL,,,,,,,,,,http://metax.surge.sh/S65-JL.jpg,
-S66-JL,Intelligence 7,Battle,,-3,,,7,,,http://metax.surge.sh/S66-JL.jpg,TRUE
-S67-JL,,,,,,,,,,http://metax.surge.sh/S67-JL.jpg,
-S68-JL,,,,,,,,,,http://metax.surge.sh/S68-JL.jpg,
-S69-JL,,,,,,,,,,http://metax.surge.sh/S69-JL.jpg,
-S70-JL,,,,,,,,,,http://metax.surge.sh/S70-JL.jpg,
-S71-JL,Special 4,Battle,,0,,,,4,,http://metax.surge.sh/S71-JL.jpg,FALSE
+id,title,card_type,trait,mp,effect,strength,intelligence,special,,image_url
+C1-JL,Alfred Pennyworth - Butler,Character,Hero,1,PUSH: Place this card on top of its owner's deck to search your deck for a Character and place it in your hand.,1,,,,http://metaxdb.com/images/C1-JL.jpg
+C2-JL,Amanda Waller - The Wall,Character,Hero,4,CONSTANT: Your Villain Characters may Link to a Team Attack for 0 MP on the turn they enter play.,3,,5,,http://metaxdb.com/images/C2-JL.jpg
+C3-JL,Black Canary - Dinah Lance,Character,Hero,2,PLAY: Negate the effects of target Character until the end of your next turn.,5,3,,,http://metaxdb.com/images/C3-JL.jpg
+C4-JL,Hawkgirl - Gravity-Defying Nth,Character,Hero,3,CONSTANT: Negate any effects that would move a card in a discard pile to a different zone.,5,,3,,http://metaxdb.com/images/C4-JL.jpg
+C5-JL,Deadman - Boston Brand,Character,Hero,2,PLAY: Place a Battle Card from your discard pile into your hand.,2,,5,,http://metaxdb.com/images/C5-JL.jpg
+C6-JL,Firestorm - Nuclear Man,Character,Hero,2,PUSH: KO this card to KO target Character.,3,,6,,http://metaxdb.com/images/C6-JL.jpg
+C7-JL,Hawkman - Carter Hall,Character,Hero,3,PLAY: Each player draws 2 cards.,5,3,,,http://metaxdb.com/images/C7-JL.jpg
+C8-JL,Martian Manhunter - J'onn J'onzz,Character,Hero,3,CONSTANT: This card may use any Battle Card when defending.,5,5,,,http://metaxdb.com/images/C8-JL.jpg
+C9-JL,Red Tornado - John Smith,Character,Hero,3,"CONSTANT: Whenever this card gains a VP, draw 2 cards.",,4,5,,http://metaxdb.com/images/C9-JL.jpg
+C10-JL,Starfire - Koriand'r,Character,Hero,1,PLAY: Attach a Battle Card with a rank of 7 from your discard pile to target Character.,,4,6,,http://metaxdb.com/images/C10-JL.jpg
+C11-JL,Superboy - Kon-El,Character,Hero,3,"PLAY: Choose an attached Battle Card, then return it to its owner's hand or discard it.",6,,5,,http://metaxdb.com/images/C11-JL.jpg
+C12-JL,Mister Freeze - Victor Fries,Character,Villain,3,CONSTANT: Characters with a rank of 7 have their effects negated and cannot defend.,4,,5,,http://metaxdb.com/images/C12-JL.jpg
+C13-JL,Bane - Professional Criminal,Character,Villain,3,PLAY: Discard the top 2 cards of your opponent's deck.,6,5,,,http://metaxdb.com/images/C13-JL.jpg
+C14-JL,Scarecrow - Jonathan Crane,Character,Villain,2,"CONSTANT: Whenever this card pushes to attack, your opponent loses 2 MP.",,3,5,,http://metaxdb.com/images/C14-JL.jpg
+C15-JL,General Zod - Dru-Zod,Character,Villain,2,"CONSTANT: While you control only Villain Characters, your opponent's ""constant"" effects are negated.",6,,3,,http://metaxdb.com/images/C15-JL.jpg
+C16-JL,Poison Ivy - Pamela Isley,Character,Villain,2,"CONSTANT: At the start of your turn, gain 2 MP.",,3,5,,http://metaxdb.com/images/C16-JL.jpg
+C17-JL,Ra's Al Ghul - The Demon's Head,Character,Villain,0,PLAY: You may play a Character from your discard pile with a maximum rank of 5 or less.,3,6,,,http://metaxdb.com/images/C17-JL.jpg
+C18-JL,Absence of Fear,Event,,-5,"Your opponent shuffles his or her hand into his or her deck, then draws 5 cards.",,,,,http://metaxdb.com/images/C18-JL.jpg
+C19-JL,Leap Into Action,Event,,-2,Search your deck for a Hero Character with a rank of 7 or a Battle Card with a rank of 7 and place it in your hand.,,,,,http://metaxdb.com/images/C19-JL.jpg
+C20-JL,Birds of a Feather,Event,,-1,Each player draws 2 cards.,,,,,http://metaxdb.com/images/C20-JL.jpg
+C21-JL,Disgraced,Event,,-5,"KO target Character with a ""constant"" effect, or draw 2 cards if there are no Characters with a ""constant"" effect in play.",,,,,http://metaxdb.com/images/C21-JL.jpg
+C22-JL,Echolocation,Event,,-4,Look at your opponent's hand and choose a card. Your opponent discards that card.,,,,,http://metaxdb.com/images/C22-JL.jpg
+C23-JL,Rise from the Ashes,Event,,-3,Search your discard pile for a Character and place it in your hand.,,,,,http://metaxdb.com/images/C23-JL.jpg
+C24-JL,Injustice,Event,,-1,Characters lose all effects until the end of your next turn. Draw a card.,,,,,http://metaxdb.com/images/C24-JL.jpg
+C25-JL,Battle Frenzy,Event,,-4,"At the end of your turn, draw a card for each Battle Card played this turn.",,,,,http://metaxdb.com/images/C25-JL.jpg
+C26-JL,Lose the Battle to Win the War,Event,,-2,"Return an attached Battle Card to its owner's hand, then shuffle this card into its owner's deck.",,,,,http://metaxdb.com/images/C26-JL.jpg
+C27-JL,Overboard,Event,,-2,Discard a Character from your hand with a maximum rank of 5 or less to draw 2 cards.,,,,,http://metaxdb.com/images/C27-JL.jpg
+C28-JL,Combat Mastery,Event,,-1,"Until the end of your next turn, your Characters may use any Battle Cards. Draw a card.",,,,,http://metaxdb.com/images/C28-JL.jpg
+C29-JL,Resurrection of Power,Event,,0,"KO any number of Characters you control, then draw a card for each Character KO'd this way.",,,,,http://metaxdb.com/images/C29-JL.jpg
+C30-JL,Reinforcements,Event,,-2,"Shuffle 2 Battle Cards from your discard pile into your deck, then draw a card.",,,,,http://metaxdb.com/images/C30-JL.jpg
+C31-JL,Strength 1,Battle,,2,"Draw a card, then discard a card from your hand.",1,,,,http://metaxdb.com/images/C31-JL.jpg
+C32-JL,Intelligence 1,Battle,,2,ATTACK: This attack can only be defended by Characters with an Intelligence Stat.,,1,,,http://metaxdb.com/images/C32-JL.jpg
+C33-JL,Special 1,Battle,,0,Draw a card.,,,1,,http://metaxdb.com/images/C33-JL.jpg
+C34-JL,Special 1,Battle,,2,"DEFEND: Until the end of the turn, Battle Cards cannot be attached to the Character using this card.",,,1,,http://metaxdb.com/images/C34-JL.jpg
+C35-JL,Strength 2,Battle,,2,"If this card is used by a Hero Character, you may discard an attached Battle Card.",2,,,,http://metaxdb.com/images/C35-JL.jpg
+C36-JL,Strength 2,Battle,,2,"DEFEND: If this card KO's a Character, gain 2 MP.",2,,,,http://metaxdb.com/images/C36-JL.jpg
+C37-JL,Strength 2,Battle,,3,Each player draws a card.,2,,,,http://metaxdb.com/images/C37-JL.jpg
+C38-JL,Intelligence 2,Battle,,1,"Draw 2 cards, then place a card from your hand to the bottom of your deck.",,2,,,http://metaxdb.com/images/C38-JL.jpg
+C39-JL,Special 2,Battle,,1,Negate the effects of target Character until the end of your next turn.,,,2,,http://metaxdb.com/images/C39-JL.jpg
+C40-JL,Strength 3,Battle,,0,"Discard the top 2 cards of your deck, then draw a card.",3,,,,http://metaxdb.com/images/C40-JL.jpg
+C41-JL,Special 7,Battle,,0,"If you control ""Batman"", ""Superman"" and ""Wonder Woman"", draw 3 cards.",,,7,,http://metaxdb.com/images/C41-JL.jpg
+C42-JL,Intelligence 3,Battle,,2,Shuffle a Character from your discard pile into your deck.,,3,,,http://metaxdb.com/images/C42-JL.jpg
+C43-JL,Intelligence 3,Battle,,-2,Search your discard pile for a Battle Card with a maximum rank of 2 or less and place it into your hand.,,3,,,http://metaxdb.com/images/C43-JL.jpg
+C44-JL,Special 3,Battle,,-2,Search your discard pile for a Battle Card with a rank or 6 or 7 and place it in your hand.,,,3,,http://metaxdb.com/images/C44-JL.jpg
+C45-JL,Strength 4,Battle,,0,"ATTACK: If the Character using this card has a maximum rank or 5 or less, draw a card.",4,,,,http://metaxdb.com/images/C45-JL.jpg
+C46-JL,Intelligence 4,Battle,,0,Search your deck for a Battle Card with a rank of 5 and place it into your hand.,,4,,,http://metaxdb.com/images/C46-JL.jpg
+C47-JL,Special 4,Battle,,4,This card cannot be used by a Character with a rank of 6 or higher.,,,4,,http://metaxdb.com/images/C47-JL.jpg
+C48-JL,Special 4,Battle,,2,Each player discards a card from their hand.,,,4,,http://metaxdb.com/images/C48-JL.jpg
+C49-JL,Special 4,Battle,,0,Your Characters that entered play this turn may attack.,,,4,,http://metaxdb.com/images/C49-JL.jpg
+C50-JL,Strength 5,Battle,,1,ATTACK: This attack can only be defended by a Character with a maximum rank of 5 or less.,5,,,,http://metaxdb.com/images/C50-JL.jpg
+C51-JL,Intelligence 5,Battle,,0,ATTACK: Shuffle a Battle Card from your discard pile into your deck.,,5,,,http://metaxdb.com/images/C51-JL.jpg
+C52-JL,Intelligence 5,Battle,,0,"Look at the top 2 cards of your opponent's deck, then place them on the top of their deck in any order.",,5,,,http://metaxdb.com/images/C52-JL.jpg
+C53-JL,Special 5,Battle,,-1,"If you have less MP than your opponent, gain 3 MP.",,,5,,http://metaxdb.com/images/C53-JL.jpg
+C54-JL,Strength 6,Battle,,0,The next Battle Card you play this turn has its MP cost reduced by -2.,6,,,,http://metaxdb.com/images/C54-JL.jpg
+C55-JL,Intelligence 6,Battle,,-1,Look at your opponent's hand.,,6,,,http://metaxdb.com/images/C55-JL.jpg
+C56-JL,Special 6,Battle,,-2,DEFEND: Draw a card for each Character with a rank of 7 in the Battle Zone.,,,6,,http://metaxdb.com/images/C56-JL.jpg
+C57-JL,Strength 7,Battle,,-2,The next Battle Card you play this turn has its MP cost reduced to 0.,7,,,,http://metaxdb.com/images/C57-JL.jpg
+C58-JL,Intelligence 7,Battle,,-1,"Look at the top 3 cards of your deck, then place them on the top or bottom of your deck in any order.",,7,,,http://metaxdb.com/images/C58-JL.jpg
+C59-JL,Strength 3,Battle,,-2,Target Character cannot defend this turn.,3,,,,http://metaxdb.com/images/C59-JL.jpg
+C60-JL,Special 7,Battle,,0,ATTACK: Discard the top 2 cards of each player's deck.,,,7,,http://metaxdb.com/images/C60-JL.jpg
+U61-JL,Batgirl - Barbara Gordon,Character,Hero,3,CONSTANT: This card may Link to a Team Attack for 0 MP.,4,5,,,http://metaxdb.com/images/U61-JL.jpg
+U62-JL,Batman - Dark Knight,Character,Hero,3,PLAY: Push target Character.,2,7,6,,http://metaxdb.com/images/U62-JL.jpg
+U63-JL,Blue Beetle - Ted Kord,Character,Hero,4,PLAY: You may play another Character with a maximum rank of 5 or less.,3,5,,,http://metaxdb.com/images/U63-JL.jpg
+U64-JL,Vixen - Mari McCabe,Character,Hero,2,"CONSTANT: Whenever you discard 1 or more cards from your hand, draw a card.",3,,5,,http://metaxdb.com/images/U64-JL.jpg
+U65-JL,Cyborg - Victor Stone,Character,Hero,3,"PLAY: Draw 2 cards, then discard 2 cards from your hand.",4,,5,,http://metaxdb.com/images/U65-JL.jpg
+U66-JL,Green Arrow - Emerald Archer,Character,Hero,2,PUSH: Attach a Battle Card with a maximum rank of 5 or less from your hand to target Character.,2,3,5,,http://metaxdb.com/images/U66-JL.jpg
+U67-JL,Green Lantern - Hal Jordan,Character,Hero,2,PUSH: Draw a card.,,3,6,,http://metaxdb.com/images/U67-JL.jpg
+U68-JL,Nightwing - Dick Grayson,Character,Hero,3,"CONSTANT: Whenever this card leads a Team Attack, gain 1 VP.",,4,6,,http://metaxdb.com/images/U68-JL.jpg
+U69-JL,Krypto - The Super Dog,Character,Hero,2,"CONSTANT: At the end of each player's turn, that player draws a card.",,,5,,http://metaxdb.com/images/U69-JL.jpg
+U70-JL,Robin - Boy Wonder,Character,Hero,2,PLAY: Draw cards until you have the same amount in your hand as your opponent.,3,,5,,http://metaxdb.com/images/U70-JL.jpg
+U71-JL,Supergirl - Kara Zor-El,Character,Hero,0,PLAY: Each player reveals their hand and discards all Events revealed.,6,3,,,http://metaxdb.com/images/U71-JL.jpg
+U72-JL,Superman - Man of Steel,Character,Hero,2,PLAY: Draw a card.,7,3,5,,http://metaxdb.com/images/U72-JL.jpg
+U73-JL,Brainiac - Collector of Worlds,Character,Villain,1,PUSH: KO a different Character you control to gain 4 MP.,1,7,,,http://metaxdb.com/images/U73-JL.jpg
+U74-JL,Harley Quinn - Former Psychiatrist,Character,Villain,3,"CONSTANT: When this card is KO'd by Damage during the Battle Step, gain 1 VP.",2,4,5,,http://metaxdb.com/images/U74-JL.jpg
+U75-JL,Sinestro - Intergalactic Criminal,Character,Villain,1,"PLAY: The next time your opponent would draw 1 card, skip it.",3,,6,,http://metaxdb.com/images/U75-JL.jpg
+U76-JL,Solomon Grundy - Cyrus Gold,Character,Villain,1,CONSTANT: This card can only be KO'd by 8 points of Damage.,6,,,,http://metaxdb.com/images/U76-JL.jpg
+U77-JL,Victorious,Event,,-9,Gain control of target Character.,,,,,http://metaxdb.com/images/U77-JL.jpg
+U78-JL,Unexpected Turnaround,Event,,-8,Return all Characters to their owner's hands.,,,,,http://metaxdb.com/images/U78-JL.jpg
+U79-JL,Transfer of Power,Event,,-3,"Use the ""when played"" effect of target Hero Character, then draw a card.",,,,,http://metaxdb.com/images/U79-JL.jpg
+U80-JL,Don't Go It Alone,Event,,0,You may Link a Character this turn for 0 MP.,,,,,http://metaxdb.com/images/U80-JL.jpg
+U81-JL,Point Blank,Event,,-4,"Draw 3 cards, then discard 2 cards from your hand unless you discard a Character with a rank of 7.",,,,,http://metaxdb.com/images/U81-JL.jpg
+U82-JL,Joke's On You,Event,,-1,"Place 2 Battle Cards from your discard pile into your hand, then discard a random card from your hand.",,,,,http://metaxdb.com/images/U82-JL.jpg
+U83-JL,Passion for the Hunt,Event,,-2,Search your deck for a Battle Card and place it in your hand.,,,,,http://metaxdb.com/images/U83-JL.jpg
+U84-JL,Power Corrupts,Event,,-3,Attacks from target Character cannot be defended this turn.,,,,,http://metaxdb.com/images/U84-JL.jpg
+U85-JL,Push and Pull,Event,,-4,"If you control at least two Characters with a maximum rank of 5 or less, draw 3 cards.",,,,,http://metaxdb.com/images/U85-JL.jpg
+U86-JL,Rebirth,Event,,-1,Shuffle 3 non-Event cards from your discard pile into your deck.,,,,,http://metaxdb.com/images/U86-JL.jpg
+U87-JL,Upper Hand,Event,,-4,Draw 2 cards.,,,,,http://metaxdb.com/images/U87-JL.jpg
+U88-JL,Sleight of Hand,Event,,0,"Look at your opponent's VP pile and choose a card, then swap this card facedown with the chosen card.",,,,,http://metaxdb.com/images/U88-JL.jpg
+U89-JL,Paralysis,Event,,-4,Characters cannoy attack until the end of your next turn.,,,,,http://metaxdb.com/images/U89-JL.jpg
+U90-JL,Strength in Numbers,Event,,-1,"If you perform a Team Attack this turn, draw 2 cards.",,,,,http://metaxdb.com/images/U90-JL.jpg
+U91-JL,Meta Superiority,Event,,-2,Attach a Battle Card from your hand to target Character.,,,,,http://metaxdb.com/images/U91-JL.jpg
+U92-JL,Strength/Intelligence/Special 1,Battle,,0,"ATTACK: If you gain a VP from this attack, you may pay -1 MP to return this card to its owner's hand.",1,1,1,,http://metaxdb.com/images/U92-JL.jpg
+U93-JL,Intelligence 4,Battle,,-1,"DEFEND: If this card is used by a Villain Character, place a Character from a discard pile on top of its owner's deck.",,4,,,http://metaxdb.com/images/U93-JL.jpg
+U94-JL,Strength/Intelligence/Special 4,Battle,,2,,4,4,4,,http://metaxdb.com/images/U94-JL.jpg
+U95-JL,Strength/Intelligence/Special 5,Battle,,-2,"If this card is used in a Team Attack, draw 2 cards.",5,5,5,,http://metaxdb.com/images/U95-JL.jpg
+U96-JL,Intelligence 6,Battle,,-3,DEFEND: Target an attacking Character. KO that Character at the end of the turn.,,6,,,http://metaxdb.com/images/U96-JL.jpg
+U97-JL,Special 6,Battle,,-2,Draw a card.,,,6,,http://metaxdb.com/images/U97-JL.jpg
+U98-JL,Strength 7,Battle,,-1,DEFEND: Discard the top 3 cards of your deck to push up to 2 target Characters.,7,,,,http://metaxdb.com/images/U98-JL.jpg
+U99-JL,Intelligence 7,Battle,,-2,ATTACK: This attack cannot be defended.,,7,,,http://metaxdb.com/images/U99-JL.jpg
+U100-JL,Special 7,Battle,,-1,DEFEND: Discard all Battle Cards attached to the Character using this card.,,,7,,http://metaxdb.com/images/U100-JL.jpg
+R101-JL,Aquaman - Arthur Curry,Character,Hero,3,CONSTANT: This card cannot be targeted.,6,,5,,http://metaxdb.com/images/R101-JL.jpg
+R102-JL,Atom - Ray Palmer,Character,Hero,4,"CONSTANT: At the end of your turn, return target Character with a rank of 7 to its owner's hand.",1,,1,,http://metaxdb.com/images/R102-JL.jpg
+R103-JL,Doctor Fate - Agent of the Lords of Order,Character,Hero,0,PLAY: You may KO this card to place a random card from your opponent's VP pile into your hand.,1,,7,,http://metaxdb.com/images/R103-JL.jpg
+R104-JL,John Constantine - Occult Detective,Character,Hero,2,"CONSTANT: Negate all ""when played"" effects.",,5,6,,http://metaxdb.com/images/R104-JL.jpg
+R105-JL,Shazam - Captain Marvel,Character,Hero,3,PUSH: Return this card to its owner's hand.,7,,5,,http://metaxdb.com/images/R105-JL.jpg
+R106-JL,The Flash - Scarlet Speedster,Character,Hero,1,PLAY: This card may attack on the turn it enters play.,2,,6,,http://metaxdb.com/images/R106-JL.jpg
+R107-JL,Wonder Woman - Amazon Princess,Character,Hero,2,PUSH: Discard a card from your hand to KO target Character with a rank of 7.,6,4,6,,http://metaxdb.com/images/R107-JL.jpg
+R108-JL,Zatanna - Magician,Character,Hero,1,"CONSTANT: At the beginning of your turn, shuffle this card into its owner's deck to shuffle target Character into its owner's deck.",2,,6,,http://metaxdb.com/images/R108-JL.jpg
+R109-JL,Bizarro - Imperfect Duplicate,Character,Villain,0,PLAY: Gain the effects of target Character (until Bizzarro leaves play).,,5,5,,http://metaxdb.com/images/R109-JL.jpg
+R110-JL,Black Adam - Teth-Adam,Character,Villain,5,PLAY: Discard a card from your hand.,7,,6,,http://metaxdb.com/images/R110-JL.jpg
+R111-JL,Darkseid - Uxas,Character,Villain,1,"CONSTANT: The first time each turn one of your Characters with a maximum rank of 5 pushes to attack, draw a card.",,5,6,,http://metaxdb.com/images/R111-JL.jpg
+R112-JL,Deathstroke - Slade Wilson,Character,Villain,1,PLAY: KO target pushed Character.,4,4,6,,http://metaxdb.com/images/R112-JL.jpg
+R113-JL,Doomsday - Destroyer,Character,Villain,2,CONSTANT: Negate the effects of Battle Cards.,7,1,,,http://metaxdb.com/images/R113-JL.jpg
+R114-JL,Lex Luther - CEO of Lexcorp,Character,Villain,2,PLAY: KO target Character with a rank of 7.,,7,5,,http://metaxdb.com/images/R114-JL.jpg
+R115-JL,The Joker - Clown Prince of Crime,Character,Villain,2,"PLAY: Each player shuffles their hand into their deck, then draws the same amount of cards back.",,6,6,,http://metaxdb.com/images/R115-JL.jpg
+R116-JL,Against the Current,Event,,0,"Look at your opponent's hand. If you control a Character with a maximum rank of 5 or less, draw a card.",,,,,http://metaxdb.com/images/R116-JL.jpg
+R117-JL,Come and Take It,Event,,-3,Play a Character or Event from your opponent's discard pile as though it were in your hand.,,,,,http://metaxdb.com/images/R117-JL.jpg
+R118-JL,Evil Parade,Event,,-7,KO all Characters.,,,,,http://metaxdb.com/images/R118-JL.jpg
+R119-JL,Knockout,Event,,-5,KO a Character you control to KO target Character.,,,,,http://metaxdb.com/images/R119-JL.jpg
+R120-JL,Microscopic Victory,Event,,-9,Gain 1 VP.,,,,,http://metaxdb.com/images/R120-JL.jpg
+R121-JL,Showdown,Event,,-6,"Each player chooses a Character under their control, then all other Characters are KO'd.",,,,,http://metaxdb.com/images/R121-JL.jpg
+R122-JL,Right on Target,Event,,-6,Return target Character to its owner's hand.,,,,,http://metaxdb.com/images/R122-JL.jpg
+R123-JL,Ingenuity,Event,,-5,"Discard your hand, then draw 5 cards.",,,,,http://metaxdb.com/images/R123-JL.jpg
+R124-JL,Teleportation,Event,,-5,Return a Character you control to your hand to return target Character to its owner's hand.,,,,,http://metaxdb.com/images/R124-JL.jpg
+R125-JL,With Friends Like These,Event,,-4,KO all Characters with Damage attached and shuffle those attached Battle Cards into their owner's decks.,,,,,http://metaxdb.com/images/R125-JL.jpg
+R126-JL,Inherent Weakness,Event,,-5,Attach a Battle Card from your discard pile to target Character.,,,,,http://metaxdb.com/images/R126-JL.jpg
+R127-JL,Intelligence 1,Battle,,-1,"Draw 3 cards, then place 2 cards from your hand on top of your deck.",,1,,,http://metaxdb.com/images/R127-JL.jpg
+R128-JL,Special 2,Battle,,0,"ATTACK: If you have played another Battle Card with a maximum rank of 5 or less this turn, draw 2 cards.",,,2,,http://metaxdb.com/images/R128-JL.jpg
+R129-JL,Intelligence 3,Battle,,3,DEFEND: Push target Character.,,3,,,http://metaxdb.com/images/R129-JL.jpg
+R130-JL,Special 3,Battle,,1,"ATTACK: If this attack is defended, return this card to its owner's hand and you may attach a different Battle Card from your hand to the defender.",,,3,,http://metaxdb.com/images/R130-JL.jpg
+R131-JL,Strength 4,Battle,,2,"Draw 2 cards, the discard 2 cards from your hand.",4,,,,http://metaxdb.com/images/R131-JL.jpg
+R132-JL,Strength 5,Battle,,0,"DEFEND: At the end of the turn, KO any Characters that Team Attacked this turn.",5,,,,http://metaxdb.com/images/R132-JL.jpg
+R133-JL,Strength/Intelligence 5,Battle,,-1,The next Battle Card you play this turn has its MP cost reduced by -1.,5,5,,,http://metaxdb.com/images/R133-JL.jpg
+R134-JL,Strength/Special 5,Battle,,-2,You may discard a Battle Card from your hand to draw 2 cards.,5,,5,,http://metaxdb.com/images/R134-JL.jpg
+R135-JL,Intelligence/Special 5,Battle,,-1,Place an attached Battle Card on top of its owner's deck.,,5,5,,http://metaxdb.com/images/R135-JL.jpg
+R136-JL,Strength 6,Battle,,-1,ATTACK: Push target Character.,6,,,,http://metaxdb.com/images/R136-JL.jpg
+R137-JL,Strength 7,Battle,,-2,ATTACK: Your opponent discards a card from their hand.,7,,,,http://metaxdb.com/images/R137-JL.jpg
+R138-JL,Intelligence 7,Battle,,-2,DEFEND: Your opponent loses 5 MP.,,7,,,http://metaxdb.com/images/R138-JL.jpg
+R139-JL,Special 7,Battle,,-3,"ATTACK: If this attack gains a VP, gain an additional VP.",,,7,,http://metaxdb.com/images/R139-JL.jpg
+R140-JL,Strength/Intelligence/Special 7,Battle,,3,Your opponent gains a VP.,7,7,7,,http://metaxdb.com/images/R140-JL.jpg
+XR141-JL,Wonder Woman - Princess Diana of Themyscira,Character,Hero,2,"CONSTANT: Whenever a Character's ""push"" effect is activated, negate that effect, KO that Character, and KO this card.",5,,7,,http://metaxdb.com/images/XR141-JL.jpg
+XR142-JL,Darkseid - Ruler of Apokolips,Character,Villain,0,PLAY: Your opponent discards a random card from their hand.,7,5,,,http://metaxdb.com/images/XR142-JL.jpg
+XR143-JL,Harley Quinn - Dr. Harleen Quinzel,Character,Villain,1,PUSH: KO this card to gain 1 VP.,2,,6,,http://metaxdb.com/images/XR143-JL.jpg
+XR144-JL,The Joker - Certifiably Insane,Character,Villain,3,"PLAY: Search your deck for a ""Harley Quinn"" and place it in your hand.",2,7,4,,http://metaxdb.com/images/XR144-JL.jpg
+UR145-JL,Batman - The Caped Crusader,Character,Hero,2,"PLAY: Look at the top 3 cards of a player's deck, then discard 1 of them and return the other 2 in any order.",,7,7,,http://metaxdb.com/images/UR145-JL.jpg
+UR146-JL,Superman - Last Son of Krypton,Character,Hero,3,CONSTANT: Attacking does not cause this card to push.,7,,7,,http://metaxdb.com/images/UR146-JL.jpg
+P1-JL,Strength/Intelligence/Special 1,Battle,,0,"ATTACK: If you gain a VP from this attack, you may pay -1 MP to return this card to its owner's hand.",1,1,1,,http://metaxdb.com/images/P1-JL.jpg
+P2-JL,Victorious,Event,,-9,Gain control of target Character.,,,,,http://metaxdb.com/images/P2-JL.jpg
+P3-JL,Strength/Intelligence/Special 4,Battle,,2,,4,4,4,,http://metaxdb.com/images/P3-JL.jpg
+P4-JL,Unexpected Turnaround,Event,,-8,Return all Characters to their owner's hands.,,,,,http://metaxdb.com/images/P4-JL.jpg
+P5-JL,Batman - Dark Knight,Character,Hero,3,PLAY: Push target Character.,2,7,6,,http://metaxdb.com/images/P5-JL.jpg
+P6-JL,Superman - Man of Steel,Character,Hero,2,PLAY: Draw a card.,7,3,5,,http://metaxdb.com/images/P6-JL.jpg
+P7-JL,Green Lantern - Hal Jordan,Character,Hero,2,PUSH: Draw a card.,,3,6,,http://metaxdb.com/images/P7-JL.jpg
+P8-JL,Harley Quinn - Former Psychiatrist,Character,Villain,3,"CONSTANT: When this card is KO'd by Damage during the Battle Step, gain 1 VP",2,4,5,,http://metaxdb.com/images/P8-JL.jpg
+P9-JL,Aquaman - Arthur Curry,Character,Hero,3,CONSTANT: This card cannot be targeted.,6,,5,,http://metaxdb.com/images/P9-JL.jpg
+P10-JL,The Joker - Clown Prince of Crime,Character,Villain,2,"PLAY: Each player shuffles their hand into their deck, then draws the same amount of cards back.",,6,6,,http://metaxdb.com/images/P10-JL.jpg
+P11-JL,Wonder Woman - Amazon Princess,Character,Hero,2,PUSH: Discard a card from your hand to KO target Character with a rank of 7.,6,4,6,,http://metaxdb.com/images/P11-JL.jpg
+P12-JL,Lex Luther - CEO of Lexcorp,Character,Villain,2,PLAY: KO target Character with a rank of 7.,,7,5,,http://metaxdb.com/images/P12-JL.jpg
+P13-JL,Shazam - Captain Marvel,Character,Hero,3,PUSH: Return this card to its owner's hand.,7,,5,,http://metaxdb.com/images/P13-JL.jpg
+P14-JL,Darkseid - Uxas,Character,Villain,1,"CONSTANT: The first time each turn one of your Characters with a maximum rank of 5 pushes to attack, draw a card.",,5,6,,http://metaxdb.com/images/P14-JL.jpg
+P15-JL,The Flash - Scarlet Speedster,Character,Hero,1,PLAY: This card may attack on the turn it enters play.,2,,6,,http://metaxdb.com/images/P15-JL.jpg
+P16-JL,Doomsday - Destroyer,Character,Villain,2,CONSTANT: Negate the effects of Battle Cards.,7,1,,,http://metaxdb.com/images/P16-JL.jpg
+P17-JL,Paralysis,Event,,-4,Characters cannot attack until the end of your next turn.,,,,,http://metaxdb.com/images/P17-JL.jpg
+P18-JL,Strength/Intelligence/Special 5,Battle,,-2,"If this card is used in a Team Attack, draw 2 cards.",5,5,5,,http://metaxdb.com/images/P18-JL.jpg
+P19-JL,Battle Frenzy,Event,,-4,"At the end of your turn, draw a card for each Battle Card played this turn.",,,,,http://metaxdb.com/images/P19-JL.jpg
+P20-JL,Disgraced,Event,,-5,"KO target Character with a ""constant"" effect, or draw 2 cards if there are no Characters with a ""constant"" effect in play.",,,,,http://metaxdb.com/images/P20-JL.jpg
+S1-JL,Harley Quinn - Former Psychiatrist,Character,Villain,3,"CONSTANT: When this card is KO'd by damage during the Battle Step, gain 1 VP.",2,4,5,,http://metaxdb.com/images/S1-JL.jpg
+S2-JL,Brainiac - Collector of Worlds,Character,Villain,1,PUSH: KO a different Character you control to gain 4 MP.,1,7,,,http://metaxdb.com/images/S2-JL.jpg
+S3-JL,Sinestro - Intergalactic Criminal,Character,Villain,1,"PLAY: The next time your opponent would draw 1 card, skip it.",3,,6,,http://metaxdb.com/images/S3-JL.jpg
+S4-JL,Solomon Grundy - Cyrus Gold,Character,Villain,1,CONSTANT: This card can only be KO'd by 8 points of Damage.,6,,,,http://metaxdb.com/images/S4-JL.jpg
+S5-JL,Joke's On You,Event,,-1,"Place 2 Battle Cards from your discard pile into your hand, then discard a random card from your hand.",,,,,http://metaxdb.com/images/S5-JL.jpg
+S6-JL,Push and Pull,Event,,-4,"If you control at least two Characters with a maximum rank of 5 or less, draw 3 cards.",,,,,http://metaxdb.com/images/S6-JL.jpg
+S7-JL,Transfer of Power,Event,,-3,"Use the ""when played"" effect of target Hero Character, then draw a card.",,,,,http://metaxdb.com/images/S7-JL.jpg
+S8-JL,Strength 6,Battle,,-2,,6,,,,http://metaxdb.com/images/S8-JL.jpg
+S9-JL,Strength 3,Battle,,1,,3,,,,http://metaxdb.com/images/S9-JL.jpg
+S10-JL,Strength 2,Battle,,2,,2,,,,http://metaxdb.com/images/S10-JL.jpg
+S11-JL,Strength 1,Battle,,3,,1,,,,http://metaxdb.com/images/S11-JL.jpg
+S12-JL,Intelligence 7,Battle,,-3,,,7,,,http://metaxdb.com/images/S12-JL.jpg
+S13-JL,Intelligence 4,Battle,,0,,,4,,,http://metaxdb.com/images/S13-JL.jpg
+S14-JL,Intelligence 2,Battle,,2,,,2,,,http://metaxdb.com/images/S14-JL.jpg
+S15-JL,Intelligence 1,Battle,,3,,,1,,,http://metaxdb.com/images/S15-JL.jpg
+S16-JL,Special 6,Battle,,-2,,,,6,,http://metaxdb.com/images/S16-JL.jpg
+S17-JL,Special 5,Battle,,-1,,,,5,,http://metaxdb.com/images/S17-JL.jpg
+S18-JL,Special 3,Battle,,1,,,,3,,http://metaxdb.com/images/S18-JL.jpg
+S19-JL,Superman - Man of Steel,Character,Hero,2,PLAY: Draw a card.,7,3,5,,http://metaxdb.com/images/S19-JL.jpg
+S20-JL,Supergirl - Kara Zor-El,Character,Hero,0,PLAY: Each player reveals their hand and discards all Events revealed.,6,3,,,http://metaxdb.com/images/S20-JL.jpg
+S21-JL,Krypto - The Super Dog,Character,Hero,2,"CONSTANT: At the end of each player's turn, that player draws a card.",,,5,,http://metaxdb.com/images/S21-JL.jpg
+S22-JL,Green Arrow - Emerald Archer,Character,Hero,2,PUSH: Attach a Battle Card with a maximum rank of 5 or less from your hand to target Character.,2,3,5,,http://metaxdb.com/images/S22-JL.jpg
+S23-JL,Rebirth,Event,,-1,Shuffle 3 non-Event cards from your discard pile into your deck.,,,,,http://metaxdb.com/images/S23-JL.jpg
+S24-JL,Passion for the Hunt,Event,,-2,Search your deck for a Battle Card and place it in your hand.,,,,,http://metaxdb.com/images/S24-JL.jpg
+S25-JL,Power Corrupts,Event,,-3,Attacks from target Character cannot be defended this turn.,,,,,http://metaxdb.com/images/S25-JL.jpg
+S26-JL,Strength 7,Battle,,-3,,7,,,,http://metaxdb.com/images/S26-JL.jpg
+S27-JL,Strength 6,Battle,,-2,,6,,,,http://metaxdb.com/images/S27-JL.jpg
+S28-JL,Strength 3,Battle,,1,,3,,,,http://metaxdb.com/images/S28-JL.jpg
+S29-JL,Strength 2,Battle,,2,,2,,,,http://metaxdb.com/images/S29-JL.jpg
+S30-JL,Strength 1,Battle,,3,,1,,,,http://metaxdb.com/images/S30-JL.jpg
+S31-JL,Intelligence 3,Battle,,1,,,3,,,http://metaxdb.com/images/S31-JL.jpg
+S32-JL,Intelligence 2,Battle,,2,,,2,,,http://metaxdb.com/images/S32-JL.jpg
+S33-JL,Intelligence 1,Battle,,3,,,1,,,http://metaxdb.com/images/S33-JL.jpg
+S34-JL,Special 5,Battle,,-1,,,,5,,http://metaxdb.com/images/S34-JL.jpg
+S35-JL,Special 4,Battle,,0,,,,4,,http://metaxdb.com/images/S35-JL.jpg
+S36-JL,Special 1,Battle,,3,,,,1,,http://metaxdb.com/images/S36-JL.jpg
+S37-JL,Cyborg - Victor Stone,Character,Hero,3,"PLAY: Draw 2 cards, then discard 2 cards from your hand.",4,,5,,http://metaxdb.com/images/S37-JL.jpg
+S38-JL,Green Lantern - Hal Jordan,Character,Hero,2,PUSH: Draw a card.,,3,6,,http://metaxdb.com/images/S38-JL.jpg
+S39-JL,Blue Beetle - Ted Kord,Character,Hero,4,PLAY: You may play another Character with a maximum rank of 5 or less.,3,5,,,http://metaxdb.com/images/S39-JL.jpg
+S40-JL,Vixen - Mari McCabe,Character,Hero,2,"CONSTANT: Whenever you discard 1 or more cards from your hand, draw a card.",3,,5,,http://metaxdb.com/images/S40-JL.jpg
+S41-JL,Sleight of Hand,Event,,0,"Look at your opponent's VP pile and choose a card, then swap this card facedown with the chosen card.",,,,,http://metaxdb.com/images/S41-JL.jpg
+S42-JL,Strength in Numbers,Event,,-1,"If you perform a Team Attack this turn, draw 2 cards.",,,,,http://metaxdb.com/images/S42-JL.jpg
+S43-JL,Meta Superiority,Event,,-2,Attach a Battle Card from your hand to target Character.,,,,,http://metaxdb.com/images/S43-JL.jpg
+S44-JL,Strength 4,Battle,,0,,4,,,,http://metaxdb.com/images/S44-JL.jpg
+S45-JL,Strength 3,Battle,,1,,3,,,,http://metaxdb.com/images/S45-JL.jpg
+S46-JL,Strength 2,Battle,,2,,2,,,,http://metaxdb.com/images/S46-JL.jpg
+S47-JL,Strength 1,Battle,,3,,1,,,,http://metaxdb.com/images/S47-JL.jpg
+S48-JL,Intelligence 5,Battle,,-1,,,5,,,http://metaxdb.com/images/S48-JL.jpg
+S49-JL,Intelligence 3,Battle,,1,,,3,,,http://metaxdb.com/images/S49-JL.jpg
+S50-JL,Intelligence 1,Battle,,3,,,1,,,http://metaxdb.com/images/S50-JL.jpg
+S51-JL,Special 6,Battle,,-2,,,,6,,http://metaxdb.com/images/S51-JL.jpg
+S52-JL,Special 5,Battle,,-1,,,,5,,http://metaxdb.com/images/S52-JL.jpg
+S53-JL,Special 4,Battle,,0,,,,4,,http://metaxdb.com/images/S53-JL.jpg
+S54-JL,Special 3,Battle,,1,,,,3,,http://metaxdb.com/images/S54-JL.jpg
+S55-JL,Batman - Dark Knight,Character,Hero,3,PLAY: Push target Character.,2,7,6,,http://metaxdb.com/images/S55-JL.jpg
+S56-JL,Batgirl - Barbara Gordon,Character,Hero,3,CONSTANT: This card may Link to a Team Attack for 0 MP.,4,5,,,http://metaxdb.com/images/S56-JL.jpg
+S57-JL,Nightwing - Dick Grayson,Character,Hero,3,"CONSTANT: Whenever this card leads a Team Attack, gain 1 VP.",,4,6,,http://metaxdb.com/images/S57-JL.jpg
+S58-JL,Robin - Boy Wonder,Character,Hero,2,PLAY: Draw cards until you have the same amount in your hand as your opponent.,3,,5,,http://metaxdb.com/images/S58-JL.jpg
+S59-JL,Don't Go It Alone,Event,,0,You may Link a Character this turn for 0 MP.,,,,,http://metaxdb.com/images/S59-JL.jpg
+S60-JL,Point Blank,Event,,-4,"Draw 3 cards, then discard 2 cards from your hand unless you discard a Character with a rank of 7.",,,,,http://metaxdb.com/images/S60-JL.jpg
+S61-JL,Upper Hand,Event,,-4,Draw 2 cards.,,,,,http://metaxdb.com/images/S61-JL.jpg
+S62-JL,Strength 4,Battle,,0,,4,,,,http://metaxdb.com/images/S62-JL.jpg
+S63-JL,Strength 3,Battle,,1,,3,,,,http://metaxdb.com/images/S63-JL.jpg
+S64-JL,Strength 2,Battle,,2,,2,,,,http://metaxdb.com/images/S64-JL.jpg
+S65-JL,Strength 1,Battle,,3,,1,,,,http://metaxdb.com/images/S65-JL.jpg
+S66-JL,Intelligence 7,Battle,,-3,,,7,,,http://metaxdb.com/images/S66-JL.jpg
+S67-JL,Intelligence 5,Battle,,-1,,,5,,,http://metaxdb.com/images/S67-JL.jpg
+S68-JL,Intelligence 4,Battle,,0,,,4,,,http://metaxdb.com/images/S68-JL.jpg
+S69-JL,Intelligence 1,Battle,,3,,,1,,,http://metaxdb.com/images/S69-JL.jpg
+S70-JL,Special 6,Battle,,-2,,,,6,,http://metaxdb.com/images/S70-JL.jpg
+S71-JL,Special 4,Battle,,0,,,,4,,http://metaxdb.com/images/S71-JL.jpg
+S72-JL,Special 1,Battle,,3,,,,1,,http://metaxdb.com/images/S72-JL.jpg
