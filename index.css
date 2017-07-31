@@ -181,12 +181,13 @@ body {
 }
 .card-stat-mp {
   flex-grow: 1;
+  text-align: right;
 }
-.card-stats img {
+.card-stat-icon {
   max-width: 20px;
   vertical-align: middle;
 }
-.card-stats .stat {
+.card-stat-text {
   margin-left: 5px;
   font-size: 20px;
   display: inline-block;
@@ -271,4 +272,20 @@ body {
   transform: scale(0, 0);
   opacity: .2;
   transition: 0s;
+}
+
+/* TODO: better naming  */
+.deck-card-details {
+  display: flex;
+}
+.deck-card-stats {
+  display: inline-flex;
+  justify-content: flex-end;
+  padding-bottom: 10px;
+}
+.deck-card-stats .card-stat {
+  margin-right: 5px;
+}
+.deck-card-stats .card-stat:last-of-type {
+  margin-right: 0;
 }

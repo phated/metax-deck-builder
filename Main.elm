@@ -231,12 +231,12 @@ mpView stat =
         div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
 
 statView : String -> Maybe Int -> Html Msg
-statView icon stat =
+statView statType stat =
     case stat of
         Maybe.Just stat ->
-            div []
-                [ img [ src ("/icons/" ++ icon ++ ".png") ] []
-                , span [ class "stat" ] [ text (toString stat) ]
+            div [ class "card-stat" ]
+                [ img [ class "card-stat-icon", src ("/icons/" ++ statType ++ ".png") ] []
+                , span [ class "card-stat-text" ] [ text (toString stat) ]
                 ]
         Maybe.Nothing ->
             text ""
@@ -490,12 +490,18 @@ deckCardView card =
             div [ id ("deck_" ++ card.id)
                 , class "list-item"
                 ]
-                [ div [ class "card-details" ]
+                [ div [ class "deck-card-details" ]
                       [ div [ class "card-title" ]
                             [ text ("(" ++ card.id ++ ") ")
                             , text card.title
                             ]
+                      , mpView card.mp
                       ]
+                , div [ class "deck-card-stats" ]
+                    [ statView "strength" card.strength
+                    , statView "intelligence" card.intelligence
+                    , statView "special" card.special
+                    ]
                 , stepper (card, count)
                 ]
 
