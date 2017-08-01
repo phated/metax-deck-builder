@@ -1,19 +1,22 @@
-module MetaX exposing (Model, Msg, update, view, subscriptions, init)
+module Main exposing (Model, Msg, update, view, subscriptions, init)
 
+import Http
 import Html exposing (..)
 import Html.Attributes exposing (href, class, classList, id, src, disabled)
 import Html.Events exposing (..)
 import Navigation exposing (..)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
-import Json.Encode as Encode
-import Json.Helpers as Json
-import Json.Decode exposing (int, string, bool, list, nullable, succeed, decodeValue, decodeString, dict, Decoder, Value)
-import Json.Decode.Pipeline exposing (decode, required, optional)
+import Json.Decode exposing (Value)
 
-import Http
+import Data.Card as Card exposing (Card)
+import Data.CardList as CardList exposing (CardList)
+import Data.Deck as Deck exposing (Deck)
 
-import Ports
+import Request.Deck
+import Request.CardList
+
+import Util exposing (onNavigate)
 
 main : Program Value Model Msg
 main =
@@ -24,66 +27,18 @@ main =
         , subscriptions = subscriptions
         }
 
-
-type alias Card =
-    { id : String
-    , title : String
-    , card_type : String
-    , trait : String
-    , mp : Int
-    , effect : String
-    , strength : Maybe Int
-    , intelligence : Maybe Int
-    , special : Maybe Int
-    , image_url : String
-    }
-
-type alias Cards =
-    List Card
-
-type alias Deck =
-    Dict String Int
-
 type alias Model =
     { location : Location
-    , cards : Cards
+    , cards : CardList
     , deck : Deck
     }
-
 
 type Msg
     = NavigateTo String
     | UrlChange Location
-    -- | LoadCards
-    | CardsLoaded (Result Http.Error Cards)
+    | CardsLoaded (Result Http.Error CardList)
     | Decrement String
     | Increment String
-
-cardDecoder : Decoder Card
-cardDecoder =
-    decode Card
-        |> required "id" string
-        |> required "title" string
-        |> required "card_type" string
-        |> required "trait" string
-        |> required "mp" int
-        |> required "effect" string
-        |> required "strength" (nullable int)
-        |> required "intelligence" (nullable int)
-        |> required "special" (nullable int)
-        |> required "image_url" string
-
-cardListDecoder : Decoder Cards
-cardListDecoder =
-    list cardDecoder
-
-getCards : Cmd Msg
-getCards =
-    let
-        request =
-            Http.get "/data/metax.normalized.json" cardListDecoder
-    in
-        Http.send CardsLoaded request
 
 maybeIncrement : String -> Deck -> Deck
 maybeIncrement cardId deck =
@@ -115,12 +70,6 @@ decrement value =
         Nothing ->
             Just 0
 
-saveDeck : Deck -> Cmd Msg
-saveDeck deck =
-    Json.encodeMap Encode.string Encode.int deck
-        |> Encode.encode 0
-        |> Just
-        |> Ports.storeSession
 
 notZero : String -> Int -> Bool
 notZero _ count =
@@ -139,9 +88,6 @@ update msg model =
         NavigateTo pathname ->
             ( model, newUrl pathname )
 
-        -- LoadCards ->
-        --     ( model, fetch )
-
         CardsLoaded (Ok cards) ->
             ( { model | cards = cards }, Cmd.none )
 
@@ -155,13 +101,13 @@ update msg model =
             let
                 deck = maybeIncrement cardId model.deck
             in
-                ( { model | deck = deck }, saveDeck deck )
+                ( { model | deck = deck }, Request.Deck.save deck )
 
         Decrement cardId ->
             let
                 deck = Dict.filter notZero (maybeDecrement cardId model.deck)
             in
-                ( { model | deck = deck }, saveDeck deck )
+                ( { model | deck = deck }, Request.Deck.save deck )
 
 
 view : Model -> Html Msg
@@ -183,10 +129,7 @@ logo title =
 navbarTop : Model -> Html Msg
 navbarTop model =
     nav [ class "navbar-top" ]
-        [ logo "MetaX DB"
-        -- , linkTo "/" [ text "Cards" ]
-        -- , linkTo "/deck" [ text "Deck" ]
-        ]
+        [ logo "MetaX DB" ]
 
 navbarBottom : Model -> Html Msg
 navbarBottom model =
@@ -340,7 +283,6 @@ byMulti rank (card, _) =
     case card of
         Just card ->
             contains (regex ("(?:(?:Strength|Intelligence|Special)\\/){1,3}\\D+" ++ rank ++ "$")) card.title
-            -- contains ("[Strength|Intelligence|Special]\/" card.title
         Nothing ->
             False
 
@@ -537,29 +479,15 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
 
-deckDecoder : Value -> Deck
-deckDecoder session =
-    session
-        |> decodeValue string
-        |> Result.andThen (decodeString (dict int))
-        |> Result.withDefault Dict.empty
-
 init : Value -> Location -> ( Model, Cmd Msg )
 init session location =
     ( { location = location
       , cards = []
         -- TODO: avoid loading a deck list before cards are loaded
-      , deck = deckDecoder session
+      , deck = Deck.decoder session
       },
-      getCards
+      Request.CardList.load
+        |> Http.send CardsLoaded
     )
 
 
-onNavigate : Msg -> Attribute Msg
-onNavigate msg =
-    onWithOptions
-        "click"
-        { stopPropagation = True
-        , preventDefault = True
-        }
-        (succeed msg)

@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "elm-live ./Main.elm --output=elm.js --pushstate",
+    "start": "elm-live ./src/Main.elm --output=elm.js --pushstate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "from-csv": "./data/to-json.js > data/metax.normalized.json",
-    "elm-make": "elm-make ./Main.elm --output=elm.js --yes"
+    "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes"
   },
   "repository": {
     "type": "git",
