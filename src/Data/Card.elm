@@ -3,6 +3,7 @@ module Data.Card exposing (Card, decoder)
 import Json.Decode exposing (int, string, nullable, Decoder)
 import Json.Decode.Pipeline exposing (decode, required)
 
+
 type alias Card =
     { id : String
     , title : String
@@ -15,6 +16,7 @@ type alias Card =
     , special : Maybe Int
     , image_url : String
     }
+
 
 decoder : Decoder Card
 decoder =

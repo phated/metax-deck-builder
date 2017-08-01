@@ -7,7 +7,8 @@
     "start": "elm-live ./src/Main.elm --output=elm.js --pushstate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "from-csv": "./data/to-json.js > data/metax.normalized.json",
-    "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes"
+    "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes",
+    "format": "elm-format src/"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "csvtojson": "^1.1.7",
     "elm": "^0.18.0",
+    "elm-format": "^0.6.1-alpha",
     "elm-live": "^2.7.4"
   },
   "dependencies": {}

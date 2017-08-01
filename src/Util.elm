@@ -4,6 +4,7 @@ import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
 import Json.Decode exposing (succeed)
 
+
 onNavigate : a -> Attribute a
 onNavigate msg =
     onWithOptions
