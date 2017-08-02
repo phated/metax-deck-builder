@@ -15,6 +15,8 @@ import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
 
+import Compare exposing (concat, by, Comparator)
+
 
 main : Program Value Model Msg
 main =
@@ -89,6 +91,41 @@ notZero : String -> Int -> Bool
 notZero _ count =
     count /= 0
 
+forcedOrder : Card -> Int
+forcedOrder card =
+    case card.card_type of
+        "Character" -> 1
+        "Battle" -> 2
+        "Event" -> 3
+        _ -> 4
+
+type BattleCardType
+    = Strength
+    | Intelligence
+    | Special
+    | Multi
+    | None
+
+battleCardType : Card -> BattleCardType
+battleCardType card =
+    if (contains (regex "^Strength \\d+$") card.title) then Strength
+    else if (contains (regex "^Intelligence \\d+$") card.title) then Intelligence
+    else if (contains (regex "^Special \\d+$") card.title) then Special
+    else if (contains (regex "^(?:(?:Strength|Intelligence|Special)\\/){1,3} \\d+$") card.title) then Multi
+    else None
+
+battleOrder : Card -> Int
+battleOrder card =
+    case battleCardType card of
+        Strength -> 1
+        Intelligence -> 2
+        Special -> 3
+        Multi -> 4
+        None -> 5
+
+cardListSort : Comparator Card
+cardListSort =
+    concat [ by forcedOrder, by battleOrder, by .card_type, by .title, by .effect ]
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -104,7 +141,7 @@ update msg model =
             ( model, newUrl pathname )
 
         CardsLoaded (Ok cards) ->
-            ( { model | cards = cards }, Cmd.none )
+            ( { model | cards = (List.sortWith cardListSort cards) }, Cmd.none )
 
         CardsLoaded (Err err) ->
             let
