@@ -17,10 +17,12 @@ import Util exposing (onNavigate)
 
 import Compare exposing (concat, by, Comparator)
 
+import Route exposing (fromLocation, Route)
+
 
 main : Program Value Model Msg
 main =
-    Navigation.programWithFlags UrlChange
+    Navigation.programWithFlags (fromLocation >> SetRoute)
         { init = init
         , view = view
         , update = update
@@ -29,15 +31,16 @@ main =
 
 
 type alias Model =
-    { location : Location
+    { location : Maybe Route
     , cards : CardList
     , deck : Deck
+    , card : Maybe String
     }
 
 
 type Msg
     = NavigateTo String
-    | UrlChange Location
+    | SetRoute (Maybe Route)
     | CardsLoaded (Result Http.Error CardList)
     | Decrement String
     | Increment String
@@ -130,12 +133,16 @@ cardListSort =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        UrlChange location ->
-            let
-                test =
-                    Debug.log "location" location
-            in
-                ( { model | location = location }, Cmd.none )
+        SetRoute route ->
+            case route of
+                Just Route.Home ->
+                    ( { model | location = route }, Cmd.none )
+                Just Route.Deck ->
+                    ( { model | location = route }, Cmd.none )
+                Just (Route.Card cardId )->
+                    ( { model | location = route, card = Just cardId }, Cmd.none )
+                Nothing ->
+                    ( { model | location = Just Route.Home }, Cmd.none )
 
         NavigateTo pathname ->
             ( model, newUrl pathname )
@@ -319,7 +326,11 @@ cardEffect effect =
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ img [ class "card-thumbnail", src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+        [ a [ class "card-thumbnail"
+            , onNavigate (NavigateTo ("/card/" ++ card.id))
+            ]
+            [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+            ]
         , div [ class "card-text" ]
             [ div [ class "card-title" ] [ text card.title ]
             , cardEffect card.effect
@@ -640,14 +651,50 @@ deckListPane model =
         -- TODO: use |> operator
         (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
 
+cardPane : String -> Model -> Html Msg
+cardPane cardId model =
+    let
+        card = lookup model cardId
+    in
+        case card of
+            Just card ->
+                div [ id "card-pane"
+                    , class "pane"
+                    ]
+                    [ img [ class "card-full"
+                          , src card.image_url
+                          ]
+                          []
+                    ]
+            Nothing ->
+                div [ id "card-pane"
+                    , class "pane"
+                    ]
+                    [ text "Card not found"
+                    ]
 
 paneContainer : Model -> Html Msg
 paneContainer model =
-    div [ classList [ ( "pane-container", True ), ( "is-deck", model.location.pathname == "/deck" ) ] ]
-        [ cardListPane model
-        , deckListPane model
-        ]
-
+    case model.location of
+        Just Route.Home ->
+            div [ class "pane-container" ]
+                [ cardListPane model
+                , deckListPane model
+                ]
+        Just Route.Deck ->
+            div [ classList [ ( "pane-container", True ), ( "is-deck", True ) ] ]
+                [ cardListPane model
+                , deckListPane model
+                ]
+        Just (Route.Card id) ->
+            div [ class "pane-container" ]
+                [ cardPane id model
+                ]
+        Nothing ->
+            div [ class "pane-container" ]
+                [ cardListPane model
+                , deckListPane model
+                ]
 
 applicationShell : Model -> Html Msg
 applicationShell model =
@@ -665,9 +712,9 @@ subscriptions model =
 
 init : Value -> Location -> ( Model, Cmd Msg )
 init session location =
-    ( { location = location
+    ( { location = fromLocation location
       , cards = []
-
+      , card = Nothing
       -- TODO: avoid loading a deck list before cards are loaded
       , deck = Deck.decoder session
       }

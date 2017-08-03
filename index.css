@@ -109,6 +109,10 @@ body {
   }
 }
 
+#card-pane {
+  display: flex;
+}
+
 .list-item-header {
   font-weight: 700;
   text-align: center;
@@ -152,6 +156,11 @@ body {
   max-width: 100%;
   /* max-height: 53px; */
   max-height: 100px;
+}
+.card-full {
+  width: 100%;
+  max-width: 500px;
+  margin: auto
 }
 
 .card-text {
