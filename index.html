@@ -21,14 +21,23 @@
 		var characters = decklist.filter(function(card) {
 			return card.card_type === 'Character';
 		});
+		var characterSum = characters.reduce(function(sum, card) {
+			return (sum + card.quantity);
+		}, 0);
 
 		var battle = decklist.filter(function(card) {
 			return card.card_type === 'Battle';
 		});
+		var battleSum = battle.reduce(function(sum, card) {
+			return (sum + card.quantity);
+		}, 0);
 
 		var events = decklist.filter(function(card) {
 			return card.card_type === 'Events';
 		});
+		var eventSum = events.reduce(function(sum, card) {
+			return (sum + card.quantity);
+		}, 0);
 
 		function toLine(card, idx) {
 			var line = card.quantity + 'x ' + card.title + ' (' + card.id + ')';
@@ -42,15 +51,15 @@
 		var lines = []
 
 		if (characterLines.length) {
-			lines = lines.concat(['Characters'], characterLines);
+			lines = lines.concat(['Characters (' + characterSum + ')'], characterLines);
 		}
 
 		if (battleLines.length) {
-			lines = lines.concat(['', 'Battle Cards'], battleLines);
+			lines = lines.concat(['', 'Battle Cards (' + battleSum + ')'], battleLines);
 		}
 
 		if (eventLines.length) {
-			lines = lines.concat(['', 'Events'], eventLines);
+			lines = lines.concat(['', 'Events (' + eventSum + ')'], eventLines);
 		}
 
 		doc.text(25, 25, lines);
