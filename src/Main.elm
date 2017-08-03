@@ -327,6 +327,7 @@ cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
         [ a [ class "card-thumbnail"
+            , href ("/card/" ++ card.id)
             , onNavigate (NavigateTo ("/card/" ++ card.id))
             ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
