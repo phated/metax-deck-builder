@@ -44,6 +44,7 @@ type Msg
     | CardsLoaded (Result Http.Error CardList)
     | Decrement String
     | Increment String
+    | ExportDeck
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -171,6 +172,9 @@ update msg model =
             in
                 ( { model | deck = deck }, Request.Deck.save deck )
 
+        ExportDeck ->
+            ( model, Request.Deck.export model.cards model.deck )
+
 
 view : Model -> Html Msg
 view model =
@@ -195,7 +199,10 @@ logo title =
 navbarTop : Model -> Html Msg
 navbarTop model =
     nav [ class "navbar-top" ]
-        [ logo "MetaX DB" ]
+        [ logo "MetaX DB"
+        , button [ class "export", onClick ExportDeck ]
+                 [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+        ]
 
 
 navbarBottom : Model -> Html Msg

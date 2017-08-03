@@ -31,6 +31,8 @@ body {
 .navbar-top .logo {
   margin-right: 20px;
   padding: 10px;
+  text-align: left;
+  flex-grow: 1;
 }
 
 .navbar-bottom {
@@ -297,4 +299,14 @@ body {
 }
 .deck-card-stats .card-stat:last-of-type {
   margin-right: 0;
+}
+
+
+.export {
+  padding: 0;
+  outline: none;
+}
+.export img {
+  padding: 5px 10px;
+  width: 35px;
 }

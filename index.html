@@ -5,12 +5,56 @@
 <title>MetaX Deck Builder</title>
 
 <body>
-	<script src="/elm.js"></script>
+<script src="/elm.js"></script>
 <script>
 	var app = Elm.Main.fullscreen(localStorage.session || null);
 
 	app.ports.storeSession.subscribe(function(session) {
 		localStorage.session = session;
+	});
+
+	app.ports.exportSession.subscribe(function(session) {
+		var decklist = JSON.parse(session);
+		var doc = new jsPDF({ format: 'letter' });
+
+		// TODO: This should probably be done in Elm!
+		var characters = decklist.filter(function(card) {
+			return card.card_type === 'Character';
+		});
+
+		var battle = decklist.filter(function(card) {
+			return card.card_type === 'Battle';
+		});
+
+		var events = decklist.filter(function(card) {
+			return card.card_type === 'Events';
+		});
+
+		function toLine(card, idx) {
+			var line = card.quantity + 'x ' + card.title + ' (' + card.id + ')';
+			return line;
+		}
+
+		var characterLines = characters.map(toLine);
+		var battleLines = battle.map(toLine);
+		var eventLines = events.map(toLine);
+
+		var lines = []
+
+		if (characterLines.length) {
+			lines = lines.concat(['Characters'], characterLines);
+		}
+
+		if (battleLines.length) {
+			lines = lines.concat(['', 'Battle Cards'], battleLines);
+		}
+
+		if (eventLines.length) {
+			lines = lines.concat(['', 'Events'], eventLines);
+		}
+
+		doc.text(25, 25, lines);
+		doc.save('metax-deck.pdf');
 	});
 
 	window.addEventListener("storage", function(event) {
@@ -19,4 +63,5 @@
 		}
 	}, false);
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
 </body>
