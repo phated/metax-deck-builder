@@ -305,6 +305,9 @@ body {
 .export {
   padding: 0;
   outline: none;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 .export img {
   padding: 5px 10px;
