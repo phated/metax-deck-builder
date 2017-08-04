@@ -33,7 +33,7 @@
 		}, 0);
 
 		var events = decklist.filter(function(card) {
-			return card.card_type === 'Events';
+			return card.card_type === 'Event';
 		});
 		var eventSum = events.reduce(function(sum, card) {
 			return (sum + card.quantity);
