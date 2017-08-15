@@ -3,6 +3,10 @@ body {
   margin: 0;
 }
 
+.align-center {
+  text-align: center;
+}
+
 .navbar-top,
 .navbar-bottom {
   box-sizing: border-box;
@@ -66,15 +70,18 @@ body {
 .pane-container {
   display: flex;
   will-change: transform;
-  transform: translate3d(0%, 0, 0);
+  transform: translate3d(-100%, 0, 0);
   padding: 50px 0;
   height: 100vh;
   box-sizing: border-box;
   transition: transform .3s;
 }
 
+.is-card {
+  transform: translate3d(0%, 0, 0);
+}
 .is-deck {
-  transform: translate3d(-100%, 0, 0);
+  transform: translate3d(-200%, 0, 0);
 }
 
 .pane {
@@ -87,6 +94,10 @@ body {
   box-sizing: border-box;
 }
 
+#card-pane {
+  padding: 10px 20px 20px;
+}
+
 /* Non-mobiled */
 @media only screen and (min-width: 768px) {
   .navbar-bottom {
@@ -94,25 +105,34 @@ body {
   }
 
   .pane-container {
+    transform: translate3d(0%, 0, 0);
     padding-bottom: 0;
+    /* border-right: 1px solid #d3d3d3;
+    border-left: 1px solid #d3d3d3;
+    margin: 0 auto; */
   }
 
   .is-deck {
     transform: none;
   }
 
+  #card-pane {
+    order: 2;
+    flex-shrink: 1;
+     max-width: 380px;
+  }
+
   #card-list-pane {
     flex-shrink: 1;
     border-right: 1px solid #d3d3d3;
+    order: 1;
   }
 
   #deck-list-pane {
-    flex-shrink: 2;
+    flex-shrink: 1;
+    border-left: 1px solid #d3d3d3;
+    order: 3;
   }
-}
-
-#card-pane {
-  display: flex;
 }
 
 .list-item-header {
@@ -156,17 +176,17 @@ body {
 .card-thumbnail {
   border-radius: 3px;
   max-width: 100%;
-  /* max-height: 53px; */
   max-height: 100px;
+  margin-right: 10px;
 }
 .card-full {
   width: 100%;
   max-width: 500px;
-  margin: auto
+  margin-bottom: 10px;
 }
 
 .card-text {
-  padding: 0 10px;
+  margin-right: 10px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -176,6 +196,9 @@ body {
   flex-grow: 1;
   font-weight: 700;
   margin-bottom: 5px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 .card-effect img {
   max-width: 12px;
@@ -207,6 +230,7 @@ body {
 
 .stepper-container {
   display: flex;
+  width: 100%;
 }
 
 .count-container {
@@ -312,4 +336,9 @@ body {
 .export img {
   padding: 5px 10px;
   width: 35px;
+}
+
+.view-icon {
+  width: 20px;
+  vertical-align: middle;
 }

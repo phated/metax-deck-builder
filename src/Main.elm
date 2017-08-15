@@ -330,6 +330,22 @@ cardEffect effect =
                 [ text scrubbedEffect ]
 
 
+cardText : Card -> Html Msg
+cardText card =
+    div [ class "card-text" ]
+        [ div [ class "card-title" ] [ text card.title ]
+        , cardEffect card.effect
+        ]
+
+cardStats : Card -> Html Msg
+cardStats card =
+    div [ class "card-stats" ]
+        [ mpView card.mp
+        , statView "strength" card.strength
+        , statView "intelligence" card.intelligence
+        , statView "special" card.special
+        ]
+
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
@@ -339,18 +355,9 @@ cardDetails card =
             ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
             ]
-        , div [ class "card-text" ]
-            [ div [ class "card-title" ] [ text card.title ]
-            , cardEffect card.effect
-            ]
-        , div [ class "card-stats" ]
-            [ mpView card.mp
-            , statView "strength" card.strength
-            , statView "intelligence" card.intelligence
-            , statView "special" card.special
-            ]
+        , cardText card
+        , cardStats card
         ]
-
 
 cardView : Model -> Card -> Html Msg
 cardView model card =
@@ -632,8 +639,12 @@ deckCardView card =
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ div [ class "card-title" ]
-                        [ text ("(" ++ card.id ++ ") ")
+                    [ a [ class "card-title"
+                        , href ("/card/" ++ card.id)
+                        , onNavigate (NavigateTo ("/card/" ++ card.id))
+                        ]
+                        [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
+                        , text ("(" ++ card.id ++ ") ")
                         , text card.title
                         ]
                     , mpView card.mp
@@ -659,48 +670,67 @@ deckListPane model =
         -- TODO: use |> operator
         (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
 
-cardPane : String -> Model -> Html Msg
+cardPane : Maybe String -> Model -> Html Msg
 cardPane cardId model =
-    let
-        card = lookup model cardId
-    in
-        case card of
-            Just card ->
-                div [ id "card-pane"
-                    , class "pane"
-                    ]
-                    [ img [ class "card-full"
-                          , src card.image_url
-                          ]
-                          []
-                    ]
-            Nothing ->
-                div [ id "card-pane"
-                    , class "pane"
-                    ]
-                    [ text "Card not found"
-                    ]
+    case cardId of
+        Just cardId ->
+            let
+                card = lookup model cardId
+                count = Maybe.withDefault 0 (Dict.get cardId model.deck)
+            in
+                case card of
+                    Just card ->
+                        div [ id "card-pane"
+                            , class "pane"
+                            ]
+                            [ img [ class "card-full"
+                                , src card.image_url
+                                ]
+                                []
+                            , div [ class "card-details" ]
+                                  [ cardText card
+                                  , cardStats card
+                                  ]
+                            , stepper ( card, count )
+                            ]
+                    Nothing ->
+                        div [ id "card-pane"
+                            , class "pane align-center"
+                            ]
+                            [ text "Card not found"
+                            ]
+        Nothing ->
+            div [ id "card-pane"
+                , class "pane align-center"
+                ]
+                [ text "Click a card image to view" ]
+
 
 paneContainer : Model -> Html Msg
 paneContainer model =
     case model.location of
         Just Route.Home ->
             div [ class "pane-container" ]
-                [ cardListPane model
+                [ cardPane Nothing model
+                , cardListPane model
                 , deckListPane model
                 ]
         Just Route.Deck ->
             div [ classList [ ( "pane-container", True ), ( "is-deck", True ) ] ]
-                [ cardListPane model
+                [ cardPane Nothing model
+                , cardListPane model
                 , deckListPane model
                 ]
         Just (Route.Card id) ->
-            div [ class "pane-container" ]
-                [ cardPane id model
+            div [ classList [ ( "pane-container", True ), ( "is-card", True ) ]  ]
+                [ cardPane (Just id) model
+                , cardListPane model
+                , deckListPane model
                 ]
         Nothing ->
             div [ class "pane-container" ]
-                [ cardListPane model
+                [ cardPane Nothing model
+                , cardListPane model
                 , deckListPane model
                 ]
 
