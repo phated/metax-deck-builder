@@ -17,55 +17,72 @@ save deck =
         |> Ports.storeSession
 
 
-toExport : CardList -> (String, Int) -> Value
-toExport cards (cardId, quantity) =
+toExport : CardList -> ( String, Int ) -> Value
+toExport cards ( cardId, quantity ) =
     let
-        title = lookupTitle cards cardId
-        cardType = lookupType cards cardId
+        title =
+            lookupTitle cards cardId
+
+        cardType =
+            lookupType cards cardId
     in
         object
-            [ ("quantity", int quantity)
-            , ("id", string cardId)
-            , ("title", string title)
-            , ("card_type", string cardType)
+            [ ( "quantity", int quantity )
+            , ( "id", string cardId )
+            , ( "title", string title )
+            , ( "card_type", string cardType )
             ]
+
 
 export : CardList -> Deck -> Cmd msg
 export cards deck =
     let
-        exportDeck = List.map (toExport cards) (Dict.toList deck)
+        exportDeck =
+            List.map (toExport cards) (Dict.toList deck)
     in
         encode 0 (list exportDeck)
             |> Just
             |> Ports.exportSession
 
+
+
 -- TODO: dedupe
+
+
 idMatches : String -> Card -> Bool
 idMatches cardId card =
     card.id == cardId
+
 
 lookup : CardList -> String -> Maybe Card
 lookup cards cardId =
     List.filter (idMatches cardId) cards
         |> List.head
 
+
 lookupTitle : CardList -> String -> String
 lookupTitle cards cardId =
     let
-        card = lookup cards cardId
+        card =
+            lookup cards cardId
     in
         case card of
             Just card ->
                 .title card
+
             _ ->
                 ""
+
+
 lookupType : CardList -> String -> String
 lookupType cards cardId =
     let
-        card = lookup cards cardId
+        card =
+            lookup cards cardId
     in
         case card of
             Just card ->
                 .card_type card
+
             _ ->
                 ""

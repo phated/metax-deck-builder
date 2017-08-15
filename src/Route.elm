@@ -3,6 +3,7 @@ module Route exposing (Route(..), route, fromLocation)
 import Navigation exposing (Location)
 import UrlParser as Url exposing ((</>), Parser, oneOf, parsePath, s, string)
 
+
 type Route
     = Home
     | Deck
@@ -16,6 +17,7 @@ route =
         , Url.map Deck (s "deck")
         , Url.map Card (s "card" </> string)
         ]
+
 
 fromLocation : Location -> Maybe Route
 fromLocation location =

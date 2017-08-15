@@ -14,9 +14,7 @@ import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
-
 import Compare exposing (concat, by, Comparator)
-
 import Route exposing (fromLocation, Route)
 
 
@@ -95,13 +93,22 @@ notZero : String -> Int -> Bool
 notZero _ count =
     count /= 0
 
+
 forcedOrder : Card -> Int
 forcedOrder card =
     case card.card_type of
-        "Character" -> 1
-        "Battle" -> 2
-        "Event" -> 3
-        _ -> 4
+        "Character" ->
+            1
+
+        "Battle" ->
+            2
+
+        "Event" ->
+            3
+
+        _ ->
+            4
+
 
 type BattleCardType
     = Strength
@@ -110,26 +117,44 @@ type BattleCardType
     | Multi
     | None
 
+
 battleCardType : Card -> BattleCardType
 battleCardType card =
-    if (contains (regex "^Strength \\d+$") card.title) then Strength
-    else if (contains (regex "^Intelligence \\d+$") card.title) then Intelligence
-    else if (contains (regex "^Special \\d+$") card.title) then Special
-    else if (contains (regex "^(?:(?:Strength|Intelligence|Special)\\/){1,3} \\d+$") card.title) then Multi
-    else None
+    if (contains (regex "^Strength \\d+$") card.title) then
+        Strength
+    else if (contains (regex "^Intelligence \\d+$") card.title) then
+        Intelligence
+    else if (contains (regex "^Special \\d+$") card.title) then
+        Special
+    else if (contains (regex "^(?:(?:Strength|Intelligence|Special)\\/){1,3} \\d+$") card.title) then
+        Multi
+    else
+        None
+
 
 battleOrder : Card -> Int
 battleOrder card =
     case battleCardType card of
-        Strength -> 1
-        Intelligence -> 2
-        Special -> 3
-        Multi -> 4
-        None -> 5
+        Strength ->
+            1
+
+        Intelligence ->
+            2
+
+        Special ->
+            3
+
+        Multi ->
+            4
+
+        None ->
+            5
+
 
 cardListSort : Comparator Card
 cardListSort =
     concat [ by forcedOrder, by battleOrder, by .card_type, by .title, by .effect ]
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -138,10 +163,13 @@ update msg model =
             case route of
                 Just Route.Home ->
                     ( { model | location = route }, Cmd.none )
+
                 Just Route.Deck ->
                     ( { model | location = route }, Cmd.none )
-                Just (Route.Card cardId )->
+
+                Just (Route.Card cardId) ->
                     ( { model | location = route, card = Just cardId }, Cmd.none )
+
                 Nothing ->
                     ( { model | location = Just Route.Home }, Cmd.none )
 
@@ -201,7 +229,7 @@ navbarTop model =
     nav [ class "navbar-top" ]
         [ logo "MetaX DB"
         , button [ class "export", onClick ExportDeck ]
-                 [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+            [ img [ src "/icons/ios-download-outline.svg" ] [] ]
         ]
 
 
@@ -337,6 +365,7 @@ cardText card =
         , cardEffect card.effect
         ]
 
+
 cardStats : Card -> Html Msg
 cardStats card =
     div [ class "card-stats" ]
@@ -346,10 +375,12 @@ cardStats card =
         , statView "special" card.special
         ]
 
+
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ a [ class "card-thumbnail"
+        [ a
+            [ class "card-thumbnail"
             , href ("/card/" ++ card.id)
             , onNavigate (NavigateTo ("/card/" ++ card.id))
             ]
@@ -358,6 +389,7 @@ cardDetails card =
         , cardText card
         , cardStats card
         ]
+
 
 cardView : Model -> Card -> Html Msg
 cardView model card =
@@ -639,7 +671,8 @@ deckCardView card =
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ a [ class "card-title"
+                    [ a
+                        [ class "card-title"
                         , href ("/card/" ++ card.id)
                         , onNavigate (NavigateTo ("/card/" ++ card.id))
                         ]
@@ -670,37 +703,47 @@ deckListPane model =
         -- TODO: use |> operator
         (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
 
+
 cardPane : Maybe String -> Model -> Html Msg
 cardPane cardId model =
     case cardId of
         Just cardId ->
             let
-                card = lookup model cardId
-                count = Maybe.withDefault 0 (Dict.get cardId model.deck)
+                card =
+                    lookup model cardId
+
+                count =
+                    Maybe.withDefault 0 (Dict.get cardId model.deck)
             in
                 case card of
                     Just card ->
-                        div [ id "card-pane"
+                        div
+                            [ id "card-pane"
                             , class "pane"
                             ]
-                            [ img [ class "card-full"
+                            [ img
+                                [ class "card-full"
                                 , src card.image_url
                                 ]
                                 []
                             , div [ class "card-details" ]
-                                  [ cardText card
-                                  , cardStats card
-                                  ]
+                                [ cardText card
+                                , cardStats card
+                                ]
                             , stepper ( card, count )
                             ]
+
                     Nothing ->
-                        div [ id "card-pane"
+                        div
+                            [ id "card-pane"
                             , class "pane align-center"
                             ]
                             [ text "Card not found"
                             ]
+
         Nothing ->
-            div [ id "card-pane"
+            div
+                [ id "card-pane"
                 , class "pane align-center"
                 ]
                 [ text "Click a card image to view" ]
@@ -715,24 +758,28 @@ paneContainer model =
                 , cardListPane model
                 , deckListPane model
                 ]
+
         Just Route.Deck ->
             div [ classList [ ( "pane-container", True ), ( "is-deck", True ) ] ]
                 [ cardPane Nothing model
                 , cardListPane model
                 , deckListPane model
                 ]
+
         Just (Route.Card id) ->
-            div [ classList [ ( "pane-container", True ), ( "is-card", True ) ]  ]
+            div [ classList [ ( "pane-container", True ), ( "is-card", True ) ] ]
                 [ cardPane (Just id) model
                 , cardListPane model
                 , deckListPane model
                 ]
+
         Nothing ->
             div [ class "pane-container" ]
                 [ cardPane Nothing model
                 , cardListPane model
                 , deckListPane model
                 ]
+
 
 applicationShell : Model -> Html Msg
 applicationShell model =
@@ -753,6 +800,7 @@ init session location =
     ( { location = fromLocation location
       , cards = []
       , card = Nothing
+
       -- TODO: avoid loading a deck list before cards are loaded
       , deck = Deck.decoder session
       }
