@@ -38,6 +38,11 @@ body {
   text-align: left;
   flex-grow: 1;
 }
+.logo img {
+  vertical-align: middle;
+  filter: drop-shadow(0px 0px 2px #FFF);
+  margin-right: 10px;
+}
 
 .navbar-bottom {
   box-shadow: 0 10px 10px 10px #808080;

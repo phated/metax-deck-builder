@@ -221,7 +221,9 @@ linkTo pathname =
 logo : String -> Html Msg
 logo title =
     div [ class "navitem logo" ]
-        [ text title ]
+        [ img [ src "/icons/logo.png" ] []
+        , text title
+        ]
 
 
 navbarTop : Model -> Html Msg
