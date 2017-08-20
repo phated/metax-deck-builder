@@ -1,5 +1,7 @@
-module Data.CardEffect exposing (CardEffect(..), decoder, effectToString)
+module Data.CardEffect exposing (CardEffect(..), decoder, effectToString, effectToHtml)
 
+import Html exposing (img, text, Html)
+import Html.Attributes exposing (src, class)
 import Regex exposing (regex, find, replace, HowMany(..), Match)
 import Json.Decode exposing (field, map, string, Decoder)
 
@@ -33,6 +35,35 @@ effectToString effect =
       Any content ->
           content
 
+effectToImg : CardEffect -> Maybe (Html msg)
+effectToImg effect =
+    case effect of
+      Play content ->
+          Just (img [ src "/icons/play.png" ] [])
+      Push content ->
+          Just (img [ src "/icons/push.png" ] [])
+      Constant content ->
+          Just (img [ class "upscale", src "/icons/constant.png" ] [])
+      Attack content ->
+          Just (img [ src "/icons/attack.png" ] [])
+      Defend content ->
+          Just (img [ src "/icons/defend.png" ] [])
+      Any content ->
+          Nothing
+
+effectToHtml : CardEffect -> List (Html msg)
+effectToHtml effect =
+    let
+        image = effectToImg effect
+        content = effectToString effect
+    in
+        case image of
+            Just image ->
+                [ image
+                , text content
+                ]
+            Nothing ->
+                [ text content ]
 
 matchToEffect : Match -> String -> CardEffect
 matchToEffect match =

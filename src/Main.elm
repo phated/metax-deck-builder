@@ -11,7 +11,7 @@ import Json.Decode exposing (Value)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
-import Data.CardEffect exposing (CardEffect(..), effectToString)
+import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
 -- import Data.CardRarity exposing (CardRarity(..))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
@@ -276,36 +276,7 @@ statView statType stat =
 
 cardEffect : CardEffect -> Html Msg
 cardEffect effect =
-    -- TODO: This would be nice to dedupe but I need to be able to get the content
-    case effect of
-        Play content ->
-            div [ class "card-effect" ]
-                [ img [ src "/icons/play.png" ] []
-                , text content
-                ]
-        Push content ->
-            div [ class "card-effect" ]
-                [ img [ src "/icons/push.png" ] []
-                , text content
-                ]
-        Constant content ->
-            div [ class "card-effect" ]
-                [ img [ class "upscale", src "/icons/constant.png" ] []
-                , text content
-                ]
-        Attack content ->
-            div [ class "card-effect" ]
-                [ img [ src "/icons/attack.png" ] []
-                , text content
-                ]
-        Defend content ->
-            div [ class "card-effect" ]
-                [ img [ src "/icons/defend.png" ] []
-                , text content
-                ]
-        Any content ->
-            div [ class "card-effect" ]
-                [ text content ]
+    div [ class "card-effect" ] (effectToHtml effect)
 
 
 cardText : Card -> Html Msg
