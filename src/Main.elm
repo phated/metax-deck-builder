@@ -1,14 +1,14 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (..)
+import Html exposing (nav, div, img, text, button, a, span, Html)
 import Html.Attributes exposing (href, class, classList, id, src, disabled)
-import Html.Events exposing (..)
-import Navigation exposing (..)
+import Html.Events exposing (onClick)
+import Navigation exposing (newUrl, Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode exposing (Value)
-import Data.Card as Card exposing (Card)
+import Data.Card as Card exposing (Card, CardRarity(..), CardType(..), BattleType(..))
 import Data.CardList as CardList exposing (CardList)
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
@@ -97,63 +97,37 @@ notZero _ count =
 forcedOrder : Card -> Int
 forcedOrder card =
     case card.card_type of
-        "Character" ->
+        Just Character ->
             1
 
-        "Battle" ->
+        Just (Battle (Strength _)) ->
             2
 
-        "Event" ->
+        Just (Battle (Intelligence _)) ->
             3
 
-        _ ->
+        Just (Battle (Special _)) ->
             4
 
-
-type BattleCardType
-    = Strength
-    | Intelligence
-    | Special
-    | Multi
-    | None
-
-
-battleCardType : Card -> BattleCardType
-battleCardType card =
-    if (contains (regex "^Strength \\d+$") card.title) then
-        Strength
-    else if (contains (regex "^Intelligence \\d+$") card.title) then
-        Intelligence
-    else if (contains (regex "^Special \\d+$") card.title) then
-        Special
-    else if (contains (regex "^(?:(?:Strength|Intelligence|Special)\\/){1,3} \\d+$") card.title) then
-        Multi
-    else
-        None
-
-
-battleOrder : Card -> Int
-battleOrder card =
-    case battleCardType card of
-        Strength ->
-            1
-
-        Intelligence ->
-            2
-
-        Special ->
-            3
-
-        Multi ->
-            4
-
-        None ->
+        Just (Battle (Multi _)) ->
             5
+
+        Just Event ->
+            6
+
+        Nothing ->
+            7
 
 
 cardListSort : Comparator Card
 cardListSort =
-    concat [ by forcedOrder, by battleOrder, by .card_type, by .title, by .effect ]
+    concat
+        [ by forcedOrder
+        -- , by battleOrder
+        -- , by .card_type
+        , by .title
+        , by .effect
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -257,11 +231,6 @@ cardListPane model =
         , class "pane"
         ]
         (List.map (cardView model) model.cards)
-
-
-isPositive : Int -> Bool
-isPositive num =
-    num >= 0
 
 
 stepper : ( Card, Int ) -> Html Msg
@@ -419,16 +388,6 @@ lookup model cardId =
         |> List.head
 
 
-byType : String -> ( Maybe Card, Int ) -> Bool
-byType cardType ( card, _ ) =
-    case card of
-        Just card ->
-            card.card_type == cardType
-
-        Nothing ->
-            False
-
-
 byTitle : String -> ( Maybe Card, Int ) -> Bool
 byTitle cardTitle ( card, _ ) =
     case card of
@@ -510,157 +469,104 @@ battleCardSubSection title cards =
         []
 
 
+type alias BattleCardGroups =
+    { strength : Dict Int (List (Maybe Card, Int))
+    , intelligence : Dict Int (List (Maybe Card, Int))
+    , special : Dict Int (List (Maybe Card, Int))
+    , multi : Dict Int (List (Maybe Card, Int))
+    }
+
+addToRank : (Maybe Card, Int) -> Maybe (List (Maybe Card, Int)) -> Maybe (List (Maybe Card, Int))
+addToRank item list =
+    case list of
+        Just list ->
+            Just (item :: list)
+
+        Nothing ->
+            Just [item]
+
+
+groupBattleCards : (Maybe Card, Int) -> BattleCardGroups -> BattleCardGroups
+groupBattleCards (card, count) result =
+    case card of
+        Just { card_type } ->
+            case card_type of
+                Just (Battle battleType) ->
+                    case battleType of
+                        Strength rank ->
+                            { result | strength = Dict.update rank (addToRank (card, count)) result.strength }
+                        Intelligence rank ->
+                            { result | intelligence = Dict.update rank (addToRank (card, count)) result.intelligence }
+                        Special rank ->
+                            { result | special = Dict.update rank (addToRank (card, count)) result.special }
+                        Multi rank ->
+                            { result | multi = Dict.update rank (addToRank (card, count)) result.multi }
+                Just Character ->
+                    result
+                Just Event ->
+                    result
+                Nothing ->
+                    result
+        Nothing ->
+            result
+
+toRows : String -> Int -> List (Maybe Card, Int) -> List (Html Msg) -> List (Html Msg)
+toRows title rank cards result =
+    let
+        test = Debug.log "rank" (rank, cards)
+    in
+    List.append result (battleCardSubSection (title ++ "- Rank " ++ (toString rank)) cards)
+
 battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
 battleCardView battle =
     if List.length battle > 0 then
         let
-            -- Strength
-            str1 =
-                Tuple.first <| List.partition (byTitle "Strength 1") battle
+            rows = List.foldl groupBattleCards (BattleCardGroups Dict.empty Dict.empty Dict.empty Dict.empty) battle
 
-            str2 =
-                Tuple.first <| List.partition (byTitle "Strength 2") battle
-
-            str3 =
-                Tuple.first <| List.partition (byTitle "Strength 3") battle
-
-            str4 =
-                Tuple.first <| List.partition (byTitle "Strength 4") battle
-
-            str5 =
-                Tuple.first <| List.partition (byTitle "Strength 5") battle
-
-            str6 =
-                Tuple.first <| List.partition (byTitle "Strength 6") battle
-
-            str7 =
-                Tuple.first <| List.partition (byTitle "Strength 7") battle
-
-            -- Intelligence
-            int1 =
-                Tuple.first <| List.partition (byTitle "Intelligence 1") battle
-
-            int2 =
-                Tuple.first <| List.partition (byTitle "Intelligence 2") battle
-
-            int3 =
-                Tuple.first <| List.partition (byTitle "Intelligence 3") battle
-
-            int4 =
-                Tuple.first <| List.partition (byTitle "Intelligence 4") battle
-
-            int5 =
-                Tuple.first <| List.partition (byTitle "Intelligence 5") battle
-
-            int6 =
-                Tuple.first <| List.partition (byTitle "Intelligence 6") battle
-
-            int7 =
-                Tuple.first <| List.partition (byTitle "Intelligence 7") battle
-
-            -- Special
-            sp1 =
-                Tuple.first <| List.partition (byTitle "Special 1") battle
-
-            sp2 =
-                Tuple.first <| List.partition (byTitle "Special 2") battle
-
-            sp3 =
-                Tuple.first <| List.partition (byTitle "Special 3") battle
-
-            sp4 =
-                Tuple.first <| List.partition (byTitle "Special 4") battle
-
-            sp5 =
-                Tuple.first <| List.partition (byTitle "Special 5") battle
-
-            sp6 =
-                Tuple.first <| List.partition (byTitle "Special 6") battle
-
-            sp7 =
-                Tuple.first <| List.partition (byTitle "Special 7") battle
-
-            -- Multi
-            multi1 =
-                Tuple.first <| List.partition (byMulti "1") battle
-
-            multi2 =
-                Tuple.first <| List.partition (byMulti "2") battle
-
-            multi3 =
-                Tuple.first <| List.partition (byMulti "3") battle
-
-            multi4 =
-                Tuple.first <| List.partition (byMulti "4") battle
-
-            multi5 =
-                Tuple.first <| List.partition (byMulti "5") battle
-
-            multi6 =
-                Tuple.first <| List.partition (byMulti "6") battle
-
-            multi7 =
-                Tuple.first <| List.partition (byMulti "7") battle
+            strRows = Dict.foldl (toRows "Strength") [] rows.strength
+            intRows = Dict.foldl (toRows "Intelligence") [] rows.intelligence
+            spRows = Dict.foldl (toRows "Special") [] rows.special
+            multiRows = Dict.foldl (toRows "Multi") [] rows.multi
         in
-            List.concat
-                [ sectionHeader "Battle Cards" (sum battle)
-
-                -- Strength
-                , battleCardSubSection "Strength - Rank 1" str1
-                , battleCardSubSection "Strength - Rank 2" str2
-                , battleCardSubSection "Strength - Rank 3" str3
-                , battleCardSubSection "Strength - Rank 4" str4
-                , battleCardSubSection "Strength - Rank 5" str5
-                , battleCardSubSection "Strength - Rank 6" str6
-                , battleCardSubSection "Strength - Rank 7" str7
-
-                -- Intelligence
-                , battleCardSubSection "Intelligence - Rank 1" int1
-                , battleCardSubSection "Intelligence - Rank 2" int2
-                , battleCardSubSection "Intelligence - Rank 3" int3
-                , battleCardSubSection "Intelligence - Rank 4" int4
-                , battleCardSubSection "Intelligence - Rank 5" int5
-                , battleCardSubSection "Intelligence - Rank 6" int6
-                , battleCardSubSection "Intelligence - Rank 7" int7
-
-                -- Special
-                , battleCardSubSection "Special - Rank 1" sp1
-                , battleCardSubSection "Special - Rank 2" sp2
-                , battleCardSubSection "Special - Rank 3" sp3
-                , battleCardSubSection "Special - Rank 4" sp4
-                , battleCardSubSection "Special - Rank 5" sp5
-                , battleCardSubSection "Special - Rank 6" sp6
-                , battleCardSubSection "Special - Rank 7" sp7
-
-                -- Multi
-                , battleCardSubSection "Multi - Rank 1" multi1
-                , battleCardSubSection "Multi - Rank 2" multi2
-                , battleCardSubSection "Multi - Rank 3" multi3
-                , battleCardSubSection "Multi - Rank 4" multi4
-                , battleCardSubSection "Multi - Rank 5" multi5
-                , battleCardSubSection "Multi - Rank 6" multi6
-                , battleCardSubSection "Multi - Rank 7" multi7
-                ]
+            (sectionHeader "Battle Cards" (sum battle))
+            ++ strRows
+            ++ intRows
+            ++ spRows
+            ++ multiRows
     else
         []
 
+type alias DeckGroups =
+    { characters : List (Maybe Card, Int)
+    , events : List (Maybe Card, Int)
+    , battle : List (Maybe Card, Int)
+    }
+
+groupTypes : (Maybe Card, Int) -> DeckGroups -> DeckGroups
+groupTypes ( card, count ) result =
+    case card of
+        Just { card_type } ->
+            case card_type of
+                Just Character ->
+                    { result | characters = (card, count) :: result.characters }
+                Just Event ->
+                    { result | events = (card, count) :: result.events }
+                Just (Battle _) ->
+                    { result | battle = (card, count) :: result.battle }
+                Nothing ->
+                    result
+        Nothing ->
+            result
 
 deckSectionView : List ( Maybe Card, Int ) -> List (Html Msg)
 deckSectionView cards =
     let
-        characters =
-            Tuple.first <| List.partition (byType "Character") cards
-
-        events =
-            Tuple.first <| List.partition (byType "Event") cards
-
-        battle =
-            Tuple.first <| List.partition (byType "Battle") cards
+        rows = List.foldl groupTypes (DeckGroups [] [] []) cards
     in
         List.concat
-            [ charactersView characters
-            , eventsView events
-            , battleCardView battle
+            [ charactersView rows.characters
+            , eventsView rows.events
+            , battleCardView rows.battle
             ]
 
 
@@ -750,37 +656,42 @@ cardPane cardId model =
                 ]
                 [ text "Click a card image to view" ]
 
+getClassList : Maybe Route -> List (String, Bool)
+getClassList location =
+    case location of
+        Just Route.Home ->
+            [ ( "pane-container", True ) ]
+        Just Route.Deck ->
+            [ ( "pane-container", True ), ( "is-deck", True ) ]
+        Just (Route.Card _) ->
+            [ ( "pane-container", True ), ( "is-card", True ) ]
+        Nothing ->
+            [ ( "pane-container", True ) ]
+
+getCardId : Maybe Route -> Maybe String
+getCardId location =
+    case location of
+        Just Route.Home ->
+            Nothing
+        Just Route.Deck ->
+            Nothing
+        Just (Route.Card id) ->
+            Just id
+        Nothing ->
+            Nothing
+
 
 paneContainer : Model -> Html Msg
 paneContainer model =
-    case model.location of
-        Just Route.Home ->
-            div [ class "pane-container" ]
-                [ cardPane Nothing model
-                , cardListPane model
-                , deckListPane model
-                ]
-
-        Just Route.Deck ->
-            div [ classList [ ( "pane-container", True ), ( "is-deck", True ) ] ]
-                [ cardPane Nothing model
-                , cardListPane model
-                , deckListPane model
-                ]
-
-        Just (Route.Card id) ->
-            div [ classList [ ( "pane-container", True ), ( "is-card", True ) ] ]
-                [ cardPane (Just id) model
-                , cardListPane model
-                , deckListPane model
-                ]
-
-        Nothing ->
-            div [ class "pane-container" ]
-                [ cardPane Nothing model
-                , cardListPane model
-                , deckListPane model
-                ]
+    let
+        containerClasses = getClassList model.location
+        cardId = getCardId model.location
+    in
+        div [ classList containerClasses ]
+            [ cardPane cardId model
+            , cardListPane model
+            , deckListPane model
+            ]
 
 
 applicationShell : Model -> Html Msg
