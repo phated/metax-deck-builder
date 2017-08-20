@@ -3,7 +3,8 @@ module Request.Deck exposing (save, export)
 import Json.Encode exposing (encode, string, int, list, object, Value)
 import Json.Helpers exposing (encodeMap)
 import Data.Deck exposing (Deck)
-import Data.Card exposing (Card, CardType, fromCardType)
+import Data.Card exposing (Card)
+import Data.CardType exposing (CardType(Unknown), fromCardType)
 import Data.CardList exposing (CardList)
 import Dict
 import Ports
@@ -74,7 +75,7 @@ lookupTitle cards cardId =
                 ""
 
 
-lookupType : CardList -> String -> Maybe CardType
+lookupType : CardList -> String -> CardType
 lookupType cards cardId =
     let
         card =
@@ -85,4 +86,4 @@ lookupType cards cardId =
                 .card_type card
 
             _ ->
-                Nothing
+                Unknown

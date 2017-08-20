@@ -8,8 +8,10 @@ import Navigation exposing (newUrl, Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode exposing (Value)
-import Data.Card as Card exposing (Card, CardRarity(..), CardType(..), BattleType(..))
+import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
+import Data.CardType exposing (CardType(..), BattleType(..))
+-- import Data.CardRarity exposing (CardRarity(..))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
@@ -97,25 +99,25 @@ notZero _ count =
 forcedOrder : Card -> Int
 forcedOrder card =
     case card.card_type of
-        Just Character ->
+        Character ->
             1
 
-        Just (Battle (Strength _)) ->
+        Battle (Strength _) ->
             2
 
-        Just (Battle (Intelligence _)) ->
+        Battle (Intelligence _) ->
             3
 
-        Just (Battle (Special _)) ->
+        Battle (Special _) ->
             4
 
-        Just (Battle (Multi _)) ->
+        Battle (Multi _) ->
             5
 
-        Just Event ->
+        Event ->
             6
 
-        Nothing ->
+        Unknown ->
             7
 
 
@@ -491,7 +493,7 @@ groupBattleCards (card, count) result =
     case card of
         Just { card_type } ->
             case card_type of
-                Just (Battle battleType) ->
+                Battle battleType ->
                     case battleType of
                         Strength rank ->
                             { result | strength = Dict.update rank (addToRank (card, count)) result.strength }
@@ -501,11 +503,11 @@ groupBattleCards (card, count) result =
                             { result | special = Dict.update rank (addToRank (card, count)) result.special }
                         Multi rank ->
                             { result | multi = Dict.update rank (addToRank (card, count)) result.multi }
-                Just Character ->
+                Character ->
                     result
-                Just Event ->
+                Event ->
                     result
-                Nothing ->
+                Unknown ->
                     result
         Nothing ->
             result
@@ -547,13 +549,13 @@ groupTypes ( card, count ) result =
     case card of
         Just { card_type } ->
             case card_type of
-                Just Character ->
+                Character ->
                     { result | characters = (card, count) :: result.characters }
-                Just Event ->
+                Event ->
                     { result | events = (card, count) :: result.events }
-                Just (Battle _) ->
+                Battle _ ->
                     { result | battle = (card, count) :: result.battle }
-                Nothing ->
+                Unknown ->
                     result
         Nothing ->
             result
