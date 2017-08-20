@@ -1,4 +1,4 @@
-module Data.CardEffect exposing (CardEffect(..), decoder)
+module Data.CardEffect exposing (CardEffect(..), decoder, effectToString)
 
 import Regex exposing (regex, find, replace, HowMany(..), Match)
 import Json.Decode exposing (field, map, string, Decoder)
@@ -17,6 +17,23 @@ decoder =
   field "effect" (map toEffect string)
 
 -- Utils
+effectToString : CardEffect -> String
+effectToString effect =
+  case effect of
+      Play content ->
+          content
+      Push content ->
+          content
+      Constant content ->
+          content
+      Attack content ->
+          content
+      Defend content ->
+          content
+      Any content ->
+          content
+
+
 matchToEffect : Match -> String -> CardEffect
 matchToEffect match =
     case match.submatches of

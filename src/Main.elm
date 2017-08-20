@@ -11,7 +11,7 @@ import Json.Decode exposing (Value)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
-import Data.CardEffect exposing (CardEffect(..))
+import Data.CardEffect exposing (CardEffect(..), effectToString)
 -- import Data.CardRarity exposing (CardRarity(..))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
@@ -97,9 +97,9 @@ notZero _ count =
     count /= 0
 
 
-forcedOrder : Card -> Int
-forcedOrder card =
-    case card.card_type of
+typeOrder : CardType -> Int
+typeOrder cardType =
+    case cardType of
         Character ->
             1
 
@@ -121,16 +121,12 @@ forcedOrder card =
         Unknown ->
             7
 
-
 cardListSort : Comparator Card
 cardListSort =
     concat
-        [ by forcedOrder
-        -- , by battleOrder
-        -- , by .card_type
+        [ by (typeOrder << .card_type)
         , by .title
-        -- TODO: this unsorted the effect-less battle cards
-        -- , by .effect
+        , by (effectToString << .effect)
         ]
 
 
