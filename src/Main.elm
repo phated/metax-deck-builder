@@ -371,26 +371,6 @@ lookup model cardId =
         |> List.head
 
 
-byTitle : String -> ( Maybe Card, Int ) -> Bool
-byTitle cardTitle ( card, _ ) =
-    case card of
-        Just card ->
-            card.title == cardTitle
-
-        Nothing ->
-            False
-
-
-byMulti : String -> ( Maybe Card, Int ) -> Bool
-byMulti rank ( card, _ ) =
-    case card of
-        Just card ->
-            contains (regex ("(?:(?:Strength|Intelligence|Special)\\/){1,3}\\D+" ++ rank ++ "$")) card.title
-
-        Nothing ->
-            False
-
-
 sectionHeader : String -> Int -> List (Html Msg)
 sectionHeader title count =
     List.singleton (div [ class "list-item-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
