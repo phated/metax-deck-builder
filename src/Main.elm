@@ -11,6 +11,7 @@ import Json.Decode exposing (Value)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
+import Data.CardEffect exposing (CardEffect(..))
 -- import Data.CardRarity exposing (CardRarity(..))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
@@ -128,7 +129,8 @@ cardListSort =
         -- , by battleOrder
         -- , by .card_type
         , by .title
-        , by .effect
+        -- TODO: this unsorted the effect-less battle cards
+        -- , by .effect
         ]
 
 
@@ -276,59 +278,38 @@ statView statType stat =
             text ""
 
 
-
--- TODO: There HAS to be a better way to do this
-
-
-cardEffect : String -> Html Msg
+cardEffect : CardEffect -> Html Msg
 cardEffect effect =
-    let
-        hasPlay =
-            contains (regex "PLAY") effect
-
-        hasPush =
-            contains (regex "PUSH") effect
-
-        hasConstant =
-            contains (regex "CONSTANT") effect
-
-        hasAttack =
-            contains (regex "ATTACK") effect
-
-        hasDefend =
-            contains (regex "DEFEND") effect
-
-        scrubbedEffect =
-            replace Regex.All (regex "PLAY|PUSH|CONSTANT|ATTACK|DEFEND") (\_ -> "") effect
-    in
-        if hasPlay then
+    -- TODO: This would be nice to dedupe but I need to be able to get the content
+    case effect of
+        Play content ->
             div [ class "card-effect" ]
                 [ img [ src "/icons/play.png" ] []
-                , text scrubbedEffect
+                , text content
                 ]
-        else if hasPush then
+        Push content ->
             div [ class "card-effect" ]
                 [ img [ src "/icons/push.png" ] []
-                , text scrubbedEffect
+                , text content
                 ]
-        else if hasConstant then
+        Constant content ->
             div [ class "card-effect" ]
                 [ img [ class "upscale", src "/icons/constant.png" ] []
-                , text scrubbedEffect
+                , text content
                 ]
-        else if hasAttack then
+        Attack content ->
             div [ class "card-effect" ]
                 [ img [ src "/icons/attack.png" ] []
-                , text scrubbedEffect
+                , text content
                 ]
-        else if hasDefend then
+        Defend content ->
             div [ class "card-effect" ]
                 [ img [ src "/icons/defend.png" ] []
-                , text scrubbedEffect
+                , text content
                 ]
-        else
+        Any content ->
             div [ class "card-effect" ]
-                [ text scrubbedEffect ]
+                [ text content ]
 
 
 cardText : Card -> Html Msg
@@ -514,9 +495,6 @@ groupBattleCards (card, count) result =
 
 toRows : String -> Int -> List (Maybe Card, Int) -> List (Html Msg) -> List (Html Msg)
 toRows title rank cards result =
-    let
-        test = Debug.log "rank" (rank, cards)
-    in
     List.append result (battleCardSubSection (title ++ "- Rank " ++ (toString rank)) cards)
 
 battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
