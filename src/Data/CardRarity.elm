@@ -3,6 +3,7 @@ module Data.CardRarity exposing (CardRarity(..), decoder)
 import Regex exposing (find, regex, Match, HowMany(AtMost))
 import Json.Decode exposing (string, map, field, Decoder)
 
+
 type CardRarity
     = Common
     | Uncommon
@@ -13,32 +14,44 @@ type CardRarity
     | Starter
     | Unknown
 
+
 decoder : Decoder CardRarity
 decoder =
-  field "id" (map toRarity string)
+    field "id" (map toRarity string)
+
 
 
 -- Utils
 -- TODO: How can this be more type safe?
+
+
 matchToRarity : Match -> CardRarity
 matchToRarity match =
     case match.submatches of
-        [Just "C"] ->
+        [ Just "C" ] ->
             Common
-        [Just "U"] ->
+
+        [ Just "U" ] ->
             Uncommon
-        [Just "R"] ->
+
+        [ Just "R" ] ->
             Rare
-        [Just "XR"] ->
+
+        [ Just "XR" ] ->
             XRare
-        [Just "UR"] ->
+
+        [ Just "UR" ] ->
             URare
-        [Just "P"] ->
+
+        [ Just "P" ] ->
             Promo
-        [Just "S"] ->
+
+        [ Just "S" ] ->
             Starter
+
         [] ->
             Unknown
+
         _ ->
             Unknown
 
@@ -46,10 +59,12 @@ matchToRarity match =
 toRarity : String -> CardRarity
 toRarity id =
     let
-        match = List.head (find (AtMost 1) (regex "^(C|U(?!R)|R|XR|UR|P|S)") id)
+        match =
+            List.head (find (AtMost 1) (regex "^(C|U(?!R)|R|XR|UR|P|S)") id)
     in
         case match of
-            Just (m) ->
+            Just m ->
                 matchToRarity m
+
             Nothing ->
                 Unknown

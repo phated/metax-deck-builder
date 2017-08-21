@@ -2,10 +2,10 @@ module Data.Card exposing (Card, decoder)
 
 import Json.Decode exposing (int, string, nullable, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom)
-
 import Data.CardType as CardType exposing (CardType)
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
+
 
 type alias Card =
     { id : String

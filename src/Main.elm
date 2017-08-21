@@ -12,7 +12,10 @@ import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
 import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
+
+
 -- import Data.CardRarity exposing (CardRarity(..))
+
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
@@ -120,6 +123,7 @@ typeOrder cardType =
 
         Unknown ->
             7
+
 
 cardListSort : Comparator Card
 cardListSort =
@@ -400,95 +404,121 @@ battleCardSubSection title cards =
 
 
 type alias BattleCardGroups =
-    { strength : Dict Int (List (Maybe Card, Int))
-    , intelligence : Dict Int (List (Maybe Card, Int))
-    , special : Dict Int (List (Maybe Card, Int))
-    , multi : Dict Int (List (Maybe Card, Int))
+    { strength : Dict Int (List ( Maybe Card, Int ))
+    , intelligence : Dict Int (List ( Maybe Card, Int ))
+    , special : Dict Int (List ( Maybe Card, Int ))
+    , multi : Dict Int (List ( Maybe Card, Int ))
     }
 
-addToRank : (Maybe Card, Int) -> Maybe (List (Maybe Card, Int)) -> Maybe (List (Maybe Card, Int))
+
+addToRank : ( Maybe Card, Int ) -> Maybe (List ( Maybe Card, Int )) -> Maybe (List ( Maybe Card, Int ))
 addToRank item list =
     case list of
         Just list ->
             Just (item :: list)
 
         Nothing ->
-            Just [item]
+            Just [ item ]
 
 
-groupBattleCards : (Maybe Card, Int) -> BattleCardGroups -> BattleCardGroups
-groupBattleCards (card, count) result =
+groupBattleCards : ( Maybe Card, Int ) -> BattleCardGroups -> BattleCardGroups
+groupBattleCards ( card, count ) result =
     case card of
         Just { card_type } ->
             case card_type of
                 Battle battleType ->
                     case battleType of
                         Strength rank ->
-                            { result | strength = Dict.update rank (addToRank (card, count)) result.strength }
+                            { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
+
                         Intelligence rank ->
-                            { result | intelligence = Dict.update rank (addToRank (card, count)) result.intelligence }
+                            { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
+
                         Special rank ->
-                            { result | special = Dict.update rank (addToRank (card, count)) result.special }
+                            { result | special = Dict.update rank (addToRank ( card, count )) result.special }
+
                         Multi rank ->
-                            { result | multi = Dict.update rank (addToRank (card, count)) result.multi }
+                            { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
+
                 Character ->
                     result
+
                 Event ->
                     result
+
                 Unknown ->
                     result
+
         Nothing ->
             result
 
-toRows : String -> Int -> List (Maybe Card, Int) -> List (Html Msg) -> List (Html Msg)
+
+toRows : String -> Int -> List ( Maybe Card, Int ) -> List (Html Msg) -> List (Html Msg)
 toRows title rank cards result =
     List.append result (battleCardSubSection (title ++ "- Rank " ++ (toString rank)) cards)
+
 
 battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
 battleCardView battle =
     if List.length battle > 0 then
         let
-            rows = List.foldl groupBattleCards (BattleCardGroups Dict.empty Dict.empty Dict.empty Dict.empty) battle
+            rows =
+                List.foldl groupBattleCards (BattleCardGroups Dict.empty Dict.empty Dict.empty Dict.empty) battle
 
-            strRows = Dict.foldl (toRows "Strength") [] rows.strength
-            intRows = Dict.foldl (toRows "Intelligence") [] rows.intelligence
-            spRows = Dict.foldl (toRows "Special") [] rows.special
-            multiRows = Dict.foldl (toRows "Multi") [] rows.multi
+            strRows =
+                Dict.foldl (toRows "Strength") [] rows.strength
+
+            intRows =
+                Dict.foldl (toRows "Intelligence") [] rows.intelligence
+
+            spRows =
+                Dict.foldl (toRows "Special") [] rows.special
+
+            multiRows =
+                Dict.foldl (toRows "Multi") [] rows.multi
         in
             (sectionHeader "Battle Cards" (sum battle))
-            ++ strRows
-            ++ intRows
-            ++ spRows
-            ++ multiRows
+                ++ strRows
+                ++ intRows
+                ++ spRows
+                ++ multiRows
     else
         []
 
+
 type alias DeckGroups =
-    { characters : List (Maybe Card, Int)
-    , events : List (Maybe Card, Int)
-    , battle : List (Maybe Card, Int)
+    { characters : List ( Maybe Card, Int )
+    , events : List ( Maybe Card, Int )
+    , battle : List ( Maybe Card, Int )
     }
 
-groupTypes : (Maybe Card, Int) -> DeckGroups -> DeckGroups
+
+groupTypes : ( Maybe Card, Int ) -> DeckGroups -> DeckGroups
 groupTypes ( card, count ) result =
     case card of
         Just { card_type } ->
             case card_type of
                 Character ->
-                    { result | characters = (card, count) :: result.characters }
+                    { result | characters = ( card, count ) :: result.characters }
+
                 Event ->
-                    { result | events = (card, count) :: result.events }
+                    { result | events = ( card, count ) :: result.events }
+
                 Battle _ ->
-                    { result | battle = (card, count) :: result.battle }
+                    { result | battle = ( card, count ) :: result.battle }
+
                 Unknown ->
                     result
+
         Nothing ->
             result
+
 
 deckSectionView : List ( Maybe Card, Int ) -> List (Html Msg)
 deckSectionView cards =
     let
-        rows = List.foldl groupTypes (DeckGroups [] [] []) cards
+        rows =
+            List.foldl groupTypes (DeckGroups [] [] []) cards
     in
         List.concat
             [ charactersView rows.characters
@@ -583,27 +613,35 @@ cardPane cardId model =
                 ]
                 [ text "Click a card image to view" ]
 
-getClassList : Maybe Route -> List (String, Bool)
+
+getClassList : Maybe Route -> List ( String, Bool )
 getClassList location =
     case location of
         Just Route.Home ->
             [ ( "pane-container", True ) ]
+
         Just Route.Deck ->
             [ ( "pane-container", True ), ( "is-deck", True ) ]
+
         Just (Route.Card _) ->
             [ ( "pane-container", True ), ( "is-card", True ) ]
+
         Nothing ->
             [ ( "pane-container", True ) ]
+
 
 getCardId : Maybe Route -> Maybe String
 getCardId location =
     case location of
         Just Route.Home ->
             Nothing
+
         Just Route.Deck ->
             Nothing
+
         Just (Route.Card id) ->
             Just id
+
         Nothing ->
             Nothing
 
@@ -611,8 +649,11 @@ getCardId location =
 paneContainer : Model -> Html Msg
 paneContainer model =
     let
-        containerClasses = getClassList model.location
-        cardId = getCardId model.location
+        containerClasses =
+            getClassList model.location
+
+        cardId =
+            getCardId model.location
     in
         div [ classList containerClasses ]
             [ cardPane cardId model
