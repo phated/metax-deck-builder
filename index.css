@@ -390,7 +390,7 @@ body {
   }
 
   .pane-container {
-    /* transform: translate3d(0%, 0, 0); */
+    transform: translate3d(0%, 0, 0);
     padding-bottom: 0;
     /* border-right: 1px solid #d3d3d3;
     border-left: 1px solid #d3d3d3;
