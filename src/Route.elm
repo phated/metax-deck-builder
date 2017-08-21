@@ -8,6 +8,7 @@ type Route
     = Home
     | Deck
     | Card String
+    | Search
 
 
 route : Parser (Route -> a) a
@@ -16,6 +17,7 @@ route =
         [ Url.map Home (s "")
         , Url.map Deck (s "deck")
         , Url.map Card (s "card" </> string)
+        , Url.map Search (s "search")
         ]
 
 

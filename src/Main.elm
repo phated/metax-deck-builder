@@ -1,9 +1,9 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (nav, div, img, text, button, a, span, Html)
-import Html.Attributes exposing (href, class, classList, id, src, disabled)
-import Html.Events exposing (onClick)
+import Html exposing (nav, div, img, text, button, a, span, label, input, Html)
+import Html.Attributes exposing (href, class, classList, id, src, disabled, type_, checked)
+import Html.Events exposing (onClick, onCheck)
 import Navigation exposing (newUrl, Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
@@ -12,10 +12,7 @@ import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
 import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
-
-
--- import Data.CardRarity exposing (CardRarity(..))
-
+import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
@@ -33,12 +30,16 @@ main =
         , subscriptions = subscriptions
         }
 
+type alias Filters =
+    { rarity : List CardRarity
+    }
 
 type alias Model =
     { location : Maybe Route
     , cards : CardList
     , deck : Deck
     , card : Maybe String
+    , filters : Filters
     }
 
 
@@ -49,6 +50,9 @@ type Msg
     | Decrement String
     | Increment String
     | ExportDeck
+    -- TODO: differentiate between filter types
+    | AddFilter CardRarity
+    | RemoveFilter CardRarity
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -148,6 +152,9 @@ update msg model =
                 Just (Route.Card cardId) ->
                     ( { model | location = route, card = Just cardId }, Cmd.none )
 
+                Just Route.Search ->
+                    ( { model | location = route }, Cmd.none )
+
                 Nothing ->
                     ( { model | location = Just Route.Home }, Cmd.none )
 
@@ -181,6 +188,18 @@ update msg model =
         ExportDeck ->
             ( model, Request.Deck.export model.cards model.deck )
 
+        AddFilter rarity ->
+            let
+                updatedRarity = rarity :: model.filters.rarity
+            in
+                ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
+
+        RemoveFilter rarity ->
+            let
+                updatedRarity = List.filter ((/=) rarity) model.filters.rarity
+            in
+                ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -204,12 +223,33 @@ logo title =
         ]
 
 
+getNavbarIcon : Maybe Route -> Html Msg
+getNavbarIcon location =
+    case location of
+        Just Route.Home ->
+            button [ class "navbar-button"
+                   , href ("/search")
+                   , onNavigate (NavigateTo "/search") ]
+                [ img [ src "/icons/ios-search-white.svg" ] [] ]
+
+        Just Route.Deck ->
+            button [ class "navbar-button", onClick ExportDeck ]
+                [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+
+        Just (Route.Card _) ->
+            text ""
+
+        Just Route.Search ->
+            text ""
+
+        Nothing ->
+            text ""
+
 navbarTop : Model -> Html Msg
 navbarTop model =
     nav [ class "navbar-top" ]
         [ logo "MetaX DB"
-        , button [ class "export", onClick ExportDeck ]
-            [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+        , getNavbarIcon model.location
         ]
 
 
@@ -227,6 +267,16 @@ navbarBottom model =
             , linkTo "/deck" [ text ("Deck (" ++ (toString deckSize) ++ ")") ]
             ]
 
+-- TODO: These should go somewhere else
+filterRarity : CardRarity -> Card -> Bool
+filterRarity rarity card =
+    card.rarity == rarity
+
+
+applyFilters : Filters -> Card -> Bool
+applyFilters filters card =
+    List.any (\rarity -> filterRarity rarity card) filters.rarity
+
 
 cardListPane : Model -> Html Msg
 cardListPane model =
@@ -234,7 +284,7 @@ cardListPane model =
         [ id "card-list-pane"
         , class "pane"
         ]
-        (List.map (cardView model) model.cards)
+        (List.map (cardView model) (List.filter (applyFilters model.filters) model.cards))
 
 
 stepper : ( Card, Int ) -> Html Msg
@@ -626,6 +676,9 @@ getClassList location =
         Just (Route.Card _) ->
             [ ( "pane-container", True ), ( "is-card", True ) ]
 
+        Just Route.Search ->
+            [ ( "pane-container", True ), ( "is-search", True ) ]
+
         Nothing ->
             [ ( "pane-container", True ) ]
 
@@ -642,8 +695,48 @@ getCardId location =
         Just (Route.Card id) ->
             Just id
 
+        Just Route.Search ->
+            Nothing
+
         Nothing ->
             Nothing
+
+
+updateFilter : CardRarity -> Bool -> Msg
+updateFilter rarity isChecked =
+    if isChecked then AddFilter rarity
+    else RemoveFilter rarity
+
+
+checkbox : String -> CardRarity -> List CardRarity -> Html Msg
+checkbox label_ rarity rarityFilters =
+    let
+        isChecked = List.member rarity rarityFilters
+    in
+        label [ class "checkbox" ]
+            [ input [ type_ "checkbox", checked isChecked, onCheck (updateFilter rarity) ] []
+            , text label_
+            ]
+
+
+searchPane : Model -> Html Msg
+searchPane model =
+    div [ id "search-pane"
+        , class "pane"
+        ]
+        [ div [ class "list-item-header"] [ text "Rarity" ]
+        , checkbox "Common" Common model.filters.rarity
+        , checkbox "Uncommon" Uncommon model.filters.rarity
+        , checkbox "Rare" Rare model.filters.rarity
+        , checkbox "XR" XRare model.filters.rarity
+        , checkbox "UR" URare model.filters.rarity
+        , checkbox "Promo" Promo model.filters.rarity
+        , checkbox "Starter" Starter model.filters.rarity
+        , button [ class "search-button"
+                 , href ("/")
+                 , onNavigate (NavigateTo "/")] [ text "Search" ]
+        , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
+        ]
 
 
 paneContainer : Model -> Html Msg
@@ -656,9 +749,10 @@ paneContainer model =
             getCardId model.location
     in
         div [ classList containerClasses ]
-            [ cardPane cardId model
-            , cardListPane model
+            [ cardListPane model
             , deckListPane model
+            , searchPane model
+            , cardPane cardId model
             ]
 
 
@@ -684,6 +778,9 @@ init session location =
 
       -- TODO: avoid loading a deck list before cards are loaded
       , deck = Deck.decoder session
+      , filters =
+          { rarity = [Common, Uncommon, Rare, XRare, URare]
+          }
       }
     , Request.CardList.load
         |> Http.send CardsLoaded

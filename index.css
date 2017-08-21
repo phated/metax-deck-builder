@@ -75,26 +75,49 @@ body {
 .pane-container {
   display: flex;
   will-change: transform;
-  transform: translate3d(-100%, 0, 0);
   padding: 50px 0;
   height: 100vh;
   box-sizing: border-box;
+  /* TODO: Need to track what page we are transitioning FROM to do proper animations */
   transition: transform .3s;
 }
 
-.is-card {
-  transform: translate3d(0%, 0, 0);
-}
 .is-deck {
+  transform: translate3d(-100%, 0, 0);
+}
+.is-search {
+  animation: .3s slideSearch;
   transform: translate3d(-200%, 0, 0);
+}
+.is-card {
+  animation: .3s slideCard;
+  transform: translate3d(-300%, 0, 0);
+}
+
+@keyframes slideSearch {
+  from {
+    transform: translate3d(-200%, -100vh, 0);
+  }
+
+  to {
+    transform: translate3d(-200%, 0, 0);
+  }
+}
+@keyframes slideCard {
+  from {
+    transform: translate3d(-300%, -100vh, 0);
+  }
+
+  to {
+    transform: translate3d(-300%, 0, 0);
+  }
 }
 
 .pane {
   width: 100%;
+  height: 100%;
   flex-shrink: 0;
   overflow-x: auto;
-  align-self: flex-start;
-  height: 100%;
   padding: 0 8px;
   box-sizing: border-box;
 }
@@ -103,42 +126,22 @@ body {
   padding: 10px 20px 20px;
 }
 
-/* Non-mobiled */
-@media only screen and (min-width: 768px) {
-  .navbar-bottom {
-    display: none;
-  }
+.search-button, .auto-button {
+  border: none;
+  background: #303030;
+  color: #fff;
+  width: 100%;
+  outline: none;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 8px;
+  border-radius: 4px;
+}
 
-  .pane-container {
-    transform: translate3d(0%, 0, 0);
-    padding-bottom: 0;
-    /* border-right: 1px solid #d3d3d3;
-    border-left: 1px solid #d3d3d3;
-    margin: 0 auto; */
-  }
-
-  .is-deck {
-    transform: none;
-  }
-
-  #card-pane {
-    order: 2;
-    flex-shrink: 1;
-    max-width: 380px;
-    overflow-y: scroll;
-  }
-
-  #card-list-pane {
-    flex-shrink: 1;
-    border-right: 1px solid #d3d3d3;
-    order: 1;
-  }
-
-  #deck-list-pane {
-    flex-shrink: 1;
-    border-left: 1px solid #d3d3d3;
-    order: 3;
-  }
+.auto-button {
+  display: none;
+  background: #d3d3d3;
+  color: #999999;
 }
 
 .list-item-header {
@@ -332,14 +335,14 @@ body {
 }
 
 
-.export {
+.navbar-button {
   padding: 0;
   outline: none;
   background: none;
   border: none;
   cursor: pointer;
 }
-.export img {
+.navbar-button img {
   padding: 5px 10px;
   width: 35px;
 }
@@ -347,4 +350,88 @@ body {
 .view-icon {
   width: 20px;
   vertical-align: middle;
+}
+
+.checkbox {
+  display: block;
+  font-size: 18px;
+  padding: 5px 5px 5px 0;
+}
+
+.checkbox input {
+  visibility: hidden;
+  width: 20px;
+  height: 20px;
+  margin: 0 5px 0 0;
+  vertical-align: text-bottom;
+}
+
+.checkbox input:before {
+  visibility: visible;
+  content: " ";
+  width: 20px;
+  height: 20px;
+  display: block;
+  background-image: url(/icons/ios-circle-outline.svg);
+  background-size: 20px;
+  /* This 1px really annoyed me */
+  position: relative;
+  top: -1px;
+}
+
+.checkbox input:checked:before {
+  background-image: url(/icons/ios-checkmark.svg);
+}
+
+/* Non-mobiled */
+@media only screen and (min-width: 768px) {
+  .navbar-bottom {
+    display: none;
+  }
+
+  .pane-container {
+    /* transform: translate3d(0%, 0, 0); */
+    padding-bottom: 0;
+    /* border-right: 1px solid #d3d3d3;
+    border-left: 1px solid #d3d3d3;
+    margin: 0 auto; */
+  }
+
+  .is-deck {
+    transform: none;
+  }
+
+  .pane {
+    flex-shrink: 1;
+    border-right: 1px solid #d3d3d3;
+  }
+
+  #search-pane {
+    order: 1;
+    max-width: 200px;
+  }
+
+  #card-list-pane {
+    order: 2;
+  }
+
+  #card-pane {
+    order: 3;
+    max-width: 380px;
+    overflow-y: scroll;
+  }
+
+  #deck-list-pane {
+    order: 4;
+    border-right: none;
+  }
+
+  /* In desktop mode, you can see the auto filtering, I think */
+  .search-button {
+    display: none;
+  }
+
+  .auto-button {
+    display: block;
+  }
 }
