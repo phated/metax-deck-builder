@@ -35,7 +35,8 @@ type alias Filters =
     }
 
 type alias Model =
-    { location : Maybe Route
+    { locationTo : Maybe Route
+    , locationFrom : Maybe Route
     , cards : CardList
     , deck : Deck
     , card : Maybe String
@@ -144,19 +145,19 @@ update msg model =
         SetRoute route ->
             case route of
                 Just Route.Home ->
-                    ( { model | location = route }, Cmd.none )
+                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
 
                 Just Route.Deck ->
-                    ( { model | location = route }, Cmd.none )
+                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
 
                 Just (Route.Card cardId) ->
-                    ( { model | location = route, card = Just cardId }, Cmd.none )
+                    ( { model | locationFrom = model.locationTo, locationTo = route, card = Just cardId }, Cmd.none )
 
                 Just Route.Search ->
-                    ( { model | location = route }, Cmd.none )
+                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
 
                 Nothing ->
-                    ( { model | location = Just Route.Home }, Cmd.none )
+                    ( { model | locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
 
         NavigateTo pathname ->
             ( model, newUrl pathname )
@@ -249,7 +250,7 @@ navbarTop : Model -> Html Msg
 navbarTop model =
     nav [ class "navbar-top" ]
         [ logo "MetaX DB"
-        , getNavbarIcon model.location
+        , getNavbarIcon <| .locationTo model
         ]
 
 
@@ -619,9 +620,9 @@ deckListPane model =
         (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
 
 
-cardPane : Maybe String -> Model -> Html Msg
-cardPane cardId model =
-    case cardId of
+cardPane : Model -> Html Msg
+cardPane model =
+    case .card model of
         Just cardId ->
             let
                 card =
@@ -664,22 +665,76 @@ cardPane cardId model =
                 [ text "Click a card image to view" ]
 
 
-getClassList : Maybe Route -> List ( String, Bool )
-getClassList location =
-    case location of
-        Just Route.Home ->
-            [ ( "pane-container", True ) ]
+getClassList : (Maybe Route, Maybe Route) -> List ( String, Bool )
+getClassList (from, to) =
+    case (from, to) of
+        -- From Nothing
+        (Nothing, Just Route.Home) ->
+            [ ( "pane-container", True ), ( "to-home", True ) ]
 
-        Just Route.Deck ->
-            [ ( "pane-container", True ), ( "is-deck", True ) ]
+        (Nothing, Just Route.Deck) ->
+            [ ( "pane-container", True ), ( "to-deck", True ) ]
 
-        Just (Route.Card _) ->
-            [ ( "pane-container", True ), ( "is-card", True ) ]
+        (Nothing, Just (Route.Card _)) ->
+            [ ( "pane-container", True ), ( "to-card", True ) ]
 
-        Just Route.Search ->
-            [ ( "pane-container", True ), ( "is-search", True ) ]
+        (Nothing, Just Route.Search) ->
+            [ ( "pane-container", True ), ( "to-search", True ) ]
 
-        Nothing ->
+        -- From Home
+        (Just Route.Home, Just Route.Home) ->
+            [ ( "pane-container", True ), ("from-home", True), ( "to-home", True ) ]
+
+        (Just Route.Home, Just Route.Deck) ->
+            [ ( "pane-container", True ), ("from-home", True), ( "to-deck", True ) ]
+
+        (Just Route.Home, Just (Route.Card _)) ->
+            [ ( "pane-container", True ), ("from-home", True), ( "to-card", True ) ]
+
+        (Just Route.Home, Just Route.Search) ->
+            [ ( "pane-container", True ), ("from-home", True), ( "to-search", True ) ]
+
+        -- From Deck
+        (Just Route.Deck, Just Route.Home) ->
+            [ ( "pane-container", True ), ("from-deck", True), ( "to-home", True ) ]
+
+        (Just Route.Deck, Just Route.Deck) ->
+            [ ( "pane-container", True ), ("from-deck", True), ( "to-deck", True ) ]
+
+        (Just Route.Deck, Just (Route.Card _)) ->
+            [ ( "pane-container", True ), ("from-deck", True), ( "to-card", True ) ]
+
+        (Just Route.Deck, Just Route.Search) ->
+            [ ( "pane-container", True ), ("from-deck", True), ( "to-search", True ) ]
+
+        -- From Card
+        (Just (Route.Card _), Just Route.Home) ->
+            [ ( "pane-container", True ), ("from-card", True), ( "to-home", True ) ]
+
+        (Just (Route.Card _), Just Route.Deck) ->
+            [ ( "pane-container", True ), ("from-card", True), ( "to-deck", True ) ]
+
+        (Just (Route.Card _), Just (Route.Card _)) ->
+            [ ( "pane-container", True ), ("from-card", True), ( "to-card", True ) ]
+
+        (Just (Route.Card _), Just Route.Search) ->
+            [ ( "pane-container", True ), ("from-card", True), ( "to-search", True ) ]
+
+        -- From Search
+        (Just Route.Search, Just Route.Home) ->
+            [ ( "pane-container", True ), ("from-search", True), ( "to-home", True ) ]
+
+        (Just Route.Search, Just Route.Deck) ->
+            [ ( "pane-container", True ), ("from-search", True), ( "to-deck", True ) ]
+
+        (Just Route.Search, Just (Route.Card _)) ->
+            [ ( "pane-container", True ), ("from-search", True), ( "to-card", True ) ]
+
+        (Just Route.Search, Just Route.Search) ->
+            [ ( "pane-container", True ), ("from-search", True), ( "to-search", True ) ]
+
+        -- To Nothing
+        (_, Nothing) ->
             [ ( "pane-container", True ) ]
 
 
@@ -743,16 +798,13 @@ paneContainer : Model -> Html Msg
 paneContainer model =
     let
         containerClasses =
-            getClassList model.location
-
-        cardId =
-            getCardId model.location
+            getClassList <| (.locationFrom model, .locationTo model)
     in
         div [ classList containerClasses ]
             [ cardListPane model
             , deckListPane model
             , searchPane model
-            , cardPane cardId model
+            , cardPane model
             ]
 
 
@@ -772,16 +824,20 @@ subscriptions model =
 
 init : Value -> Location -> ( Model, Cmd Msg )
 init session location =
-    ( { location = fromLocation location
-      , cards = []
-      , card = Nothing
+    let
+        route = fromLocation location
+    in
+        ( { locationTo = route
+        , locationFrom = Nothing
+        , cards = []
+        , card = getCardId route
 
-      -- TODO: avoid loading a deck list before cards are loaded
-      , deck = Deck.decoder session
-      , filters =
-          { rarity = [Common, Uncommon, Rare, XRare, URare]
-          }
-      }
-    , Request.CardList.load
-        |> Http.send CardsLoaded
-    )
+        -- TODO: avoid loading a deck list before cards are loaded
+        , deck = Deck.decoder session
+        , filters =
+            { rarity = [Common, Uncommon, Rare, XRare, URare]
+            }
+        }
+        , Request.CardList.load
+            |> Http.send CardsLoaded
+        )

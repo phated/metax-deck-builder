@@ -78,23 +78,44 @@ body {
   padding: 50px 0;
   height: 100vh;
   box-sizing: border-box;
-  /* TODO: Need to track what page we are transitioning FROM to do proper animations */
+}
+
+/* Animations when transition from->to pages */
+/* TODO: Finish these */
+.from-home.to-deck,
+.from-deck.to-home {
   transition: transform .3s;
 }
 
-.is-deck {
+.from-home.to-search,
+.from-deck.to-search {
+  animation: .3s slideSearchIn;
+}
+.from-search.to-home,
+.from-search.to-deck {
+  animation: .3s slideSearchOut;
+}
+
+.from-home.to-card,
+.from-deck.to-card {
+  animation: .3s slideCardIn;
+}
+.from-card.to-home,
+.from-card.to-deck {
+  animation: .3s slideCardOut;
+}
+
+.to-deck {
   transform: translate3d(-100%, 0, 0);
 }
-.is-search {
-  animation: .3s slideSearch;
+.to-search {
   transform: translate3d(-200%, 0, 0);
 }
-.is-card {
-  animation: .3s slideCard;
+.to-card {
   transform: translate3d(-300%, 0, 0);
 }
 
-@keyframes slideSearch {
+@keyframes slideSearchIn {
   from {
     transform: translate3d(-200%, -100vh, 0);
   }
@@ -103,13 +124,31 @@ body {
     transform: translate3d(-200%, 0, 0);
   }
 }
-@keyframes slideCard {
+@keyframes slideSearchOut {
+  from {
+    transform: translate3d(-200%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-200%, -100vh, 0);
+  }
+}
+@keyframes slideCardIn {
   from {
     transform: translate3d(-300%, -100vh, 0);
   }
 
   to {
     transform: translate3d(-300%, 0, 0);
+  }
+}
+@keyframes slideCardOut {
+  from {
+    transform: translate3d(-300%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-300%, -100vh, 0);
   }
 }
 
@@ -397,7 +436,7 @@ body {
     margin: 0 auto; */
   }
 
-  .is-deck {
+  .to-deck {
     transform: none;
   }
 
