@@ -212,13 +212,15 @@ view model =
     applicationShell model
 
 
-linkTo : String -> List (Html Msg) -> Html Msg
+linkTo : String -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
 linkTo pathname =
-    a
-        [ class "navitem"
-        , href pathname
-        , onNavigate (NavigateTo pathname)
-        ]
+    let
+        linkAttrs =
+            [ href pathname
+            , onNavigate (NavigateTo pathname)
+            ]
+    in
+        (\attrs contents -> a (List.append attrs linkAttrs) contents)
 
 
 logo : String -> Html Msg
@@ -233,9 +235,8 @@ getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
         Just Route.Home ->
-            button [ class "navbar-button"
-                   , href ("/search")
-                   , onNavigate (NavigateTo "/search") ]
+            linkTo "/search"
+                [ class "navbar-button" ]
                 [ img [ src "/icons/ios-search-white.svg" ] [] ]
 
         Just Route.Deck ->
@@ -258,9 +259,8 @@ navbarTop model =
         , getNavbarIcon <| .locationTo model
         ]
 
-
-navbarBottom : Model -> Html Msg
-navbarBottom model =
+decklistText : Model -> Html Msg
+decklistText model =
     let
         deckContents =
             (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
@@ -268,10 +268,15 @@ navbarBottom model =
         deckSize =
             sum deckContents
     in
-        nav [ class "navbar-bottom" ]
-            [ linkTo "/" [ text "Cards" ]
-            , linkTo "/deck" [ text ("Deck (" ++ (toString deckSize) ++ ")") ]
-            ]
+        text ("Deck (" ++ (toString deckSize) ++ ")")
+
+
+navbarBottom : Model -> Html Msg
+navbarBottom model =
+    nav [ class "navbar-bottom" ]
+        [ linkTo "/" [ class "navitem" ] [ text "Cards" ]
+        , linkTo "/deck" [ class "navitem" ] [ decklistText model ]
+        ]
 
 -- TODO: These should go somewhere else
 filterRarity : CardRarity -> Card -> Bool
@@ -360,11 +365,8 @@ cardStats card =
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ a
-            [ class "card-thumbnail"
-            , href ("/card/" ++ card.id)
-            , onNavigate (NavigateTo ("/card/" ++ card.id))
-            ]
+        [ linkTo ("/card/" ++ card.id)
+            [ class "card-thumbnail" ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
             ]
         , cardText card
@@ -592,11 +594,8 @@ deckCardView card =
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ a
-                        [ class "card-title"
-                        , href ("/card/" ++ card.id)
-                        , onNavigate (NavigateTo ("/card/" ++ card.id))
-                        ]
+                    [ linkTo ("/card/" ++ card.id)
+                        [ class "card-title" ]
                         [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
                         , text ("(" ++ card.id ++ ") ")
                         , text card.title

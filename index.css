@@ -380,6 +380,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+  display: flex;
 }
 .navbar-button img {
   padding: 5px 10px;
