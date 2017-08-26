@@ -39,11 +39,15 @@
 		xhr.send();
 	}
 
-	var app = Elm.Main.fullscreen(localStorage.session || null);
+	var app = Elm.Main.fullscreen();
 
 	app.ports.storeSession.subscribe(function(session) {
 		localStorage.session = session;
 	});
+
+	app.ports.loadSession.subscribe(function(deckId) {
+		app.ports.onSessionLoaded.send(localStorage.session)
+	})
 
 	var characterKeys = [
 		{ quantity: ' IN DECKRow1', title: 'Character Title - Subtitle_1' },

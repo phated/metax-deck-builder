@@ -7,7 +7,6 @@ import Html.Events exposing (onClick, onCheck)
 import Navigation exposing (newUrl, Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
-import Json.Decode exposing (Value)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..), BattleType(..))
@@ -19,11 +18,12 @@ import Request.CardList
 import Util exposing (onNavigate)
 import Compare exposing (concat, by, Comparator)
 import Route exposing (fromLocation, Route)
+import Ports exposing (onSessionLoaded, loadSession)
 
 
-main : Program Value Model Msg
+main : Program Never Model Msg
 main =
-    Navigation.programWithFlags (fromLocation >> SetRoute)
+    Navigation.program (fromLocation >> SetRoute)
         { init = init
         , view = view
         , update = update
@@ -54,6 +54,7 @@ type Msg
     -- TODO: differentiate between filter types
     | AddFilter CardRarity
     | RemoveFilter CardRarity
+    | LoadDeck Deck
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -162,8 +163,12 @@ update msg model =
         NavigateTo pathname ->
             ( model, newUrl pathname )
 
+        LoadDeck deck ->
+            ( { model | deck = deck }, Cmd.none )
+
         CardsLoaded (Ok cards) ->
-            ( { model | cards = (List.sortWith cardListSort cards) }, Cmd.none )
+            -- TODO: Deck ID
+            ( { model | cards = (List.sortWith cardListSort cards) }, loadSession "")
 
         CardsLoaded (Err err) ->
             let
@@ -819,11 +824,11 @@ applicationShell model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.map LoadDeck (onSessionLoaded Deck.decoder)
 
 
-init : Value -> Location -> ( Model, Cmd Msg )
-init session location =
+init : Location -> ( Model, Cmd Msg )
+init location =
     let
         route = fromLocation location
     in
@@ -831,9 +836,7 @@ init session location =
         , locationFrom = Nothing
         , cards = []
         , card = getCardId route
-
-        -- TODO: avoid loading a deck list before cards are loaded
-        , deck = Deck.decoder session
+        , deck = Dict.empty
         , filters =
             { rarity = [Common, Uncommon, Rare, XRare, URare]
             }
