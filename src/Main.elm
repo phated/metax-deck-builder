@@ -636,11 +636,11 @@ deckListPane model =
         , class "pane column-wrapper"
         ]
         -- TODO: use |> operator
-        [ deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
-        , div [ class "column-footer" ]
+        [ div [ class "column-footer" ]
               [ div [ class "column-label" ] [ decklistText model ]
               , downloadButton
               ]
+        , deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
         ]
 
 cardPane : Model -> Html Msg
