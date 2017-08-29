@@ -161,40 +161,9 @@ body {
   box-sizing: border-box;
 }
 
-.column-wrapper {
-  position: relative;
-  padding: 0;
-}
-
-.column-contents {
-  padding: 0 8px;
-  margin-bottom: 50px;
-}
-
-/* TODO: a lot of these styles are copied from navitem */
-/* This only shows on desktop */
+/* All other styles are defined only in desktop mode */
 .column-footer {
   display: none;
-  position: -webkit-sticky;
-  position: sticky;
-  left: 0;
-  right: 0;
-  /* Super hacky way to force it to the bottom when list is smaller */
-  top: calc(100vh - 100px);
-  height: 50px;
-  margin-top: -50px;
-  background: #303030;
-  color: #fff;
-  font-size: 20px;
-  z-index: 10;
-}
-
-.column-footer > * {
-  margin: auto;
-}
-.column-label {
-  flex-grow: 1;
-  text-align: center;
 }
 
 #card-pane {
@@ -511,10 +480,43 @@ body {
     display: block;
   }
 
-  /* Show the deck text on desktop */
+  /* Turn the deck into a column with a bunch of hacky stuff to avoid position: sticky */
+  .column-wrapper {
+    position: relative;
+    padding: 0;
+    /* Hide the contents to position footer absolutely */
+    overflow: hidden;
+  }
+
+  .column-contents {
+    /* Needed to scroll properly */
+    box-sizing: border-box;
+    height: 100%;
+    padding: 0 8px 50px;
+    overflow-x: auto;
+  }
+
+  /* TODO: a lot of these styles are copied from navitem */
+  /* This only shows on desktop */
   .column-footer {
-    /* Needs to be flex */
     display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 50px;
+    background: #303030;
+    color: #fff;
+    font-size: 20px;
+    z-index: 10;
+  }
+
+  .column-footer > * {
+    margin: auto;
+  }
+  .column-label {
+    flex-grow: 1;
+    text-align: center;
   }
 
   /* Hide the search button on desktop */
