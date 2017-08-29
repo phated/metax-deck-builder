@@ -235,6 +235,11 @@ logo title =
         ]
 
 
+downloadButton : Html Msg
+downloadButton =
+    button [ class "navbar-button", onClick ExportDeck ]
+           [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+
 getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
@@ -244,8 +249,7 @@ getNavbarIcon location =
                 [ img [ src "/icons/ios-search-white.svg" ] [] ]
 
         Just Route.Deck ->
-            button [ class "navbar-button", onClick ExportDeck ]
-                [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+            downloadButton
 
         Just (Route.Card _) ->
             text ""
@@ -582,17 +586,18 @@ groupTypes ( card, count ) result =
             result
 
 
-deckSectionView : List ( Maybe Card, Int ) -> List (Html Msg)
+deckSectionView : List ( Maybe Card, Int ) -> Html Msg
 deckSectionView cards =
     let
         rows =
             List.foldl groupTypes (DeckGroups [] [] []) cards
     in
-        List.concat
-            [ charactersView rows.characters
-            , eventsView rows.events
-            , battleCardView rows.battle
-            ]
+        div [ class "column-contents" ]
+            (List.concat
+                [ charactersView rows.characters
+                , eventsView rows.events
+                , battleCardView rows.battle
+                ])
 
 
 deckCardView : ( Maybe Card, Int ) -> Html Msg
@@ -628,11 +633,15 @@ deckListPane : Model -> Html Msg
 deckListPane model =
     div
         [ id "deck-list-pane"
-        , class "pane"
+        , class "pane column-wrapper"
         ]
         -- TODO: use |> operator
-        (deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck)))
-
+        [ deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
+        , div [ class "column-footer" ]
+              [ div [ class "column-label" ] [ decklistText model ]
+              , downloadButton
+              ]
+        ]
 
 cardPane : Model -> Html Msg
 cardPane model =
