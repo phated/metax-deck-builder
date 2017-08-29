@@ -30,9 +30,11 @@ main =
         , subscriptions = subscriptions
         }
 
+
 type alias Filters =
     { rarity : List CardRarity
     }
+
 
 type alias Model =
     { locationTo : Maybe Route
@@ -51,7 +53,7 @@ type Msg
     | Decrement String
     | Increment String
     | ExportDeck
-    -- TODO: differentiate between filter types
+      -- TODO: differentiate between filter types
     | AddFilter CardRarity
     | RemoveFilter CardRarity
     | LoadDeck Deck
@@ -168,7 +170,7 @@ update msg model =
 
         CardsLoaded (Ok cards) ->
             -- TODO: Deck ID
-            ( { model | cards = (List.sortWith cardListSort cards) }, loadSession "")
+            ( { model | cards = (List.sortWith cardListSort cards) }, loadSession "" )
 
         CardsLoaded (Err err) ->
             let
@@ -196,13 +198,15 @@ update msg model =
 
         AddFilter rarity ->
             let
-                updatedRarity = rarity :: model.filters.rarity
+                updatedRarity =
+                    rarity :: model.filters.rarity
             in
                 ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
 
         RemoveFilter rarity ->
             let
-                updatedRarity = List.filter ((/=) rarity) model.filters.rarity
+                updatedRarity =
+                    List.filter ((/=) rarity) model.filters.rarity
             in
                 ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
 
@@ -252,12 +256,14 @@ getNavbarIcon location =
         Nothing ->
             text ""
 
+
 navbarTop : Model -> Html Msg
 navbarTop model =
     nav [ class "navbar-top" ]
         [ logo "MetaX DB"
         , getNavbarIcon <| .locationTo model
         ]
+
 
 decklistText : Model -> Html Msg
 decklistText model =
@@ -278,7 +284,11 @@ navbarBottom model =
         , linkTo "/deck" [ class "navitem" ] [ decklistText model ]
         ]
 
+
+
 -- TODO: These should go somewhere else
+
+
 filterRarity : CardRarity -> Card -> Bool
 filterRarity rarity card =
     card.rarity == rarity
@@ -669,76 +679,76 @@ cardPane model =
                 [ text "Click a card image to view" ]
 
 
-getClassList : (Maybe Route, Maybe Route) -> List ( String, Bool )
-getClassList (from, to) =
-    case (from, to) of
+getClassList : ( Maybe Route, Maybe Route ) -> List ( String, Bool )
+getClassList ( from, to ) =
+    case ( from, to ) of
         -- From Nothing
-        (Nothing, Just Route.Home) ->
+        ( Nothing, Just Route.Home ) ->
             [ ( "pane-container", True ), ( "to-home", True ) ]
 
-        (Nothing, Just Route.Deck) ->
+        ( Nothing, Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "to-deck", True ) ]
 
-        (Nothing, Just (Route.Card _)) ->
+        ( Nothing, Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "to-card", True ) ]
 
-        (Nothing, Just Route.Search) ->
+        ( Nothing, Just Route.Search ) ->
             [ ( "pane-container", True ), ( "to-search", True ) ]
 
         -- From Home
-        (Just Route.Home, Just Route.Home) ->
-            [ ( "pane-container", True ), ("from-home", True), ( "to-home", True ) ]
+        ( Just Route.Home, Just Route.Home ) ->
+            [ ( "pane-container", True ), ( "from-home", True ), ( "to-home", True ) ]
 
-        (Just Route.Home, Just Route.Deck) ->
-            [ ( "pane-container", True ), ("from-home", True), ( "to-deck", True ) ]
+        ( Just Route.Home, Just Route.Deck ) ->
+            [ ( "pane-container", True ), ( "from-home", True ), ( "to-deck", True ) ]
 
-        (Just Route.Home, Just (Route.Card _)) ->
-            [ ( "pane-container", True ), ("from-home", True), ( "to-card", True ) ]
+        ( Just Route.Home, Just (Route.Card _) ) ->
+            [ ( "pane-container", True ), ( "from-home", True ), ( "to-card", True ) ]
 
-        (Just Route.Home, Just Route.Search) ->
-            [ ( "pane-container", True ), ("from-home", True), ( "to-search", True ) ]
+        ( Just Route.Home, Just Route.Search ) ->
+            [ ( "pane-container", True ), ( "from-home", True ), ( "to-search", True ) ]
 
         -- From Deck
-        (Just Route.Deck, Just Route.Home) ->
-            [ ( "pane-container", True ), ("from-deck", True), ( "to-home", True ) ]
+        ( Just Route.Deck, Just Route.Home ) ->
+            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-home", True ) ]
 
-        (Just Route.Deck, Just Route.Deck) ->
-            [ ( "pane-container", True ), ("from-deck", True), ( "to-deck", True ) ]
+        ( Just Route.Deck, Just Route.Deck ) ->
+            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-deck", True ) ]
 
-        (Just Route.Deck, Just (Route.Card _)) ->
-            [ ( "pane-container", True ), ("from-deck", True), ( "to-card", True ) ]
+        ( Just Route.Deck, Just (Route.Card _) ) ->
+            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-card", True ) ]
 
-        (Just Route.Deck, Just Route.Search) ->
-            [ ( "pane-container", True ), ("from-deck", True), ( "to-search", True ) ]
+        ( Just Route.Deck, Just Route.Search ) ->
+            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-search", True ) ]
 
         -- From Card
-        (Just (Route.Card _), Just Route.Home) ->
-            [ ( "pane-container", True ), ("from-card", True), ( "to-home", True ) ]
+        ( Just (Route.Card _), Just Route.Home ) ->
+            [ ( "pane-container", True ), ( "from-card", True ), ( "to-home", True ) ]
 
-        (Just (Route.Card _), Just Route.Deck) ->
-            [ ( "pane-container", True ), ("from-card", True), ( "to-deck", True ) ]
+        ( Just (Route.Card _), Just Route.Deck ) ->
+            [ ( "pane-container", True ), ( "from-card", True ), ( "to-deck", True ) ]
 
-        (Just (Route.Card _), Just (Route.Card _)) ->
-            [ ( "pane-container", True ), ("from-card", True), ( "to-card", True ) ]
+        ( Just (Route.Card _), Just (Route.Card _) ) ->
+            [ ( "pane-container", True ), ( "from-card", True ), ( "to-card", True ) ]
 
-        (Just (Route.Card _), Just Route.Search) ->
-            [ ( "pane-container", True ), ("from-card", True), ( "to-search", True ) ]
+        ( Just (Route.Card _), Just Route.Search ) ->
+            [ ( "pane-container", True ), ( "from-card", True ), ( "to-search", True ) ]
 
         -- From Search
-        (Just Route.Search, Just Route.Home) ->
-            [ ( "pane-container", True ), ("from-search", True), ( "to-home", True ) ]
+        ( Just Route.Search, Just Route.Home ) ->
+            [ ( "pane-container", True ), ( "from-search", True ), ( "to-home", True ) ]
 
-        (Just Route.Search, Just Route.Deck) ->
-            [ ( "pane-container", True ), ("from-search", True), ( "to-deck", True ) ]
+        ( Just Route.Search, Just Route.Deck ) ->
+            [ ( "pane-container", True ), ( "from-search", True ), ( "to-deck", True ) ]
 
-        (Just Route.Search, Just (Route.Card _)) ->
-            [ ( "pane-container", True ), ("from-search", True), ( "to-card", True ) ]
+        ( Just Route.Search, Just (Route.Card _) ) ->
+            [ ( "pane-container", True ), ( "from-search", True ), ( "to-card", True ) ]
 
-        (Just Route.Search, Just Route.Search) ->
-            [ ( "pane-container", True ), ("from-search", True), ( "to-search", True ) ]
+        ( Just Route.Search, Just Route.Search ) ->
+            [ ( "pane-container", True ), ( "from-search", True ), ( "to-search", True ) ]
 
         -- To Nothing
-        (_, Nothing) ->
+        ( _, Nothing ) ->
             [ ( "pane-container", True ) ]
 
 
@@ -763,14 +773,17 @@ getCardId location =
 
 updateFilter : CardRarity -> Bool -> Msg
 updateFilter rarity isChecked =
-    if isChecked then AddFilter rarity
-    else RemoveFilter rarity
+    if isChecked then
+        AddFilter rarity
+    else
+        RemoveFilter rarity
 
 
 checkbox : String -> CardRarity -> List CardRarity -> Html Msg
 checkbox label_ rarity rarityFilters =
     let
-        isChecked = List.member rarity rarityFilters
+        isChecked =
+            List.member rarity rarityFilters
     in
         label [ class "checkbox" ]
             [ input [ type_ "checkbox", checked isChecked, onCheck (updateFilter rarity) ] []
@@ -780,10 +793,11 @@ checkbox label_ rarity rarityFilters =
 
 searchPane : Model -> Html Msg
 searchPane model =
-    div [ id "search-pane"
+    div
+        [ id "search-pane"
         , class "pane"
         ]
-        [ div [ class "list-item-header"] [ text "Rarity" ]
+        [ div [ class "list-item-header" ] [ text "Rarity" ]
         , checkbox "Common" Common model.filters.rarity
         , checkbox "Uncommon" Uncommon model.filters.rarity
         , checkbox "Rare" Rare model.filters.rarity
@@ -791,9 +805,12 @@ searchPane model =
         , checkbox "UR" URare model.filters.rarity
         , checkbox "Promo" Promo model.filters.rarity
         , checkbox "Starter" Starter model.filters.rarity
-        , button [ class "search-button"
-                 , href ("/")
-                 , onNavigate (NavigateTo "/")] [ text "Search" ]
+        , button
+            [ class "search-button"
+            , href ("/")
+            , onNavigate (NavigateTo "/")
+            ]
+            [ text "Search" ]
         , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
         ]
 
@@ -802,7 +819,7 @@ paneContainer : Model -> Html Msg
 paneContainer model =
     let
         containerClasses =
-            getClassList <| (.locationFrom model, .locationTo model)
+            getClassList <| ( .locationFrom model, .locationTo model )
     in
         div [ classList containerClasses ]
             [ cardListPane model
@@ -829,17 +846,18 @@ subscriptions model =
 init : Location -> ( Model, Cmd Msg )
 init location =
     let
-        route = fromLocation location
+        route =
+            fromLocation location
     in
         ( { locationTo = route
-        , locationFrom = Nothing
-        , cards = []
-        , card = getCardId route
-        , deck = Dict.empty
-        , filters =
-            { rarity = [Common, Uncommon, Rare, XRare, URare]
-            }
-        }
+          , locationFrom = Nothing
+          , cards = []
+          , card = getCardId route
+          , deck = Dict.empty
+          , filters =
+                { rarity = [ Common, Uncommon, Rare, XRare, URare ]
+                }
+          }
         , Request.CardList.load
             |> Http.send CardsLoaded
         )
