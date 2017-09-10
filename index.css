@@ -524,3 +524,114 @@ body {
     display: none;
   }
 }
+
+.search-box {
+  -webkit-appearance: textfield;
+
+  margin: 10px 0;
+  font-size: 16px;
+  padding: 4px 8px;
+  width: 100%;
+  border-radius: 5px;
+  border-color: #303030;
+  outline: none;
+}
+
+.help-text {
+  font-size: .9em;
+  margin-bottom: 10px;
+}
+
+.option-container {
+  margin-right: 15px;
+  /* animation: .3s slideOptionsOut; */
+}
+
+.option-container.is-open {
+  margin-right: 0;
+  margin-left: 15px;
+}
+
+.option-title {
+  height: 30px;
+
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+
+  position: relative;
+  cursor: pointer;
+}
+
+.option-title {
+  border-radius: 5px 0 0 5px;
+
+  color: #303030;
+  background-color: #d8d8d8;
+}
+
+.is-open .option-title {
+  border-radius: 0 5px 5px 0;
+
+  color: #d8d8d8;
+  background-color: #303030;
+}
+
+.option-title:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  height: 0;
+  width: 0;
+}
+
+.option-title:after {
+  left: 100%;
+
+  border: 15px solid #d8d8d8;
+  border-right: 0;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.is-open .option-title:after {
+  right: 100%;
+  left: auto;
+
+  border: 15px solid #303030;
+  border-left: 0;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.option-body {
+  display: none;
+}
+
+.is-open .option-body {
+  display: block;
+}
+
+.is-open {
+  animation: .3s slideOptionsIn;
+}
+@keyframes slideOptionsIn {
+  from {
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slideOptionsOut {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}

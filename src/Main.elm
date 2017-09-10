@@ -2,7 +2,7 @@ module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
 import Html exposing (nav, div, img, text, button, a, span, label, input, Html)
-import Html.Attributes exposing (href, class, classList, id, src, disabled, type_, checked)
+import Html.Attributes exposing (href, class, classList, id, src, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Navigation exposing (newUrl, Location)
 import Dict exposing (Dict)
@@ -31,18 +31,15 @@ main =
         }
 
 
-type alias Filters =
-    { rarity : List CardRarity
-    }
-
-
 type alias Model =
     { locationTo : Maybe Route
     , locationFrom : Maybe Route
     , cards : CardList
     , deck : Deck
     , card : Maybe String
-    , filters : Filters
+    , filterRarity : List CardRarity
+    , filterType : List CardType
+    , rarityOpen : Bool
     }
 
 
@@ -54,9 +51,12 @@ type Msg
     | Increment String
     | ExportDeck
       -- TODO: differentiate between filter types
-    | AddFilter CardRarity
-    | RemoveFilter CardRarity
+    | AddRarityFilter CardRarity
+    | RemoveRarityFilter CardRarity
+    | AddTypeFilter CardType
+    | RemoveTypeFilter CardType
     | LoadDeck Deck
+    | ToggleOpenRarity
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -196,19 +196,36 @@ update msg model =
         ExportDeck ->
             ( model, Request.Deck.export model.cards model.deck )
 
-        AddFilter rarity ->
+        AddRarityFilter rarity ->
             let
                 updatedRarity =
-                    rarity :: model.filters.rarity
+                    rarity :: model.filterRarity
             in
-                ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
+                ( { model | filterRarity = updatedRarity }, Cmd.none )
 
-        RemoveFilter rarity ->
+        RemoveRarityFilter rarity ->
             let
                 updatedRarity =
-                    List.filter ((/=) rarity) model.filters.rarity
+                    List.filter ((/=) rarity) model.filterRarity
             in
-                ( { model | filters = { rarity = updatedRarity } }, Cmd.none )
+                ( { model | filterRarity = updatedRarity }, Cmd.none )
+
+        AddTypeFilter cardType ->
+            let
+                updatedType =
+                    cardType :: model.filterType
+            in
+                ( { model | filterType = updatedType }, Cmd.none )
+
+        RemoveTypeFilter cardType ->
+            let
+                updatedType =
+                    List.filter ((/=) cardType) model.filterType
+            in
+                ( { model | filterType = updatedType }, Cmd.none )
+
+        ToggleOpenRarity ->
+            ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -297,10 +314,24 @@ filterRarity : CardRarity -> Card -> Bool
 filterRarity rarity card =
     card.rarity == rarity
 
+filterType : CardType -> Card -> Bool
+filterType cardType card =
+    card.card_type == cardType
 
-applyFilters : Filters -> Card -> Bool
+type alias Filters filters =
+    { filters | filterRarity : List CardRarity, filterType : List CardType }
+
+applyRarityFilters : List CardRarity -> Card -> Bool
+applyRarityFilters filters card =
+    List.any (\rarity -> filterRarity rarity card) filters
+
+applyTypeFilters : List CardType -> Card -> Bool
+applyTypeFilters filters card =
+    List.any (\cardType -> filterType cardType card) filters
+
+applyFilters : Filters filters -> Card -> Bool
 applyFilters filters card =
-    List.any (\rarity -> filterRarity rarity card) filters.rarity
+     (applyRarityFilters filters.filterRarity card) && (applyTypeFilters filters.filterType card)
 
 
 cardListPane : Model -> Html Msg
@@ -309,7 +340,7 @@ cardListPane model =
         [ id "card-list-pane"
         , class "pane"
         ]
-        (List.map (cardView model) (List.filter (applyFilters model.filters) model.cards))
+        (List.map (cardView model) (List.filter (applyFilters model) model.cards))
 
 
 stepper : ( Card, Int ) -> Html Msg
@@ -780,25 +811,53 @@ getCardId location =
             Nothing
 
 
-updateFilter : CardRarity -> Bool -> Msg
-updateFilter rarity isChecked =
+updateRarityFilter : CardRarity -> Bool -> Msg
+updateRarityFilter rarity isChecked =
     if isChecked then
-        AddFilter rarity
+        AddRarityFilter rarity
     else
-        RemoveFilter rarity
+        RemoveRarityFilter rarity
+
+updateTypeFilter : CardType -> Bool -> Msg
+updateTypeFilter cardType isChecked =
+    if isChecked then
+        AddTypeFilter cardType
+    else
+        RemoveTypeFilter cardType
 
 
-checkbox : String -> CardRarity -> List CardRarity -> Html Msg
-checkbox label_ rarity rarityFilters =
-    let
-        isChecked =
-            List.member rarity rarityFilters
-    in
-        label [ class "checkbox" ]
-            [ input [ type_ "checkbox", checked isChecked, onCheck (updateFilter rarity) ] []
-            , text label_
-            ]
+checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
+checkbox label_ isChecked msg =
+    label [ class "checkbox" ]
+        [ input [ type_ "checkbox", checked isChecked, onCheck msg ] []
+        , text label_
+        ]
 
+rarityToString : CardRarity -> String
+rarityToString rarity =
+    case rarity of
+        Common ->
+            "C"
+        Uncommon ->
+            "UC"
+        Rare ->
+            "R"
+        XRare ->
+            "XR"
+        URare ->
+            "UR"
+        Starter ->
+            "S"
+        Promo ->
+            "P"
+        -- TODO: Blah! Remove "Unknown"
+        _ ->
+            ""
+
+buildQuery : Model -> String
+buildQuery model =
+    if List.length model.filterRarity == 0 then ""
+    else (++) "rarity:" (String.join "," <| List.map rarityToString model.filterRarity)
 
 searchPane : Model -> Html Msg
 searchPane model =
@@ -806,21 +865,62 @@ searchPane model =
         [ id "search-pane"
         , class "pane"
         ]
-        [ div [ class "list-item-header" ] [ text "Rarity" ]
-        , checkbox "Common" Common model.filters.rarity
-        , checkbox "Uncommon" Uncommon model.filters.rarity
-        , checkbox "Rare" Rare model.filters.rarity
-        , checkbox "XR" XRare model.filters.rarity
-        , checkbox "UR" URare model.filters.rarity
-        , checkbox "Promo" Promo model.filters.rarity
-        , checkbox "Starter" Starter model.filters.rarity
+        [ input [ type_ "search", placeholder "Search", class "search-box", value (buildQuery model) ] []
+        , div [ class "help-text" ] [ text "Need help?" ]
+        -- TODO: maybe a button?
+        -- , div [ class "signpost" ] [ text "Card Type" ]
+        -- , div [ class "signpost" ] [ text "Rank" ]
+        , div [ classList [("option-container", True), ("is-open", model.rarityOpen)] ]
+            [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]
+            , div [ class "option-body" ]
+                [ checkbox "Common" (List.member Common model.filterRarity) (updateRarityFilter Common)
+                , checkbox "Uncommon" (List.member Uncommon model.filterRarity) (updateRarityFilter Uncommon)
+                , checkbox "Rare" (List.member Rare model.filterRarity) (updateRarityFilter Rare)
+                , checkbox "XR" (List.member XRare model.filterRarity) (updateRarityFilter XRare)
+                , checkbox "UR" (List.member URare model.filterRarity) (updateRarityFilter URare)
+                , checkbox "Promo" (List.member Promo model.filterRarity) (updateRarityFilter Promo)
+                , checkbox "Starter" (List.member Starter model.filterRarity) (updateRarityFilter Starter)
+                ]
+            ]
+        --     div [ class "list-item-header" ] [ text "Rarity" ]
+        -- , div [ class "list-item-header" ] [ text "Rarity" ]
+        -- , checkbox "Character" (List.member Character model.filterType) (updateTypeFilter Character)
+        -- , checkbox "Event" (List.member Event model.filterType) (updateTypeFilter Event)
+        -- , checkbox "Battle - Strength 1" (List.member (Battle <| Strength 1) model.filterType) (updateTypeFilter (Battle <| Strength 1))
+        -- , checkbox "Battle - Strength 2" (List.member (Battle <| Strength 2) model.filterType) (updateTypeFilter (Battle <| Strength 2))
+        -- , checkbox "Battle - Strength 3" (List.member (Battle <| Strength 3) model.filterType) (updateTypeFilter (Battle <| Strength 3))
+        -- , checkbox "Battle - Strength 4" (List.member (Battle <| Strength 4) model.filterType) (updateTypeFilter (Battle <| Strength 4))
+        -- , checkbox "Battle - Strength 5" (List.member (Battle <| Strength 5) model.filterType) (updateTypeFilter (Battle <| Strength 5))
+        -- , checkbox "Battle - Strength 6" (List.member (Battle <| Strength 6) model.filterType) (updateTypeFilter (Battle <| Strength 6))
+        -- , checkbox "Battle - Strength 7" (List.member (Battle <| Strength 7) model.filterType) (updateTypeFilter (Battle <| Strength 7))
+        -- , checkbox "Battle - Int 1" (List.member (Battle <| Intelligence 1) model.filterType) (updateTypeFilter (Battle <| Intelligence 1))
+        -- , checkbox "Battle - Int 2" (List.member (Battle <| Intelligence 2) model.filterType) (updateTypeFilter (Battle <| Intelligence 2))
+        -- , checkbox "Battle - Int 3" (List.member (Battle <| Intelligence 3) model.filterType) (updateTypeFilter (Battle <| Intelligence 3))
+        -- , checkbox "Battle - Int 4" (List.member (Battle <| Intelligence 4) model.filterType) (updateTypeFilter (Battle <| Intelligence 4))
+        -- , checkbox "Battle - Int 5" (List.member (Battle <| Intelligence 5) model.filterType) (updateTypeFilter (Battle <| Intelligence 5))
+        -- , checkbox "Battle - Int 6" (List.member (Battle <| Intelligence 6) model.filterType) (updateTypeFilter (Battle <| Intelligence 6))
+        -- , checkbox "Battle - Int 7" (List.member (Battle <| Intelligence 7) model.filterType) (updateTypeFilter (Battle <| Intelligence 7))
+        -- , checkbox "Battle - Special 1" (List.member (Battle <| Special 1) model.filterType) (updateTypeFilter (Battle <| Special 1))
+        -- , checkbox "Battle - Special 2" (List.member (Battle <| Special 2) model.filterType) (updateTypeFilter (Battle <| Special 2))
+        -- , checkbox "Battle - Special 3" (List.member (Battle <| Special 3) model.filterType) (updateTypeFilter (Battle <| Special 3))
+        -- , checkbox "Battle - Special 4" (List.member (Battle <| Special 4) model.filterType) (updateTypeFilter (Battle <| Special 4))
+        -- , checkbox "Battle - Special 5" (List.member (Battle <| Special 5) model.filterType) (updateTypeFilter (Battle <| Special 5))
+        -- , checkbox "Battle - Special 6" (List.member (Battle <| Special 6) model.filterType) (updateTypeFilter (Battle <| Special 6))
+        -- , checkbox "Battle - Special 7" (List.member (Battle <| Special 7) model.filterType) (updateTypeFilter (Battle <| Special 7))
+        -- , checkbox "Battle - Multi 1" (List.member (Battle <| Multi 1) model.filterType) (updateTypeFilter (Battle <| Multi 1))
+        -- , checkbox "Battle - Multi 2" (List.member (Battle <| Multi 2) model.filterType) (updateTypeFilter (Battle <| Multi 2))
+        -- , checkbox "Battle - Multi 3" (List.member (Battle <| Multi 3) model.filterType) (updateTypeFilter (Battle <| Multi 3))
+        -- , checkbox "Battle - Multi 4" (List.member (Battle <| Multi 4) model.filterType) (updateTypeFilter (Battle <| Multi 4))
+        -- , checkbox "Battle - Multi 5" (List.member (Battle <| Multi 5) model.filterType) (updateTypeFilter (Battle <| Multi 5))
+        -- , checkbox "Battle - Multi 6" (List.member (Battle <| Multi 6) model.filterType) (updateTypeFilter (Battle <| Multi 6))
+        -- , checkbox "Battle - Multi 7" (List.member (Battle <| Multi 7) model.filterType) (updateTypeFilter (Battle <| Multi 7))
         , button
             [ class "search-button"
             , href ("/")
             , onNavigate (NavigateTo "/")
             ]
             [ text "Search" ]
-        , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
+        -- , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
         ]
 
 
@@ -863,9 +963,41 @@ init location =
           , cards = []
           , card = getCardId route
           , deck = Dict.empty
-          , filters =
-                { rarity = [ Common, Uncommon, Rare, XRare, URare ]
-                }
+          , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
+          , filterType =
+            [ -- TODO: This isn't flexible
+              Character
+            , Event
+            , Battle (Strength 1)
+            , Battle (Strength 2)
+            , Battle (Strength 3)
+            , Battle (Strength 4)
+            , Battle (Strength 5)
+            , Battle (Strength 6)
+            , Battle (Strength 7)
+            , Battle (Intelligence 1)
+            , Battle (Intelligence 2)
+            , Battle (Intelligence 3)
+            , Battle (Intelligence 4)
+            , Battle (Intelligence 5)
+            , Battle (Intelligence 6)
+            , Battle (Intelligence 7)
+            , Battle (Special 1)
+            , Battle (Special 2)
+            , Battle (Special 3)
+            , Battle (Special 4)
+            , Battle (Special 5)
+            , Battle (Special 6)
+            , Battle (Special 7)
+            , Battle (Multi 1)
+            , Battle (Multi 2)
+            , Battle (Multi 3)
+            , Battle (Multi 4)
+            , Battle (Multi 5)
+            , Battle (Multi 6)
+            , Battle (Multi 7)
+            ]
+          , rarityOpen = False
           }
         , Request.CardList.load
             |> Http.send CardsLoaded
