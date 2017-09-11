@@ -1,7 +1,8 @@
-module Data.CardRarity exposing (CardRarity(..), decoder)
+module Data.CardRarity exposing (CardRarity(..), decoder, stringToCardRarity, cardRarityToString)
 
 import Regex exposing (find, regex, Match, HowMany(AtMost))
-import Json.Decode exposing (string, map, field, Decoder)
+import Json.Decode exposing (string, andThen, Decoder)
+import Json.Decode.Extra exposing (fromResult)
 
 
 type CardRarity
@@ -12,51 +13,88 @@ type CardRarity
     | URare
     | Promo
     | Starter
-    | Unknown
 
 
 decoder : Decoder CardRarity
 decoder =
-    field "id" (map toRarity string)
+    string |> andThen (fromString >> fromResult)
 
+fromString : String -> Result String CardRarity
+fromString =
+    -- TODO: A lot of this can go away when a rarity column is added to the data
+    Result.fromMaybe "Invalid card rarity." << toRarity
 
 
 -- Utils
--- TODO: How can this be more type safe?
+stringToCardRarity : String -> Maybe CardRarity
+stringToCardRarity rarity =
+    case rarity of
+        "C" ->
+            Just Common
 
+        "U" ->
+            Just Uncommon
 
-matchToRarity : Match -> CardRarity
-matchToRarity match =
-    case match.submatches of
-        [ Just "C" ] ->
-            Common
+        "R" ->
+            Just Rare
 
-        [ Just "U" ] ->
-            Uncommon
+        "XR" ->
+            Just XRare
 
-        [ Just "R" ] ->
-            Rare
+        "UR" ->
+            Just URare
 
-        [ Just "XR" ] ->
-            XRare
+        "P" ->
+            Just Promo
 
-        [ Just "UR" ] ->
-            URare
-
-        [ Just "P" ] ->
-            Promo
-
-        [ Just "S" ] ->
-            Starter
-
-        [] ->
-            Unknown
+        "S" ->
+            Just Starter
 
         _ ->
-            Unknown
+            Nothing
 
 
-toRarity : String -> CardRarity
+cardRarityToString : CardRarity -> String
+cardRarityToString rarity =
+    case rarity of
+        Common ->
+            "C"
+
+        Uncommon ->
+            "U"
+
+        Rare ->
+            "R"
+
+        XRare ->
+            "XR"
+
+        URare ->
+            "UR"
+
+        Promo ->
+            "P"
+
+        Starter ->
+            "S"
+
+
+-- TODO: How can this be more type safe?
+
+matchToRarity : Match -> Maybe CardRarity
+matchToRarity match =
+    case match.submatches of
+        [ Just m ] ->
+            stringToCardRarity m
+
+        [] ->
+            Nothing
+
+        _ ->
+            Nothing
+
+
+toRarity : String -> Maybe CardRarity
 toRarity id =
     let
         match =
@@ -67,4 +105,4 @@ toRarity id =
                 matchToRarity m
 
             Nothing ->
-                Unknown
+                Nothing

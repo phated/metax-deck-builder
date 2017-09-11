@@ -9,9 +9,9 @@ import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
-import Data.CardType exposing (CardType(..), BattleType(..))
+import Data.CardType exposing (CardType(..))
 import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
-import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
+import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter), cardRarityToString)
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
@@ -50,7 +50,6 @@ type Msg
     | Decrement String
     | Increment String
     | ExportDeck
-      -- TODO: differentiate between filter types
     | AddRarityFilter CardRarity
     | RemoveRarityFilter CardRarity
     | AddTypeFilter CardType
@@ -107,6 +106,27 @@ notZero : String -> Int -> Bool
 notZero _ count =
     count /= 0
 
+battleTypeOrder : Card -> Int
+battleTypeOrder { card_type, strength, intelligence, special } =
+    -- That hackiness, tho
+    if card_type /= Battle then 0
+    else
+        case toBattleType strength intelligence special of
+            Just (Strength rank) ->
+                0 + rank
+
+            Just (Intelligence rank) ->
+                7 + rank
+
+            Just (Special rank) ->
+                14 + rank
+
+            Just (Multi rank) ->
+                21 + rank
+
+            Nothing ->
+                28
+
 
 typeOrder : CardType -> Int
 typeOrder cardType =
@@ -114,29 +134,17 @@ typeOrder cardType =
         Character ->
             1
 
-        Battle (Strength _) ->
+        Battle ->
             2
 
-        Battle (Intelligence _) ->
-            3
-
-        Battle (Special _) ->
-            4
-
-        Battle (Multi _) ->
-            5
-
         Event ->
-            6
-
-        Unknown ->
-            7
-
+            3
 
 cardListSort : Comparator Card
 cardListSort =
     concat
         [ by (typeOrder << .card_type)
+        , by battleTypeOrder
         , by .title
         , by (effectToString << .effect)
         ]
@@ -523,33 +531,78 @@ addToRank item list =
         Nothing ->
             Just [ item ]
 
+type BattleType
+    = Strength Int
+    | Intelligence Int
+    | Special Int
+    | Multi Int
+    -- | StrengthIntelligence Int
+    -- | StrengthSpecial Int
+    -- | IntelligenceSpecial Int
+    -- | StrengthIntelligenceSpecial Int
+
+toBattleType : Maybe Int -> Maybe Int -> Maybe Int -> Maybe BattleType
+toBattleType strength intelligence special =
+    case ( strength, intelligence, special ) of
+        ( Just strRank, Nothing, Nothing ) ->
+            Just (Strength strRank)
+
+        ( Nothing, Just intRank, Nothing ) ->
+            Just (Intelligence intRank)
+
+        ( Nothing, Nothing, Just spRank ) ->
+            Just (Special spRank)
+
+        ( Just multiRank, Just _, Nothing ) ->
+            -- TODO: there should probably be some more validation here
+            -- StrengthIntelligence multiRank
+            Just (Multi multiRank)
+
+        ( Just multiRank, Nothing, Just _ ) ->
+            -- TODO: there should probably be some more validation here
+            -- StrengthSpecial multiRank
+            Just (Multi multiRank)
+
+        ( Nothing, Just multiRank, Just _ ) ->
+            -- TODO: there should probably be some more validation here
+            -- IntelligenceSpecial multiRank
+            Just (Multi multiRank)
+
+        ( Just multiRank, Just _, Just _ ) ->
+            -- TODO: there should probably be some more validation here
+            -- StrengthIntelligenceSpecial multiRank
+            Just (Multi multiRank)
+
+        ( Nothing, Nothing, Nothing ) ->
+            Nothing
+
 
 groupBattleCards : ( Maybe Card, Int ) -> BattleCardGroups -> BattleCardGroups
 groupBattleCards ( card, count ) result =
     case card of
-        Just { card_type } ->
+        Just { card_type, strength, intelligence, special } ->
             case card_type of
-                Battle battleType ->
-                    case battleType of
-                        Strength rank ->
+                Battle ->
+                    case toBattleType strength intelligence special of
+                        Just (Strength rank) ->
                             { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
 
-                        Intelligence rank ->
+                        Just (Intelligence rank) ->
                             { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
 
-                        Special rank ->
+                        Just (Special rank) ->
                             { result | special = Dict.update rank (addToRank ( card, count )) result.special }
 
-                        Multi rank ->
+                        Just (Multi rank) ->
                             { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
+
+                        Nothing ->
+                            result
 
                 Character ->
                     result
 
                 Event ->
-                    result
-
-                Unknown ->
                     result
 
         Nothing ->
@@ -607,11 +660,8 @@ groupTypes ( card, count ) result =
                 Event ->
                     { result | events = ( card, count ) :: result.events }
 
-                Battle _ ->
+                Battle ->
                     { result | battle = ( card, count ) :: result.battle }
-
-                Unknown ->
-                    result
 
         Nothing ->
             result
@@ -833,31 +883,11 @@ checkbox label_ isChecked msg =
         , text label_
         ]
 
-rarityToString : CardRarity -> String
-rarityToString rarity =
-    case rarity of
-        Common ->
-            "C"
-        Uncommon ->
-            "UC"
-        Rare ->
-            "R"
-        XRare ->
-            "XR"
-        URare ->
-            "UR"
-        Starter ->
-            "S"
-        Promo ->
-            "P"
-        -- TODO: Blah! Remove "Unknown"
-        _ ->
-            ""
 
 buildQuery : Model -> String
 buildQuery model =
     if List.length model.filterRarity == 0 then ""
-    else (++) "rarity:" (String.join "," <| List.map rarityToString model.filterRarity)
+    else (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
 
 searchPane : Model -> Html Msg
 searchPane model =
@@ -968,34 +998,7 @@ init location =
             [ -- TODO: This isn't flexible
               Character
             , Event
-            , Battle (Strength 1)
-            , Battle (Strength 2)
-            , Battle (Strength 3)
-            , Battle (Strength 4)
-            , Battle (Strength 5)
-            , Battle (Strength 6)
-            , Battle (Strength 7)
-            , Battle (Intelligence 1)
-            , Battle (Intelligence 2)
-            , Battle (Intelligence 3)
-            , Battle (Intelligence 4)
-            , Battle (Intelligence 5)
-            , Battle (Intelligence 6)
-            , Battle (Intelligence 7)
-            , Battle (Special 1)
-            , Battle (Special 2)
-            , Battle (Special 3)
-            , Battle (Special 4)
-            , Battle (Special 5)
-            , Battle (Special 6)
-            , Battle (Special 7)
-            , Battle (Multi 1)
-            , Battle (Multi 2)
-            , Battle (Multi 3)
-            , Battle (Multi 4)
-            , Battle (Multi 5)
-            , Battle (Multi 6)
-            , Battle (Multi 7)
+            , Battle
             ]
           , rarityOpen = False
           }

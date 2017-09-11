@@ -1,6 +1,6 @@
 module Data.Card exposing (Card, decoder)
 
-import Json.Decode exposing (int, string, nullable, Decoder)
+import Json.Decode exposing (int, string, nullable, field, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom)
 import Data.CardType as CardType exposing (CardType)
 import Data.CardEffect as CardEffect exposing (CardEffect)
@@ -27,7 +27,7 @@ decoder =
     decode Card
         |> required "id" string
         |> required "title" string
-        |> custom CardType.decoder
+        |> custom (field "card_type" CardType.decoder)
         |> required "trait" string
         |> required "mp" int
         |> custom CardEffect.decoder
@@ -35,4 +35,5 @@ decoder =
         |> required "intelligence" (nullable int)
         |> required "special" (nullable int)
         |> required "image_url" string
-        |> custom CardRarity.decoder
+        -- TODO: Add a rarity field to the data
+        |> custom (field "id" CardRarity.decoder)
