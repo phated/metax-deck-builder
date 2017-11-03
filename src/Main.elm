@@ -39,8 +39,12 @@ type alias Model =
     , card : Maybe String
     , filterRarity : List CardRarity
     , filterType : List CardType
-    , rarityOpen : Bool
+    , isOpen : Maybe QueryOpen
     }
+
+type QueryOpen
+    = RarityPane
+    | TypePane
 
 
 type Msg
@@ -55,7 +59,7 @@ type Msg
     | AddTypeFilter CardType
     | RemoveTypeFilter CardType
     | LoadDeck Deck
-    | ToggleOpenRarity
+    | ToggleOpen QueryOpen
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -171,7 +175,8 @@ update msg model =
                     ( { model | locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
 
         NavigateTo pathname ->
-            ( model, newUrl pathname )
+            -- TODO: Probably not the best place to do this
+            ( { model | isOpen = Nothing }, newUrl pathname )
 
         LoadDeck deck ->
             ( { model | deck = deck }, Cmd.none )
@@ -232,9 +237,8 @@ update msg model =
             in
                 ( { model | filterType = updatedType }, Cmd.none )
 
-        ToggleOpenRarity ->
-            ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
-
+        ToggleOpen pane ->
+            ( { model | isOpen = Just pane }, Cmd.none )
 
 view : Model -> Html Msg
 view model =
@@ -889,19 +893,30 @@ buildQuery model =
     if List.length model.filterRarity == 0 then ""
     else (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
 
+getPaneClasses : Model -> List (String, Bool)
+getPaneClasses model =
+    case model.isOpen of
+        Just RarityPane ->
+            [("pane", True), ("rarity-open", True)]
+
+        Just TypePane ->
+            [("pane", True), ("type-open", True)]
+
+        Nothing ->
+            [ ("pane", True) ]
+
 searchPane : Model -> Html Msg
 searchPane model =
     div
         [ id "search-pane"
-        , class "pane"
+        , classList (getPaneClasses model)
         ]
         [ input [ type_ "search", placeholder "Search", class "search-box", value (buildQuery model) ] []
         , div [ class "help-text" ] [ text "Need help?" ]
         -- TODO: maybe a button?
-        -- , div [ class "signpost" ] [ text "Card Type" ]
         -- , div [ class "signpost" ] [ text "Rank" ]
-        , div [ classList [("option-container", True), ("is-open", model.rarityOpen)] ]
-            [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]
+        , div [ class "option-container rarity-pane" ]
+            [ div [ class "option-title", onClick (ToggleOpen RarityPane) ] [ text "Rarity" ]
             , div [ class "option-body" ]
                 [ checkbox "Common" (List.member Common model.filterRarity) (updateRarityFilter Common)
                 , checkbox "Uncommon" (List.member Uncommon model.filterRarity) (updateRarityFilter Uncommon)
@@ -912,45 +927,20 @@ searchPane model =
                 , checkbox "Starter" (List.member Starter model.filterRarity) (updateRarityFilter Starter)
                 ]
             ]
-        --     div [ class "list-item-header" ] [ text "Rarity" ]
-        -- , div [ class "list-item-header" ] [ text "Rarity" ]
-        -- , checkbox "Character" (List.member Character model.filterType) (updateTypeFilter Character)
-        -- , checkbox "Event" (List.member Event model.filterType) (updateTypeFilter Event)
-        -- , checkbox "Battle - Strength 1" (List.member (Battle <| Strength 1) model.filterType) (updateTypeFilter (Battle <| Strength 1))
-        -- , checkbox "Battle - Strength 2" (List.member (Battle <| Strength 2) model.filterType) (updateTypeFilter (Battle <| Strength 2))
-        -- , checkbox "Battle - Strength 3" (List.member (Battle <| Strength 3) model.filterType) (updateTypeFilter (Battle <| Strength 3))
-        -- , checkbox "Battle - Strength 4" (List.member (Battle <| Strength 4) model.filterType) (updateTypeFilter (Battle <| Strength 4))
-        -- , checkbox "Battle - Strength 5" (List.member (Battle <| Strength 5) model.filterType) (updateTypeFilter (Battle <| Strength 5))
-        -- , checkbox "Battle - Strength 6" (List.member (Battle <| Strength 6) model.filterType) (updateTypeFilter (Battle <| Strength 6))
-        -- , checkbox "Battle - Strength 7" (List.member (Battle <| Strength 7) model.filterType) (updateTypeFilter (Battle <| Strength 7))
-        -- , checkbox "Battle - Int 1" (List.member (Battle <| Intelligence 1) model.filterType) (updateTypeFilter (Battle <| Intelligence 1))
-        -- , checkbox "Battle - Int 2" (List.member (Battle <| Intelligence 2) model.filterType) (updateTypeFilter (Battle <| Intelligence 2))
-        -- , checkbox "Battle - Int 3" (List.member (Battle <| Intelligence 3) model.filterType) (updateTypeFilter (Battle <| Intelligence 3))
-        -- , checkbox "Battle - Int 4" (List.member (Battle <| Intelligence 4) model.filterType) (updateTypeFilter (Battle <| Intelligence 4))
-        -- , checkbox "Battle - Int 5" (List.member (Battle <| Intelligence 5) model.filterType) (updateTypeFilter (Battle <| Intelligence 5))
-        -- , checkbox "Battle - Int 6" (List.member (Battle <| Intelligence 6) model.filterType) (updateTypeFilter (Battle <| Intelligence 6))
-        -- , checkbox "Battle - Int 7" (List.member (Battle <| Intelligence 7) model.filterType) (updateTypeFilter (Battle <| Intelligence 7))
-        -- , checkbox "Battle - Special 1" (List.member (Battle <| Special 1) model.filterType) (updateTypeFilter (Battle <| Special 1))
-        -- , checkbox "Battle - Special 2" (List.member (Battle <| Special 2) model.filterType) (updateTypeFilter (Battle <| Special 2))
-        -- , checkbox "Battle - Special 3" (List.member (Battle <| Special 3) model.filterType) (updateTypeFilter (Battle <| Special 3))
-        -- , checkbox "Battle - Special 4" (List.member (Battle <| Special 4) model.filterType) (updateTypeFilter (Battle <| Special 4))
-        -- , checkbox "Battle - Special 5" (List.member (Battle <| Special 5) model.filterType) (updateTypeFilter (Battle <| Special 5))
-        -- , checkbox "Battle - Special 6" (List.member (Battle <| Special 6) model.filterType) (updateTypeFilter (Battle <| Special 6))
-        -- , checkbox "Battle - Special 7" (List.member (Battle <| Special 7) model.filterType) (updateTypeFilter (Battle <| Special 7))
-        -- , checkbox "Battle - Multi 1" (List.member (Battle <| Multi 1) model.filterType) (updateTypeFilter (Battle <| Multi 1))
-        -- , checkbox "Battle - Multi 2" (List.member (Battle <| Multi 2) model.filterType) (updateTypeFilter (Battle <| Multi 2))
-        -- , checkbox "Battle - Multi 3" (List.member (Battle <| Multi 3) model.filterType) (updateTypeFilter (Battle <| Multi 3))
-        -- , checkbox "Battle - Multi 4" (List.member (Battle <| Multi 4) model.filterType) (updateTypeFilter (Battle <| Multi 4))
-        -- , checkbox "Battle - Multi 5" (List.member (Battle <| Multi 5) model.filterType) (updateTypeFilter (Battle <| Multi 5))
-        -- , checkbox "Battle - Multi 6" (List.member (Battle <| Multi 6) model.filterType) (updateTypeFilter (Battle <| Multi 6))
-        -- , checkbox "Battle - Multi 7" (List.member (Battle <| Multi 7) model.filterType) (updateTypeFilter (Battle <| Multi 7))
+        , div [ class "option-container type-pane" ]
+            [ div [ class "option-title", onClick (ToggleOpen TypePane) ] [ text "Card Type" ]
+            , div [ class "option-body" ]
+                [ checkbox "Character" (List.member Character model.filterType) (updateTypeFilter Character)
+                , checkbox "Event" (List.member Event model.filterType) (updateTypeFilter Event)
+                , checkbox "Battle" (List.member Battle model.filterType) (updateTypeFilter Battle)
+                ]
+            ]
         , button
             [ class "search-button"
             , href ("/")
             , onNavigate (NavigateTo "/")
             ]
             [ text "Search" ]
-        -- , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
         ]
 
 
@@ -994,13 +984,8 @@ init location =
           , card = getCardId route
           , deck = Dict.empty
           , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
-          , filterType =
-            [ -- TODO: This isn't flexible
-              Character
-            , Event
-            , Battle
-            ]
-          , rarityOpen = False
+          , filterType = [ Character, Event, Battle ]
+          , isOpen = Nothing
           }
         , Request.CardList.load
             |> Http.send CardsLoaded
