@@ -227,6 +227,7 @@ body {
 }
 
 .card-thumbnail {
+  position: relative;
   border-radius: 3px;
   max-width: 100%;
   max-height: 100px;
@@ -234,8 +235,12 @@ body {
 }
 .card-full {
   width: 100%;
-  max-width: 500px;
+}
+
+.card-full-wrapper {
+  position: relative;
   margin-bottom: 10px;
+  max-width: 500px;
 }
 
 .card-text {
@@ -634,4 +639,23 @@ body {
   to {
     transform: translate3d(100%, 0, 0);
   }
+}
+
+.preview-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2px;
+  font-size: 14px;
+  color: #fff;
+  background: #0c7e43;
+  text-align: center;
+}
+.previewed-by {
+  bottom: 4px;
+  padding: 10px;
+}
+.previewed-by a {
+  color: #fff;
 }
