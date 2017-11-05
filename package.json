@@ -6,7 +6,8 @@
   "scripts": {
     "start": "elm-live ./src/Main.elm --output=elm.js --pushstate",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "from-csv": "./data/to-json.js > data/metax.normalized.json",
+    "update-data": "curl https://docs.google.com/spreadsheets/d/1Ia_Uv5fZC3TMMJKENNwabyA3bh4JkFsGTCST3tT9Grg/export?exportFormat=csv > data/metax-db.csv",
+    "from-csv": "npm run update-data && ./data/to-json.js > data/metax.normalized.json",
     "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes",
     "format": "elm-format src/"
   },

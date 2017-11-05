@@ -22,10 +22,11 @@ var conv = csv({
     strength: numberOrNull,
     intelligence: numberOrNull,
     special: numberOrNull,
-    field10: 'omit',
     image_url: function(item) {
       return item.replace('http://metaxdb.com', '');
-    }
+    },
+    preview_url: 'string',
+    previewer: 'string'
   }
 });
 
