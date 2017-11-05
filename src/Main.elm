@@ -414,6 +414,12 @@ cardStats card =
         , statView "special" card.special
         ]
 
+previewBanner : Card -> Html Msg
+previewBanner card =
+    if card.preview_url == ""
+        then text ""
+        else div [ class "preview-banner" ] [ text "Preview" ]
+
 
 cardDetails : Card -> Html Msg
 cardDetails card =
@@ -421,6 +427,7 @@ cardDetails card =
         [ linkTo ("/card/" ++ card.id)
             [ class "card-thumbnail" ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+            , previewBanner card
             ]
         , cardText card
         , cardStats card
@@ -724,6 +731,19 @@ deckListPane model =
         , deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
         ]
 
+previewedBy : Card -> Html Msg
+previewedBy card =
+    if card.preview_url == ""
+        then text ""
+        else div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href card.preview_url ] [ text card.previewer ]]
+
+largeImg : Card -> Html Msg
+largeImg card =
+    div [ class "card-full-wrapper" ]
+        [ img [ class "card-full", src card.image_url ] []
+        , previewedBy card
+        ]
+
 cardPane : Model -> Html Msg
 cardPane model =
     case .card model of
@@ -741,11 +761,7 @@ cardPane model =
                             [ id "card-pane"
                             , class "pane"
                             ]
-                            [ img
-                                [ class "card-full"
-                                , src card.image_url
-                                ]
-                                []
+                            [ largeImg card
                             , div [ class "card-details" ]
                                 [ cardText card
                                 , cardStats card

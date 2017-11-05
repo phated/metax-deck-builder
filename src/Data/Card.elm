@@ -18,6 +18,8 @@ type alias Card =
     , intelligence : Maybe Int
     , special : Maybe Int
     , image_url : String
+    , preview_url : String
+    , previewer : String
     , rarity : CardRarity
     }
 
@@ -35,5 +37,7 @@ decoder =
         |> required "intelligence" (nullable int)
         |> required "special" (nullable int)
         |> required "image_url" string
+        |> required "preview_url" string
+        |> required "previewer" string
         -- TODO: Add a rarity field to the data
         |> custom (field "id" CardRarity.decoder)
