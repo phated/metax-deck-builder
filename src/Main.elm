@@ -397,10 +397,17 @@ cardEffect effect =
     div [ class "card-effect" ] (effectToHtml effect)
 
 
+cardTrait : String -> String
+cardTrait trait =
+    if trait == ""
+        then ""
+        else  " (" ++ trait ++ ")"
+
 cardText : Card -> Html Msg
 cardText card =
     div [ class "card-text" ]
-        [ div [ class "card-title" ] [ text card.title ]
+        [ div [ class "card-title" ] [ text (card.title ++ (cardTrait card.trait)) ]
+        -- , cardTrait card.trait
         , cardEffect card.effect
         ]
 
