@@ -649,7 +649,8 @@ body {
   padding: 2px;
   font-size: 14px;
   color: #fff;
-  background: #0c7e43;
+  /* background: #0c7e43; */
+  background: #c96b14;
   text-align: center;
 }
 .previewed-by {
