@@ -9,6 +9,7 @@ import Data.CardRarity as CardRarity exposing (CardRarity)
 
 type alias Card =
     { id : String
+    , set : String
     , title : String
     , card_type : CardType
     , trait : String
@@ -28,6 +29,7 @@ decoder : Decoder Card
 decoder =
     decode Card
         |> required "id" string
+        |> required "set" string
         |> required "title" string
         |> custom (field "card_type" CardType.decoder)
         |> required "trait" string

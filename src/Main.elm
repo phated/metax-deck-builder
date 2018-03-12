@@ -38,8 +38,10 @@ type alias Model =
     , deck : Deck
     , card : Maybe String
     , filterRarity : List CardRarity
+    , filterSet : List String
     , filterType : List CardType
     , rarityOpen : Bool
+    , setOpen : Bool
     }
 
 
@@ -52,10 +54,14 @@ type Msg
     | ExportDeck
     | AddRarityFilter CardRarity
     | RemoveRarityFilter CardRarity
+    | AddSetFilter String
+    | RemoveSetFilter String
+    -- Currently unused
     | AddTypeFilter CardType
     | RemoveTypeFilter CardType
     | LoadDeck Deck
     | ToggleOpenRarity
+    | ToggleOpenSet
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -218,6 +224,20 @@ update msg model =
             in
                 ( { model | filterRarity = updatedRarity }, Cmd.none )
 
+        AddSetFilter set ->
+            let
+                updatedSet =
+                    set :: model.filterSet
+            in
+                ( { model | filterSet = updatedSet }, Cmd.none )
+
+        RemoveSetFilter set ->
+            let
+                updatedSet =
+                    List.filter ((/=) set) model.filterSet
+            in
+                ( { model | filterSet = updatedSet }, Cmd.none )
+
         AddTypeFilter cardType ->
             let
                 updatedType =
@@ -234,6 +254,8 @@ update msg model =
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
+        ToggleOpenSet ->
+            ( { model | setOpen = not model.setOpen }, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -322,16 +344,24 @@ filterRarity : CardRarity -> Card -> Bool
 filterRarity rarity card =
     card.rarity == rarity
 
+filterSet : String -> Card -> Bool
+filterSet set card =
+    card.set == set
+
 filterType : CardType -> Card -> Bool
 filterType cardType card =
     card.card_type == cardType
 
 type alias Filters filters =
-    { filters | filterRarity : List CardRarity, filterType : List CardType }
+    { filters | filterRarity : List CardRarity, filterSet : List String, filterType : List CardType }
 
 applyRarityFilters : List CardRarity -> Card -> Bool
 applyRarityFilters filters card =
     List.any (\rarity -> filterRarity rarity card) filters
+
+applySetFilters : List String -> Card -> Bool
+applySetFilters filters card =
+    List.any (\set -> filterSet set card) filters
 
 applyTypeFilters : List CardType -> Card -> Bool
 applyTypeFilters filters card =
@@ -339,7 +369,9 @@ applyTypeFilters filters card =
 
 applyFilters : Filters filters -> Card -> Bool
 applyFilters filters card =
-     (applyRarityFilters filters.filterRarity card) && (applyTypeFilters filters.filterType card)
+     (applyRarityFilters filters.filterRarity card) &&
+     (applySetFilters filters.filterSet card) &&
+     (applyTypeFilters filters.filterType card)
 
 
 cardListPane : Model -> Html Msg
@@ -891,6 +923,13 @@ updateRarityFilter rarity isChecked =
     else
         RemoveRarityFilter rarity
 
+updateSetFilter : String -> Bool -> Msg
+updateSetFilter set isChecked =
+    if isChecked then
+        AddSetFilter set
+    else
+        RemoveSetFilter set
+
 updateTypeFilter : CardType -> Bool -> Msg
 updateTypeFilter cardType isChecked =
     if isChecked then
@@ -909,8 +948,18 @@ checkbox label_ isChecked msg =
 
 buildQuery : Model -> String
 buildQuery model =
-    if List.length model.filterRarity == 0 then ""
-    else (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
+    let
+        rarityQuery =
+            if List.length model.filterRarity == 0 then ""
+            else (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
+
+        setQuery =
+            if List.length model.filterSet == 0 then ""
+            else (++) "set:" (String.join "," model.filterSet)
+
+    in
+        -- TODO: this adds the space before if no rarities selected
+        rarityQuery ++ " " ++ setQuery
 
 searchPane : Model -> Html Msg
 searchPane model =
@@ -933,6 +982,14 @@ searchPane model =
                 , checkbox "UR" (List.member URare model.filterRarity) (updateRarityFilter URare)
                 , checkbox "Promo" (List.member Promo model.filterRarity) (updateRarityFilter Promo)
                 , checkbox "Starter" (List.member Starter model.filterRarity) (updateRarityFilter Starter)
+                ]
+            ]
+        , div [ classList [("option-container", True), ("is-open", model.setOpen)] ]
+            [ div [ class "option-title", onClick ToggleOpenSet ] [ text "Set" ]
+            , div [ class "option-body" ]
+                [ checkbox "Attack on Titan" (List.member "AT" model.filterSet) (updateSetFilter "AT")
+                , checkbox "Green Lantern" (List.member "GL" model.filterSet) (updateSetFilter "GL")
+                , checkbox "Justice Leauge" (List.member "JL" model.filterSet) (updateSetFilter "JL")
                 ]
             ]
         --     div [ class "list-item-header" ] [ text "Rarity" ]
@@ -1017,6 +1074,7 @@ init location =
           , card = getCardId route
           , deck = Dict.empty
           , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
+          , filterSet = ["AT", "GL", "JL"]
           , filterType =
             [ -- TODO: This isn't flexible
               Character
@@ -1024,6 +1082,7 @@ init location =
             , Battle
             ]
           , rarityOpen = False
+          , setOpen = False
           }
         , Request.CardList.load
             |> Http.send CardsLoaded
