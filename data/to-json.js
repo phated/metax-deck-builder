@@ -14,6 +14,7 @@ var conv = csv({
   toArrayString: true,
   colParser: {
     id: 'string',
+    set: 'string',
     title: 'string',
     card_type: 'string',
     trait: 'string',
