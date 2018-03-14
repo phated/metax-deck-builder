@@ -1,0 +1,20 @@
+{
+    "name": "MetaX DB",
+    "short_name": "MetaX DB",
+    "icons": [
+        {
+            "src": "/favicon/android-chrome-192x192.png?v=wAO0ddaNgx",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/favicon/android-chrome-256x256.png?v=wAO0ddaNgx",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#303030",
+    "background_color": "#303030",
+    "start_url": "https://metaxdb.com",
+    "display": "standalone"
+}
