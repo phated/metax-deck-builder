@@ -16,7 +16,7 @@ C14-JL,JL,Scarecrow - Jonathan Crane,Character,Villain,2,"CONSTANT: Whenever thi
 C15-JL,JL,General Zod - Dru-Zod,Character,Villain,2,"CONSTANT: While you control only Villain Characters, your opponent's ""constant"" effects are negated.",6,,3,http://metaxdb.com/images/C15-JL.jpg,,
 C16-JL,JL,Poison Ivy - Pamela Isley,Character,Villain,2,"CONSTANT: At the start of your turn, gain 2 MP.",,3,5,http://metaxdb.com/images/C16-JL.jpg,,
 C17-JL,JL,Ra's Al Ghul - The Demon's Head,Character,Villain,0,PLAY: You may play a Character from your discard pile with a maximum rank of 5 or less.,3,6,,http://metaxdb.com/images/C17-JL.jpg,,
-C18-JL,JL,Absence of Fear,Event,,-5,"Your opponent shuffles his or her hand into his or her deck, then draws 5 cards.",,,,http://metaxdb.com/images/C18-JL.jpg,,
+C18-JL,JL,Absence of Fear,Event,,-3,"Your opponent shuffles his or her hand into his or her deck, then draws 5 cards.",,,,http://metaxdb.com/images/C18-JL.jpg,,
 C19-JL,JL,Leap Into Action,Event,,-2,Search your deck for a Hero Character with a rank of 7 or a Battle Card with a rank of 7 and place it in your hand.,,,,http://metaxdb.com/images/C19-JL.jpg,,
 C20-JL,JL,Birds of a Feather,Event,,-1,Each player draws 2 cards.,,,,http://metaxdb.com/images/C20-JL.jpg,,
 C21-JL,JL,Disgraced,Event,,-5,"KO target Character with a ""constant"" effect, or draw 2 cards if there are no Characters with a ""constant"" effect in play.",,,,http://metaxdb.com/images/C21-JL.jpg,,
