@@ -1,0 +1,17 @@
+{
+  "name": "graphql",
+  "version": "1.0.0",
+  "description": "My Graphcool Service",
+  "main": "graphcool-ids.js",
+  "scripts": {
+    "update-data": "curl https://docs.google.com/spreadsheets/d/1w2TuX7u_wdxFXnUWb_KyRS6o_8vxAEjZV5u5BpkOuI0/export?exportFormat=csv > data/metax-db.csv",
+    "from-csv": "npm run update-data && node data/to-json.js > data/metax-db.json",
+    "import": "npm run from-csv && node import.js"
+  },
+  "keywords": [],
+  "author": "Blaine Bublitz <blaine.bublitz@gmail.com> (https://github.com/phated)",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-request": "^1.5.1"
+  }
+}

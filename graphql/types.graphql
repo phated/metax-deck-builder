@@ -1,0 +1,80 @@
+type Stat @model {
+  id: ID! @isUnique
+  stat: CardStat!
+  rank: Int!
+  cards: [Card!]! @relation(name: "StatsForCard")
+}
+
+type Preview @model {
+  card: Card @relation(name: "PreviewForCard")
+  id: ID! @isUnique
+  isActive: Boolean! @defaultValue(value: false)
+  previewUrl: String!
+  previewer: String!
+}
+
+type Card @model {
+  id: ID! @isUnique
+  uid: String! @isUnique
+  rarity: CardRarity!
+  number: Int!
+  set: CardSet!
+  type: CardType!
+  mp: Int!
+  title: String!
+  subtitle: String
+  effect: String
+  stats: [Stat!]! @relation(name: "StatsForCard")
+  imageUrl: String!
+  preview: Preview @relation(name: "PreviewForCard")
+}
+
+type File @model {
+  contentType: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  name: String!
+  secret: String! @isUnique
+  size: Int!
+  updatedAt: DateTime!
+  url: String! @isUnique
+}
+
+type User @model {
+  createdAt: DateTime!
+  id: ID! @isUnique
+  updatedAt: DateTime!
+}
+
+enum CardRarity {
+  C
+  U
+  R
+  XR
+  UR
+  P
+}
+
+enum CardSet {
+  JL
+  GL
+  AT
+}
+
+enum CardType {
+  Character
+  Event
+  Battle
+}
+
+enum BattleCardStats {
+  Strength
+  Intelligence
+  Special
+}
+
+enum CardStat {
+  Strength
+  Intelligence
+  Special
+}

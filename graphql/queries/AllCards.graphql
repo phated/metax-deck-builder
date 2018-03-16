@@ -1,0 +1,5 @@
+query AllCards {
+  allCards {
+    uid
+  }
+}

@@ -1,0 +1,26 @@
+types: ./types.graphql
+functions: {}
+permissions:
+- operation: Card.read
+- operation: Card.create
+- operation: Card.update
+- operation: Card.delete
+- operation: File.read
+- operation: File.create
+- operation: File.update
+- operation: File.delete
+- operation: Preview.read
+- operation: Preview.create
+- operation: Preview.update
+- operation: Preview.delete
+- operation: Stat.read
+- operation: Stat.create
+- operation: Stat.update
+- operation: Stat.delete
+- operation: User.read
+- operation: User.create
+- operation: User.update
+- operation: User.delete
+- operation: PreviewForCard.*
+- operation: StatsForCard.*
+rootTokens: []
