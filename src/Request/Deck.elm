@@ -53,7 +53,7 @@ export cards deck =
 
 idMatches : String -> Card -> Bool
 idMatches cardId card =
-    card.id == cardId
+    card.uid == cardId
 
 
 lookup : CardList -> String -> Maybe Card
