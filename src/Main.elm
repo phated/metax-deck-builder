@@ -20,6 +20,8 @@ import Compare exposing (concat, by, Comparator)
 import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 
+import GraphQl as GQL
+
 
 main : Program Never Model Msg
 main =
@@ -49,6 +51,7 @@ type Msg
     = NavigateTo String
     | SetRoute (Maybe Route)
     | CardsLoaded (Result Http.Error CardList)
+    -- | CardsLoaded2 Queries.Msg
     | Decrement String
     | Increment String
     | ExportDeck
@@ -192,6 +195,19 @@ update msg model =
                     Debug.log "err" err
             in
                 ( model, Cmd.none )
+
+        -- CardsLoaded2 msg ->
+        --     let
+        --         test = Debug.log "graphql" msg
+        --     in
+        --         (model, Cmd.none)
+
+        -- CardsLoaded2 (Err err) ->
+        --     let
+        --         test =
+        --             Debug.log "err" err
+        --     in
+        --         ( model, Cmd.none )
 
         Increment cardId ->
             let
@@ -393,8 +409,8 @@ stepper ( card, count ) =
             (count == 3)
     in
         div [ class "stepper-container" ]
-            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.id) ] [ text "-" ]
-            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card.id) ] [ text "+" ]
+            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.uid) ] [ text "-" ]
+            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card.uid) ] [ text "+" ]
             , div [ class "count-container" ] [ text (toString count) ]
             ]
 
@@ -455,15 +471,17 @@ cardStats card =
 
 previewBanner : Card -> Html Msg
 previewBanner card =
-    if card.preview_url == ""
-        then text ""
-        else div [ class "preview-banner" ] [ text "Preview" ]
+    case card.preview of
+        Just preview ->
+            div [ class "preview-banner" ] [ text "Preview" ]
 
+        Nothing ->
+            text ""
 
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ linkTo ("/card/" ++ card.id)
+        [ linkTo ("/card/" ++ card.uid)
             [ class "card-thumbnail" ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
             , previewBanner card
@@ -477,10 +495,10 @@ cardView : Model -> Card -> Html Msg
 cardView model card =
     let
         count =
-            Maybe.withDefault 0 (Dict.get card.id model.deck)
+            Maybe.withDefault 0 (Dict.get card.uid model.deck)
     in
         div
-            [ id card.id
+            [ id card.uid
             , class "list-item"
             ]
             [ cardDetails card
@@ -490,7 +508,7 @@ cardView model card =
 
 idMatches : String -> Card -> Bool
 idMatches cardId card =
-    card.id == cardId
+    card.uid == cardId
 
 
 lookup : Model -> String -> Maybe Card
@@ -732,14 +750,14 @@ deckCardView card =
     case card of
         ( Just card, count ) ->
             div
-                [ id ("deck_" ++ card.id)
+                [ id ("deck_" ++ card.uid)
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ linkTo ("/card/" ++ card.id)
+                    [ linkTo ("/card/" ++ card.uid)
                         [ class "card-title" ]
                         [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
-                        , text ("(" ++ card.id ++ ") ")
+                        , text ("(" ++ card.uid ++ ") ")
                         , text card.title
                         ]
                     , mpView card.mp
@@ -772,9 +790,12 @@ deckListPane model =
 
 previewedBy : Card -> Html Msg
 previewedBy card =
-    if card.preview_url == ""
-        then text ""
-        else div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href card.preview_url ] [ text card.previewer ]]
+    case card.preview of
+        Just preview ->
+            div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href preview.previewUrl ] [ text preview.previewer ]]
+
+        Nothing ->
+            text ""
 
 largeImg : Card -> Html Msg
 largeImg card =
@@ -1084,6 +1105,8 @@ init location =
           , rarityOpen = False
           , setOpen = False
           }
+        -- , Cmd.map CardsLoaded2 Queries.getCards
         , Request.CardList.load
-            |> Http.send CardsLoaded
+            |> GQL.send CardsLoaded
+        --     |> Http.send CardsLoaded
         )

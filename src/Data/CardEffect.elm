@@ -3,7 +3,7 @@ module Data.CardEffect exposing (CardEffect(..), decoder, effectToString, effect
 import Html exposing (img, text, Html)
 import Html.Attributes exposing (src, class)
 import Regex exposing (regex, find, replace, HowMany(..), Match)
-import Json.Decode exposing (field, map, string, Decoder)
+import Json.Decode exposing (field, map, string, oneOf, null, Decoder)
 
 
 type CardEffect
@@ -18,7 +18,10 @@ type CardEffect
 
 decoder : Decoder CardEffect
 decoder =
-    field "effect" (map toEffect string)
+    field "effect" (oneOf [
+        (map toEffect string),
+        null (Any "")
+    ])
 
 
 
