@@ -12,6 +12,8 @@ import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..))
 import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
 import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter), cardRarityToString)
+import Data.CardStatList exposing (CardStatList)
+import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Request.CardList
@@ -51,7 +53,6 @@ type Msg
     = NavigateTo String
     | SetRoute (Maybe Route)
     | CardsLoaded (Result Http.Error CardList)
-    -- | CardsLoaded2 Queries.Msg
     | Decrement String
     | Increment String
     | ExportDeck
@@ -116,11 +117,11 @@ notZero _ count =
     count /= 0
 
 battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, strength, intelligence, special } =
+battleTypeOrder { card_type, stats } =
     -- That hackiness, tho
     if card_type /= Battle then 0
     else
-        case toBattleType strength intelligence special of
+        case toBattleType stats of
             Just (Strength rank) ->
                 0 + rank
 
@@ -195,19 +196,6 @@ update msg model =
                     Debug.log "err" err
             in
                 ( model, Cmd.none )
-
-        -- CardsLoaded2 msg ->
-        --     let
-        --         test = Debug.log "graphql" msg
-        --     in
-        --         (model, Cmd.none)
-
-        -- CardsLoaded2 (Err err) ->
-        --     let
-        --         test =
-        --             Debug.log "err" err
-        --     in
-        --         ( model, Cmd.none )
 
         Increment cardId ->
             let
@@ -427,17 +415,28 @@ mpView stat =
         div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
 
 
-statView : String -> Maybe Int -> Html Msg
-statView statType stat =
-    case stat of
-        Maybe.Just stat ->
-            div [ class "card-stat" ]
-                [ img [ class "card-stat-icon", src ("/icons/" ++ statType ++ ".png") ] []
-                , span [ class "card-stat-text" ] [ text (toString stat) ]
-                ]
+statsView : CardStatList -> List (Html Msg)
+statsView stats =
+    List.map statView stats
 
-        Maybe.Nothing ->
-            text ""
+statView : CardStat -> Html Msg
+statView stat =
+    case stat of
+        CardStat.Strength rank ->
+            div [ class "card-stat" ]
+                [ img [ class "card-stat-icon", src ("/icons/strength.png") ] []
+                , span [ class "card-stat-text" ] [ text (toString rank) ]
+                ]
+        CardStat.Intelligence rank ->
+            div [ class "card-stat" ]
+                [ img [ class "card-stat-icon", src ("/icons/intelligence.png") ] []
+                , span [ class "card-stat-text" ] [ text (toString rank) ]
+                ]
+        CardStat.Special rank ->
+            div [ class "card-stat" ]
+                [ img [ class "card-stat-icon", src ("/icons/special.png") ] []
+                , span [ class "card-stat-text" ] [ text (toString rank) ]
+                ]
 
 
 cardEffect : CardEffect -> Html Msg
@@ -454,7 +453,12 @@ cardTrait trait =
 cardText : Card -> Html Msg
 cardText card =
     div [ class "card-text" ]
-        [ div [ class "card-title" ] [ text (card.title ++ (cardTrait card.trait)) ]
+        [ div [ class "card-title" ]
+            [ text card.title
+            , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
+            , text <| toBattleCardRank card
+            , text <| cardTrait card.trait
+            ]
         -- , cardTrait card.trait
         , cardEffect card.effect
         ]
@@ -463,11 +467,7 @@ cardText card =
 cardStats : Card -> Html Msg
 cardStats card =
     div [ class "card-stats" ]
-        [ mpView card.mp
-        , statView "strength" card.strength
-        , statView "intelligence" card.intelligence
-        , statView "special" card.special
-        ]
+        (mpView card.mp :: statsView card.stats)
 
 previewBanner : Card -> Html Msg
 previewBanner card =
@@ -605,49 +605,35 @@ type BattleType
     -- | IntelligenceSpecial Int
     -- | StrengthIntelligenceSpecial Int
 
-toBattleType : Maybe Int -> Maybe Int -> Maybe Int -> Maybe BattleType
-toBattleType strength intelligence special =
-    case ( strength, intelligence, special ) of
-        ( Just strRank, Nothing, Nothing ) ->
-            Just (Strength strRank)
+battleTypeFoldr : CardStat -> Maybe BattleType -> Maybe BattleType
+battleTypeFoldr stat battleType =
+    case (battleType, stat) of
+        (Nothing, CardStat.Strength rank) ->
+            Just (Strength rank)
+        (Nothing, CardStat.Intelligence rank) ->
+            Just (Intelligence rank)
+        (Nothing, CardStat.Special rank) ->
+            Just (Special rank)
+        (Just _, CardStat.Strength rank) ->
+            Just (Multi rank)
+        (Just _, CardStat.Intelligence rank) ->
+            Just (Multi rank)
+        (Just _, CardStat.Special rank) ->
+            Just (Multi rank)
 
-        ( Nothing, Just intRank, Nothing ) ->
-            Just (Intelligence intRank)
 
-        ( Nothing, Nothing, Just spRank ) ->
-            Just (Special spRank)
-
-        ( Just multiRank, Just _, Nothing ) ->
-            -- TODO: there should probably be some more validation here
-            -- StrengthIntelligence multiRank
-            Just (Multi multiRank)
-
-        ( Just multiRank, Nothing, Just _ ) ->
-            -- TODO: there should probably be some more validation here
-            -- StrengthSpecial multiRank
-            Just (Multi multiRank)
-
-        ( Nothing, Just multiRank, Just _ ) ->
-            -- TODO: there should probably be some more validation here
-            -- IntelligenceSpecial multiRank
-            Just (Multi multiRank)
-
-        ( Just multiRank, Just _, Just _ ) ->
-            -- TODO: there should probably be some more validation here
-            -- StrengthIntelligenceSpecial multiRank
-            Just (Multi multiRank)
-
-        ( Nothing, Nothing, Nothing ) ->
-            Nothing
+toBattleType : CardStatList -> Maybe BattleType
+toBattleType stats =
+    List.foldr battleTypeFoldr Nothing stats
 
 
 groupBattleCards : ( Maybe Card, Int ) -> BattleCardGroups -> BattleCardGroups
 groupBattleCards ( card, count ) result =
     case card of
-        Just { card_type, strength, intelligence, special } ->
+        Just { card_type, stats } ->
             case card_type of
                 Battle ->
-                    case toBattleType strength intelligence special of
+                    case toBattleType stats of
                         Just (Strength rank) ->
                             { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
 
@@ -675,7 +661,7 @@ groupBattleCards ( card, count ) result =
 
 toRows : String -> Int -> List ( Maybe Card, Int ) -> List (Html Msg) -> List (Html Msg)
 toRows title rank cards result =
-    List.append result (battleCardSubSection (title ++ "- Rank " ++ (toString rank)) cards)
+    List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) cards)
 
 
 battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
@@ -744,6 +730,26 @@ deckSectionView cards =
                 , battleCardView rows.battle
                 ])
 
+toRank : CardStat -> Maybe Int -> Maybe Int
+toRank stat rank =
+    case stat of
+        CardStat.Strength rank -> Just rank
+        CardStat.Intelligence rank -> Just rank
+        CardStat.Special rank -> Just rank
+
+
+toBattleCardRank : Card -> String
+toBattleCardRank card =
+    let
+        rank = if card.card_type == Battle then List.foldr toRank Nothing card.stats else Nothing
+    in
+        case rank of
+            Just rank ->
+                " - Rank " ++ (toString rank)
+
+            Nothing ->
+                ""
+
 
 deckCardView : ( Maybe Card, Int ) -> Html Msg
 deckCardView card =
@@ -759,14 +765,13 @@ deckCardView card =
                         [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
                         , text ("(" ++ card.uid ++ ") ")
                         , text card.title
+                        , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
+                        , text <| toBattleCardRank card
                         ]
                     , mpView card.mp
                     ]
                 , div [ class "deck-card-stats" ]
-                    [ statView "strength" card.strength
-                    , statView "intelligence" card.intelligence
-                    , statView "special" card.special
-                    ]
+                    (statsView card.stats)
                 , stepper ( card, count )
                 ]
 
@@ -1105,8 +1110,6 @@ init location =
           , rarityOpen = False
           , setOpen = False
           }
-        -- , Cmd.map CardsLoaded2 Queries.getCards
         , Request.CardList.load
             |> GQL.send CardsLoaded
-        --     |> Http.send CardsLoaded
         )
