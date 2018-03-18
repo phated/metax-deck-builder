@@ -5,6 +5,7 @@ import Json.Decode.Pipeline exposing (decode, required, custom, optional, option
 import Data.CardType as CardType exposing (CardType)
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
+import Data.CardStatList as CardStatList exposing (CardStatList)
 
 type alias CardPreview =
     { previewer : String
@@ -23,13 +24,12 @@ type alias Card =
     , number : Int
     , rarity : CardRarity
     , title : String
+    , subtitle : Maybe String
     , card_type : CardType
     , trait : String
     , mp : Int
     , effect : CardEffect
-    , strength : Maybe Int
-    , intelligence : Maybe Int
-    , special : Maybe Int
+    , stats : CardStatList
     , image_url : String
     , preview : Maybe CardPreview
     }
@@ -43,12 +43,11 @@ decoder =
         |> required "number" int
         |> required "rarity" CardRarity.decoder
         |> required "title" string
+        |> optional "subtitle" (maybe string) Nothing
         |> custom (field "type" CardType.decoder)
         |> optionalAt ["trait", "name"] string ""
         |> required "mp" int
         |> custom CardEffect.decoder
-        |> optional "strength" (nullable int) Nothing
-        |> optional "intelligence" (nullable int) Nothing
-        |> optional "special" (nullable int) Nothing
+        |> custom (field "stats" CardStatList.decoder)
         |> required "imageUrl" string
         |> optional "preview" (maybe previewDecoder) Nothing
