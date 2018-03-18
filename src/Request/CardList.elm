@@ -5,7 +5,6 @@ import Data.CardList as CardList exposing (CardList)
 
 import GraphQl as Gql exposing (Operation, Query, Named)
 import Json.Decode exposing (Decoder, field, string, map2, at, list)
-import Http exposing (Error)
 
 cardsQuery : Operation Query Named
 cardsQuery =
@@ -19,11 +18,17 @@ cardsQuery =
         Gql.field "mp",
         Gql.field "type",
         Gql.field "title",
+        Gql.field "subtitle",
         Gql.field "trait"
           |> Gql.withSelectors [
             Gql.field "name"
           ],
         Gql.field "effect",
+        Gql.field "stats"
+          |> Gql.withSelectors [
+            Gql.field "type",
+            Gql.field "rank"
+          ],
         Gql.field "imageUrl",
         Gql.field "preview"
           |> Gql.withSelectors [
@@ -33,9 +38,6 @@ cardsQuery =
       ]
   ]
 
--- load : Http.Request CardList
--- load =
---     Http.get "/data/metax.normalized.json" CardList.decoder
 
 load = Gql.query
   "https://api.graph.cool/simple/v1/cjerpcdas51ih01414psrg6wa"
