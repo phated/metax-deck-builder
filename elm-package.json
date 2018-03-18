@@ -8,6 +8,7 @@
     ],
     "exposed-modules": [],
     "dependencies": {
+        "Janiczek/elm-encoding": "1.0.1 <= v < 2.0.0",
         "NoRedInk/elm-compare": "1.0.0 <= v < 2.0.0",
         "NoRedInk/elm-decode-pipeline": "3.0.0 <= v < 4.0.0",
         "bartavelle/json-helpers": "1.3.0 <= v < 2.0.0",
