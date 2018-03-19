@@ -15,9 +15,9 @@ var queriesWithPreview = {
   Battle: fs.readFileSync('./queries/CreateBattleCardWithPreview.graphql', 'utf8'),
 };
 
-var client = new GraphQLClient('https://api.graph.cool/simple/v1/cjerpcdas51ih01414psrg6wa', {
+var client = new GraphQLClient('https://api.graph.cool/simple/v1/metaxdb', {
   headers: {
-    Authorization: `Bearer ${GRAPHCOOL_TOKEN}`,
+    Authorization: `Bearer ${process.env.GRAPHCOOL_TOKEN}`,
   },
 })
 
