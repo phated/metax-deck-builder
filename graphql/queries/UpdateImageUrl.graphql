@@ -1,0 +1,5 @@
+mutation UpdateImageUrl($id: ID!, $imageUrl: String!) {
+  updateCard(id: $id, imageUrl: $imageUrl) {
+    uid
+  }
+}

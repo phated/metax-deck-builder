@@ -1,0 +1,6 @@
+query ImageUrls {
+  allCards {
+    id
+    imageUrl
+  }
+}
