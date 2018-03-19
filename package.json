@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "elm-live ./src/Main.elm --output=elm.js --pushstate",
-    "encoder": "elm-live ./Encode.elm --output=encoder.js --pushstate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update-data": "curl https://docs.google.com/spreadsheets/d/1Ia_Uv5fZC3TMMJKENNwabyA3bh4JkFsGTCST3tT9Grg/export?exportFormat=csv > data/metax-db.csv",
     "from-csv": "npm run update-data && ./data/to-json.js > data/metax.normalized.json",
