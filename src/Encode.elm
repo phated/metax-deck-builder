@@ -1,18 +1,21 @@
-module Encode exposing (main)
+module Encode exposing (hash)
 
+import Data.Deck exposing (Deck)
+import Data.Card exposing (Card)
 import Data.CardRarity exposing (stringToCardRarity, CardRarity(Starter, Common, Uncommon, Rare, XRare, URare, Promo))
 import Data.CardSet exposing (stringToCardSet, CardSet(JL, GL, AT))
 import Array
 import Encoding.Integral exposing (decodeBin, decodeDec, encodeBin)
-import Html exposing (Html, text)
 import Regex exposing (HowMany(All), regex)
 import Result
+import Dict
 
 
-type alias Card =
-    { qty : Int
-    , cardid : String
-    }
+-- import Html exposing (Html, text)
+-- type alias Card =
+--     { qty : Int
+--     , cardid : String
+--     }
 
 
 rarityToInt : CardRarity -> Int
@@ -122,13 +125,6 @@ sixtyfour =
         ]
 
 
-deck : List Card
-deck =
-    [ { qty = 3, cardid = "C1-JL" }
-    , { qty = 2, cardid = "C2-JL" }
-    ]
-
-
 re =
     regex "^(C|U|R|UR|XR|S|P){1}(\\d*)\\-(JL|GL|AT){1}$"
 
@@ -152,18 +148,9 @@ encodeRarity rarity =
         encodeWithPadding 3 val
 
 
-encodeNumber : String -> Maybe String
-encodeNumber num =
-    let
-        asInt =
-            Result.toMaybe (String.toInt num)
-    in
-        case asInt of
-            Just val ->
-                Just <| String.padLeft 8 '0' <| encodeBin (val - 1)
-
-            Nothing ->
-                Nothing
+encodeNumber : Int -> String
+encodeNumber number =
+    encodeWithPadding 8 (number - 1)
 
 
 encodeSet : CardSet -> String
@@ -194,72 +181,80 @@ toBase64 hashIdx =
             ""
 
 
-encodeCard : Card -> String
-encodeCard { qty, cardid } =
-    let
-        encodedQty =
-            encodeQty qty
+encodeCard : ( Maybe Card, Int ) -> String
+encodeCard ( maybeCard, qty ) =
+    case maybeCard of
+        Just card ->
+            let
+                encodedQty =
+                    encodeQty qty
 
-        chopped =
-            Regex.find All re cardid
+                -- chopped =
+                --     Regex.find All re card.uir
+                -- onlyOneMatch =
+                --     List.head chopped
+                rarity =
+                    encodeRarity card.rarity
 
-        onlyOneMatch =
-            List.head chopped
+                number =
+                    encodeNumber card.number
 
-        cardNumber =
-            case onlyOneMatch of
-                Just match ->
-                    case match.submatches of
-                        [ Just rarityMatch, Just numberMatch, Just setMatch ] ->
-                            [ Maybe.map encodeRarity (stringToCardRarity rarityMatch)
-                            , encodeNumber numberMatch
-                            , Maybe.map encodeSet (stringToCardSet setMatch)
-                            ]
+                set =
+                    encodeSet card.set
 
-                        _ ->
-                            []
+                -- cardNumber =
+                --     case onlyOneMatch of
+                --         Just match ->
+                --             case match.submatches of
+                --                 [ Just rarityMatch, Just numberMatch, Just setMatch ] ->
+                --                     [ Maybe.map encodeRarity (stringToCardRarity rarityMatch)
+                --                     , encodeNumber numberMatch
+                --                     , Maybe.map encodeSet (stringToCardSet setMatch)
+                --                     ]
+                --                 _ ->
+                --                     []
+                --         Nothing ->
+                --             []
+                hash =
+                    encodedQty ++ rarity ++ number ++ set
 
-                Nothing ->
-                    []
+                -- case cardNumber of
+                --     [ Just encodedRarity, Just encodedNumber, Just encodedSet ] ->
+                --         let
+                --             joined =
+                --         in
+                --             joined
+                --     _ ->
+                --         ""
+                checkbit =
+                    (List.length <| String.indexes "1" hash) % 2
 
-        hash =
-            case cardNumber of
-                [ Just encodedRarity, Just encodedNumber, Just encodedSet ] ->
-                    let
-                        joined =
-                            encodedQty ++ encodedRarity ++ encodedNumber ++ encodedSet
-                    in
-                        joined
+                hashWithCheckbit =
+                    hash ++ toString checkbit
 
-                _ ->
-                    ""
+                sliced =
+                    [ String.slice 0 6 hashWithCheckbit
+                    , String.slice 6 12 hashWithCheckbit
+                    , String.slice 12 18 hashWithCheckbit
+                    ]
 
-        checkbit =
-            (List.length <| String.indexes "1" hash) % 2
+                decodedSlices =
+                    List.map decodeBin sliced
 
-        hashWithCheckbit =
-            hash ++ toString checkbit
+                base64 =
+                    String.join "" (List.map toBase64 decodedSlices)
 
-        sliced =
-            [ String.slice 0 6 hashWithCheckbit
-            , String.slice 6 12 hashWithCheckbit
-            , String.slice 12 18 hashWithCheckbit
-            ]
+                out =
+                    base64
+            in
+                out
 
-        decodedSlices =
-            List.map decodeBin sliced
-
-        base64 =
-            String.join "" (List.map toBase64 decodedSlices)
-
-        out =
-            base64
-    in
-        out
+        Nothing ->
+            ""
 
 
-main : Html msg
-main =
+hash : List ( Maybe Card, Int ) -> String
+hash deck =
     let
         encodedVersion =
             toBase64 <| Just 0
@@ -280,4 +275,8 @@ main =
             encodedDeck ++ base64Checksum
     in
         -- AiAASAhA
-        text <| encoded
+        encoded
+
+
+
+-- text <| encoded
