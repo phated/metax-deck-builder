@@ -1086,6 +1086,29 @@
   {
     "number": 24,
     "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:00.000Z",
+    "stats": [],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:00.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-19T20:36:00.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-3-2/"
+    },
+    "effect": "Each player may discard a Battle Card attached to a Character they control.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-19T20:36:00.000Z",
+    "uid": "C24-AT",
+    "title": "Hearty Meal",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C24-AT.jpg"
+  },
+  {
+    "number": 24,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [],
     "preview": null,
@@ -1378,6 +1401,40 @@
     "title": "Resurrection of Power",
     "type": "Event",
     "imageUrl": "https://metaxdb.com/images/C29-JL.jpg"
+  },
+  {
+    "number": 3,
+    "subtitle": "Freckles",
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 4
+      },
+      {
+        "type": "Intelligence",
+        "rank": 6
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "MetaX TCG Subreddit",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.reddit.com/r/metaxTCG/comments/85lqe9/attack_on_titan_subreddit_exclusive_previews/"
+    },
+    "effect": "CONSTANT: Whenever this card Links, search your discard pile for an Intelligence Battle Card and place it in your hand.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Cadet Corps"
+    },
+    "rarity": "C",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "C3-AT",
+    "title": "Ymir",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/C3-AT.jpg"
   },
   {
     "number": 3,
@@ -1716,6 +1773,34 @@
     "title": "Strength",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C35-JL.jpg"
+  },
+  {
+    "number": 36,
+    "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 1
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "MetaX TCG Subreddit",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.reddit.com/r/metaxTCG/comments/85lqe9/attack_on_titan_subreddit_exclusive_previews/"
+    },
+    "effect": "Draw 2 cards, then discard a random card from your hand.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "C36-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C36-AT.jpg"
   },
   {
     "number": 36,
@@ -2282,6 +2367,34 @@
   {
     "number": 44,
     "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 4
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "MetaX TCG Community",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.facebook.com/groups/MetaXTCGCommunity/permalink/1665736296853245/"
+    },
+    "effect": "Shuffle up to 3 Scout Regiment Characters from your discard pile into your deck.",
+    "set": "AT",
+    "mp": 2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "C44-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C44-AT.jpg"
+  },
+  {
+    "number": 44,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:27.000Z",
     "stats": [
       {
@@ -2582,6 +2695,34 @@
     "title": "Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C48-JL.jpg"
+  },
+  {
+    "number": 49,
+    "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 5
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-3-2/"
+    },
+    "effect": "DEFEND: Prep target Character with Intelligence of rank 5 or higher.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "C49-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C49-AT.jpg"
   },
   {
     "number": 49,
@@ -6060,6 +6201,29 @@
   {
     "number": 119,
     "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-3-2/"
+    },
+    "effect": "Choose a card in your discard pile, then search your deck for a copy of that card and place it in your hand.",
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "R119-AT",
+    "title": "Research",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/R119-AT.jpg"
+  },
+  {
+    "number": 119,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:26.000Z",
     "stats": [],
     "preview": null,
@@ -6882,6 +7046,38 @@
   {
     "number": 133,
     "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 4
+      },
+      {
+        "type": "Special",
+        "rank": 4
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-3-2/"
+    },
+    "effect": "DEFEND: You may KO target Character outside of the Battle Zone. If that Character entered play this turn, discard your hand.",
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "R133-AT",
+    "title": "Strength / Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/R133-AT.jpg"
+  },
+  {
+    "number": 133,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:31.000Z",
     "stats": [
       {
@@ -6926,6 +7122,34 @@
     "title": "Strength / Intelligence",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/R133-JL.jpg"
+  },
+  {
+    "number": 134,
+    "subtitle": null,
+    "updatedAt": "2018-03-19T20:36:01.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 5
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-19T20:36:01.000Z",
+      "previewer": "MetaX TCG Subreddit",
+      "createdAt": "2018-03-19T20:36:01.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.reddit.com/r/metaxTCG/comments/85lqe9/attack_on_titan_subreddit_exclusive_previews/"
+    },
+    "effect": "ATTACK: If this card is used in a Team Attack, push target Character.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-19T20:36:01.000Z",
+    "uid": "R134-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/R134-AT.jpg"
   },
   {
     "number": 134,
