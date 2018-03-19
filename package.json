@@ -9,7 +9,8 @@
     "update-data": "curl https://docs.google.com/spreadsheets/d/1Ia_Uv5fZC3TMMJKENNwabyA3bh4JkFsGTCST3tT9Grg/export?exportFormat=csv > data/metax-db.csv",
     "from-csv": "npm run update-data && ./data/to-json.js > data/metax.normalized.json",
     "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes",
-    "format": "elm-format src/"
+    "format": "elm-format src/",
+    "v2": "node graphql/export.js"
   },
   "repository": {
     "type": "git",
