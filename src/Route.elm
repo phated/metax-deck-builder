@@ -5,19 +5,19 @@ import UrlParser as Url exposing ((</>), (<?>), Parser, oneOf, parsePath, s, str
 
 
 type Route
-    = Home (Maybe String)
-    | Deck (Maybe String)
-    | Card String (Maybe String)
-    | Search (Maybe String)
+    = Home
+    | Deck
+    | Card String
+    | Search
 
 
 route : Parser (Route -> a) a
 route =
     oneOf
-        [ Url.map Home (s "" <?> stringParam "deck")
-        , Url.map Deck (s "deck" <?> stringParam "deck")
-        , Url.map Card (s "card" </> string <?> stringParam "deck")
-        , Url.map Search (s "search" <?> stringParam "deck")
+        [ Url.map Home (s "")
+        , Url.map Deck (s "deck")
+        , Url.map Card (s "card" </> string)
+        , Url.map Search (s "search")
         ]
 
 

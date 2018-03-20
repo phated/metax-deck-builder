@@ -24,12 +24,15 @@ import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as GQL
 import Encode
+import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 
 
-main : Program Never Model Msg
+main : RouteUrlProgram Never Model Msg
 main =
-    Navigation.program (fromLocation >> SetRoute)
-        { init = init
+    RouteUrl.program
+        { delta2url = delta2url
+        , location2messages = location2messages
+        , init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -52,8 +55,7 @@ type alias Model =
 
 
 type Msg
-    = NavigateTo String
-    | SetRoute (Maybe Route)
+    = SetRoute Route
     | CardsLoaded (Result Http.Error CardList)
     | Decrement String
     | Increment String
@@ -68,6 +70,61 @@ type Msg
     | LoadDeck Deck
     | ToggleOpenRarity
     | ToggleOpenSet
+
+
+delta2url : Model -> Model -> Maybe UrlChange
+delta2url prevModel nextModel =
+    let
+        hash =
+            hashDeck nextModel nextModel.deck
+
+        querystring =
+            hashQuery hash
+    in
+        case nextModel.locationTo of
+            Just Route.Home ->
+                Just
+                    { entry = NewEntry
+                    , url = "/" ++ querystring
+                    }
+
+            Just Route.Deck ->
+                Just
+                    { entry = NewEntry
+                    , url = "/deck" ++ querystring
+                    }
+
+            Just (Route.Card uid) ->
+                Just
+                    { entry = NewEntry
+                    , url = "/card/" ++ uid ++ querystring
+                    }
+
+            Just Route.Search ->
+                Just
+                    { entry = NewEntry
+                    , url = "/search" ++ querystring
+                    }
+
+            Nothing ->
+                Just
+                    { entry = ModifyEntry
+                    , url = querystring
+                    }
+
+
+location2messages : Location -> List Msg
+location2messages location =
+    let
+        route =
+            fromLocation location
+    in
+        case route of
+            Just route ->
+                [ SetRoute route ]
+
+            Nothing ->
+                []
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -165,14 +222,14 @@ cardListSort =
         ]
 
 
-hashDeck : Model -> Deck -> String
+hashDeck : Model -> Deck -> Maybe String
 hashDeck model deck =
     Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
 
 
 hashQuery : Maybe String -> String
 hashQuery maybeHash =
-    Maybe.withDefault "" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
+    Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -180,23 +237,17 @@ update msg model =
     case msg of
         SetRoute route ->
             case route of
-                Just (Route.Home maybeHash) ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route, hash = hashQuery maybeHash }, Cmd.none )
+                Route.Home ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-                Just (Route.Deck maybeHash) ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route, hash = hashQuery maybeHash }, Cmd.none )
+                Route.Deck ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-                Just (Route.Card cardId maybeHash) ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route, card = Just cardId, hash = hashQuery maybeHash }, Cmd.none )
+                Route.Card cardId ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route, card = Just cardId }, Cmd.none )
 
-                Just (Route.Search maybeHash) ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route, hash = hashQuery maybeHash }, Cmd.none )
-
-                Nothing ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just (Route.Home Nothing), hash = "" }, Cmd.none )
-
-        NavigateTo pathname ->
-            ( model, newUrl pathname )
+                Route.Search ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
         LoadDeck deck ->
             ( { model | deck = deck }, Cmd.none )
@@ -216,31 +267,15 @@ update msg model =
             let
                 deck =
                     maybeIncrement cardId model.deck
-
-                hash =
-                    hashDeck model deck
             in
-                ( { model | deck = deck }
-                , Cmd.batch
-                    [ Request.Deck.save deck
-                    , modifyUrl ("?deck=" ++ hash)
-                    ]
-                )
+                ( { model | deck = deck }, Request.Deck.save deck )
 
         Decrement cardId ->
             let
                 deck =
                     Dict.filter notZero (maybeDecrement cardId model.deck)
-
-                hash =
-                    hashDeck model deck
             in
-                ( { model | deck = deck }
-                , Cmd.batch
-                    [ Request.Deck.save deck
-                    , modifyUrl ("?deck=" ++ hash)
-                    ]
-                )
+                ( { model | deck = deck }, Request.Deck.save deck )
 
         ExportDeck ->
             ( model, Request.Deck.export model.cards model.deck )
@@ -299,12 +334,13 @@ view model =
     applicationShell model
 
 
-linkTo : String -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
+linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
 linkTo pathname =
     let
         linkAttrs =
-            [ href pathname
-            , onNavigate (NavigateTo pathname)
+            -- TODO: fix href
+            [ href ""
+            , onNavigate (SetRoute pathname)
             ]
     in
         (\attrs contents -> a (List.append attrs linkAttrs) contents)
@@ -327,18 +363,18 @@ downloadButton =
 getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
-        Just (Route.Home maybeHash) ->
-            linkTo ("/search" ++ (hashQuery maybeHash))
+        Just Route.Home ->
+            linkTo Route.Search
                 [ class "navbar-button" ]
                 [ img [ src "/icons/ios-search-white.svg" ] [] ]
 
-        Just (Route.Deck maybeHash) ->
+        Just Route.Deck ->
             downloadButton
 
-        Just (Route.Card _ maybeHash) ->
+        Just (Route.Card _) ->
             text ""
 
-        Just (Route.Search maybeHash) ->
+        Just Route.Search ->
             text ""
 
         Nothing ->
@@ -368,8 +404,8 @@ decklistText model =
 navbarBottom : Model -> Html Msg
 navbarBottom model =
     nav [ class "navbar-bottom" ]
-        [ linkTo ("/" ++ model.hash) [ class "navitem" ] [ text "Cards" ]
-        , linkTo ("/deck" ++ model.hash) [ class "navitem" ] [ decklistText model ]
+        [ linkTo Route.Home [ class "navitem" ] [ text "Cards" ]
+        , linkTo Route.Deck [ class "navitem" ] [ decklistText model ]
         ]
 
 
@@ -526,10 +562,10 @@ previewBanner card =
             text ""
 
 
-cardDetails : Model -> Card -> Html Msg
-cardDetails model card =
+cardDetails : Card -> Html Msg
+cardDetails card =
     div [ class "card-details" ]
-        [ linkTo ("/card/" ++ card.uid ++ model.hash)
+        [ linkTo (Route.Card card.uid)
             [ class "card-thumbnail" ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
             , previewBanner card
@@ -549,7 +585,7 @@ cardView model card =
             [ id card.uid
             , class "list-item"
             ]
-            [ cardDetails model card
+            [ cardDetails card
             , stepper ( card, count )
             ]
 
@@ -580,23 +616,23 @@ sum cards =
     (List.sum (List.map Tuple.second cards))
 
 
-charactersView : Model -> List ( Maybe Card, Int ) -> List (Html Msg)
-charactersView model characters =
+charactersView : List ( Maybe Card, Int ) -> List (Html Msg)
+charactersView characters =
     if List.length characters > 0 then
         List.concat
             [ sectionHeader "Characters" (sum characters)
-            , (List.map (deckCardView model) characters)
+            , (List.map deckCardView characters)
             ]
     else
         []
 
 
-eventsView : Model -> List ( Maybe Card, Int ) -> List (Html Msg)
-eventsView model events =
+eventsView : List ( Maybe Card, Int ) -> List (Html Msg)
+eventsView events =
     if List.length events > 0 then
         List.concat
             [ sectionHeader "Events" (sum events)
-            , (List.map (deckCardView model) events)
+            , (List.map deckCardView events)
             ]
     else
         []
@@ -607,8 +643,8 @@ bcWarningView =
     List.singleton (div [ class "list-item-warning" ] [ text "You have too many Battle Cards at this Type/Rank" ])
 
 
-battleCardSubSection : String -> Model -> List ( Maybe Card, Int ) -> List (Html Msg)
-battleCardSubSection title model cards =
+battleCardSubSection : String -> List ( Maybe Card, Int ) -> List (Html Msg)
+battleCardSubSection title cards =
     if List.length cards > 0 then
         let
             warning =
@@ -620,7 +656,7 @@ battleCardSubSection title model cards =
             List.concat
                 [ sectionSubHeader title (sum cards)
                 , warning
-                , (List.map (deckCardView model) cards)
+                , (List.map deckCardView cards)
                 ]
     else
         []
@@ -717,29 +753,29 @@ groupBattleCards ( card, count ) result =
             result
 
 
-toRows : String -> Model -> Int -> List ( Maybe Card, Int ) -> List (Html Msg) -> List (Html Msg)
-toRows title model rank cards result =
-    List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) model cards)
+toRows : String -> Int -> List ( Maybe Card, Int ) -> List (Html Msg) -> List (Html Msg)
+toRows title rank cards result =
+    List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) cards)
 
 
-battleCardView : Model -> List ( Maybe Card, Int ) -> List (Html Msg)
-battleCardView model battle =
+battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
+battleCardView battle =
     if List.length battle > 0 then
         let
             rows =
                 List.foldl groupBattleCards (BattleCardGroups Dict.empty Dict.empty Dict.empty Dict.empty) battle
 
             strRows =
-                Dict.foldl (toRows "Strength" model) [] rows.strength
+                Dict.foldl (toRows "Strength") [] rows.strength
 
             intRows =
-                Dict.foldl (toRows "Intelligence" model) [] rows.intelligence
+                Dict.foldl (toRows "Intelligence") [] rows.intelligence
 
             spRows =
-                Dict.foldl (toRows "Special" model) [] rows.special
+                Dict.foldl (toRows "Special") [] rows.special
 
             multiRows =
-                Dict.foldl (toRows "Multi" model) [] rows.multi
+                Dict.foldl (toRows "Multi") [] rows.multi
         in
             (sectionHeader "Battle Cards" (sum battle))
                 ++ strRows
@@ -775,17 +811,17 @@ groupTypes ( card, count ) result =
             result
 
 
-deckSectionView : Model -> List ( Maybe Card, Int ) -> Html Msg
-deckSectionView model cards =
+deckSectionView : List ( Maybe Card, Int ) -> Html Msg
+deckSectionView cards =
     let
         rows =
             List.foldl groupTypes (DeckGroups [] [] []) cards
     in
         div [ class "column-contents" ]
             (List.concat
-                [ charactersView model rows.characters
-                , eventsView model rows.events
-                , battleCardView model rows.battle
+                [ charactersView rows.characters
+                , eventsView rows.events
+                , battleCardView rows.battle
                 ]
             )
 
@@ -820,8 +856,8 @@ toBattleCardRank card =
                 ""
 
 
-deckCardView : Model -> ( Maybe Card, Int ) -> Html Msg
-deckCardView model card =
+deckCardView : ( Maybe Card, Int ) -> Html Msg
+deckCardView card =
     case card of
         ( Just card, count ) ->
             div
@@ -829,7 +865,7 @@ deckCardView model card =
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ linkTo ("/card/" ++ card.uid ++ model.hash)
+                    [ linkTo (Route.Card card.uid)
                         [ class "card-title" ]
                         [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
                         , text ("(" ++ card.uid ++ ") ")
@@ -859,7 +895,7 @@ deckListPane model =
             [ div [ class "column-label" ] [ decklistText model ]
             , downloadButton
             ]
-        , deckSectionView model (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
+        , deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
         ]
 
 
@@ -926,68 +962,68 @@ getClassList : ( Maybe Route, Maybe Route ) -> List ( String, Bool )
 getClassList ( from, to ) =
     case ( from, to ) of
         -- From Nothing
-        ( Nothing, Just (Route.Home _) ) ->
+        ( Nothing, Just Route.Home ) ->
             [ ( "pane-container", True ), ( "to-home", True ) ]
 
-        ( Nothing, Just (Route.Deck _) ) ->
+        ( Nothing, Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "to-deck", True ) ]
 
-        ( Nothing, Just (Route.Card _ _) ) ->
+        ( Nothing, Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "to-card", True ) ]
 
-        ( Nothing, Just (Route.Search _) ) ->
+        ( Nothing, Just Route.Search ) ->
             [ ( "pane-container", True ), ( "to-search", True ) ]
 
         -- From Home
-        ( Just (Route.Home _), Just (Route.Home _) ) ->
+        ( Just Route.Home, Just Route.Home ) ->
             [ ( "pane-container", True ), ( "from-home", True ), ( "to-home", True ) ]
 
-        ( Just (Route.Home _), Just (Route.Deck _) ) ->
+        ( Just Route.Home, Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "from-home", True ), ( "to-deck", True ) ]
 
-        ( Just (Route.Home _), Just (Route.Card _ _) ) ->
+        ( Just Route.Home, Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "from-home", True ), ( "to-card", True ) ]
 
-        ( Just (Route.Home _), Just (Route.Search _) ) ->
+        ( Just Route.Home, Just Route.Search ) ->
             [ ( "pane-container", True ), ( "from-home", True ), ( "to-search", True ) ]
 
         -- From Deck
-        ( Just (Route.Deck _), Just (Route.Home _) ) ->
+        ( Just Route.Deck, Just Route.Home ) ->
             [ ( "pane-container", True ), ( "from-deck", True ), ( "to-home", True ) ]
 
-        ( Just (Route.Deck _), Just (Route.Deck _) ) ->
+        ( Just Route.Deck, Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "from-deck", True ), ( "to-deck", True ) ]
 
-        ( Just (Route.Deck _), Just (Route.Card _ _) ) ->
+        ( Just Route.Deck, Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "from-deck", True ), ( "to-card", True ) ]
 
-        ( Just (Route.Deck _), Just (Route.Search _) ) ->
+        ( Just Route.Deck, Just Route.Search ) ->
             [ ( "pane-container", True ), ( "from-deck", True ), ( "to-search", True ) ]
 
         -- From Card
-        ( Just (Route.Card _ _), Just (Route.Home _) ) ->
+        ( Just (Route.Card _), Just Route.Home ) ->
             [ ( "pane-container", True ), ( "from-card", True ), ( "to-home", True ) ]
 
-        ( Just (Route.Card _ _), Just (Route.Deck _) ) ->
+        ( Just (Route.Card _), Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "from-card", True ), ( "to-deck", True ) ]
 
-        ( Just (Route.Card _ _), Just (Route.Card _ _) ) ->
+        ( Just (Route.Card _), Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "from-card", True ), ( "to-card", True ) ]
 
-        ( Just (Route.Card _ _), Just (Route.Search _) ) ->
+        ( Just (Route.Card _), Just Route.Search ) ->
             [ ( "pane-container", True ), ( "from-card", True ), ( "to-search", True ) ]
 
         -- From Search
-        ( Just (Route.Search _), Just (Route.Home _) ) ->
+        ( Just Route.Search, Just Route.Home ) ->
             [ ( "pane-container", True ), ( "from-search", True ), ( "to-home", True ) ]
 
-        ( Just (Route.Search _), Just (Route.Deck _) ) ->
+        ( Just Route.Search, Just Route.Deck ) ->
             [ ( "pane-container", True ), ( "from-search", True ), ( "to-deck", True ) ]
 
-        ( Just (Route.Search _), Just (Route.Card _ _) ) ->
+        ( Just Route.Search, Just (Route.Card _) ) ->
             [ ( "pane-container", True ), ( "from-search", True ), ( "to-card", True ) ]
 
-        ( Just (Route.Search _), Just (Route.Search _) ) ->
+        ( Just Route.Search, Just Route.Search ) ->
             [ ( "pane-container", True ), ( "from-search", True ), ( "to-search", True ) ]
 
         -- To Nothing
@@ -998,16 +1034,16 @@ getClassList ( from, to ) =
 getCardId : Maybe Route -> Maybe String
 getCardId location =
     case location of
-        Just (Route.Home _) ->
+        Just Route.Home ->
             Nothing
 
-        Just (Route.Deck _) ->
+        Just Route.Deck ->
             Nothing
 
-        Just (Route.Card id _) ->
+        Just (Route.Card id) ->
             Just id
 
-        Just (Route.Search _) ->
+        Just Route.Search ->
             Nothing
 
         Nothing ->
@@ -1133,11 +1169,9 @@ searchPane model =
         , button
             [ class "search-button"
             , href ("/")
-            , onNavigate (NavigateTo ("/" ++ model.hash))
+            , onNavigate (SetRoute Route.Home)
             ]
             [ text "Search" ]
-
-        -- , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
         ]
 
 
@@ -1169,29 +1203,22 @@ subscriptions model =
     Sub.map LoadDeck (onSessionLoaded Deck.decoder)
 
 
-init : Location -> ( Model, Cmd Msg )
-init location =
-    let
-        route =
-            fromLocation location
-    in
-        ( { locationTo = route
-          , locationFrom = Nothing
-          , hash = ""
-          , cards = []
-          , card = getCardId route
-          , deck = Dict.empty
-          , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
-          , filterSet = [ AT, GL, JL ]
-          , filterType =
-                [ -- TODO: This isn't flexible
-                  Character
-                , Event
-                , Battle
-                ]
-          , rarityOpen = False
-          , setOpen = False
-          }
-        , Request.CardList.load
-            |> GQL.send CardsLoaded
-        )
+init : ( Model, Cmd Msg )
+init =
+    ( { locationTo = Nothing
+      , locationFrom = Nothing
+      , hash = ""
+      , cards = []
+      , card = getCardId Nothing
+      , deck = Dict.empty
+      , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
+      , filterSet = [ AT, GL, JL ]
+
+      -- TODO: This isn't flexible
+      , filterType = [ Character, Event, Battle ]
+      , rarityOpen = False
+      , setOpen = False
+      }
+    , Request.CardList.load
+        |> GQL.send CardsLoaded
+    )

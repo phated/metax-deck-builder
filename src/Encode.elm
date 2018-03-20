@@ -213,7 +213,7 @@ encodeCard ( maybeCard, qty ) =
             ""
 
 
-hash : List ( Maybe Card, Int ) -> String
+hash : List ( Maybe Card, Int ) -> Maybe String
 hash deck =
     let
         encodedVersion =
@@ -235,4 +235,7 @@ hash deck =
             encodedDeck ++ base64Checksum
     in
         -- AiAASAhA
-        encoded
+        if List.length encodedCards > 0 then
+            Just encoded
+        else
+            Nothing
