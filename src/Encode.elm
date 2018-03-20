@@ -114,56 +114,46 @@ sixtyfour =
         ]
 
 
-encodeWithPadding : Int -> Int -> String
-encodeWithPadding padLength value =
-    String.padLeft padLength '0' <| encodeBin value
-
-
-encodeQty : Int -> String
+encodeQty : Int -> Int
 encodeQty qty =
-    encodeWithPadding 2 (qty - 1)
+    (qty - 1) * 65536
 
 
-encodeRarity : CardRarity -> String
+encodeRarity : CardRarity -> Int
 encodeRarity rarity =
     let
         val =
             rarityToInt rarity
     in
-        encodeWithPadding 3 val
+        val * 8192
 
 
-encodeNumber : Int -> String
+encodeNumber : Int -> Int
 encodeNumber number =
-    encodeWithPadding 8 (number - 1)
+    (number - 1) * 32
 
 
-encodeSet : CardSet -> String
+encodeSet : CardSet -> Int
 encodeSet set =
     let
         val =
             setToInt set
     in
-        encodeWithPadding 4 val
+        val * 2
 
 
-toBase64 : Maybe Int -> String
+toBase64 : Int -> String
 toBase64 hashIdx =
-    case hashIdx of
-        Just idx ->
-            let
-                asBase64 =
-                    Array.get idx sixtyfour
-            in
-                case asBase64 of
-                    Just val ->
-                        val
+    let
+        asBase64 =
+            Array.get hashIdx sixtyfour
+    in
+        case asBase64 of
+            Just val ->
+                val
 
-                    Nothing ->
-                        ""
-
-        Nothing ->
-            ""
+            Nothing ->
+                ""
 
 
 encodeCard : ( Maybe Card, Int ) -> String
@@ -184,25 +174,25 @@ encodeCard ( maybeCard, qty ) =
                     encodeSet card.set
 
                 hash =
-                    encodedQty ++ rarity ++ number ++ set
+                    encodedQty + rarity + number + set
 
                 checkbit =
-                    (List.length <| String.indexes "1" hash) % 2
+                    (List.length <| String.indexes "1" <| encodeBin hash) % 2
 
                 hashWithCheckbit =
-                    hash ++ toString checkbit
+                    hash + checkbit
 
-                sliced =
-                    [ String.slice 0 6 hashWithCheckbit
-                    , String.slice 6 12 hashWithCheckbit
-                    , String.slice 12 18 hashWithCheckbit
-                    ]
+                sextet3 =
+                    hashWithCheckbit % 64
 
-                decodedSlices =
-                    List.map decodeBin sliced
+                sextet2 =
+                    (floor ((toFloat <| hashWithCheckbit - sextet3) / 64)) % 64
+
+                sextet1 =
+                    (floor ((toFloat <| hashWithCheckbit - sextet2 - sextet3) / 4096)) % 64
 
                 base64 =
-                    String.join "" (List.map toBase64 decodedSlices)
+                    (toBase64 sextet1) ++ (toBase64 sextet2) ++ (toBase64 sextet3)
 
                 out =
                     base64
@@ -217,7 +207,7 @@ hash : List ( Maybe Card, Int ) -> Maybe String
 hash deck =
     let
         encodedVersion =
-            toBase64 <| Just 0
+            toBase64 0
 
         encodedCards =
             List.map encodeCard deck
@@ -229,7 +219,7 @@ hash deck =
             List.sum (List.map (\v -> Maybe.withDefault 0 (decodeDec v)) (String.split "" encodedDeck))
 
         base64Checksum =
-            toBase64 <| Just (checksum % 64)
+            toBase64 <| checksum % 64
 
         encoded =
             encodedDeck ++ base64Checksum
