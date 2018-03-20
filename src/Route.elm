@@ -1,7 +1,7 @@
 module Route exposing (Route(..), route, fromLocation)
 
 import Navigation exposing (Location)
-import UrlParser as Url exposing ((</>), Parser, oneOf, parsePath, s, string)
+import UrlParser as Url exposing ((</>), (<?>), Parser, oneOf, parsePath, s, string, stringParam)
 
 
 type Route

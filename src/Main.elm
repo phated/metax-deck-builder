@@ -4,7 +4,7 @@ import Http
 import Html exposing (nav, div, img, text, button, a, span, label, input, Html)
 import Html.Attributes exposing (href, class, classList, id, src, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
-import Navigation exposing (newUrl, Location)
+import Navigation exposing (newUrl, modifyUrl, Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
@@ -12,6 +12,7 @@ import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..))
 import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
 import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter), cardRarityToString)
+import Data.CardSet exposing (CardSet(JL, GL, AT), cardSetToString)
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
 import Data.Deck as Deck exposing (Deck)
@@ -21,14 +22,17 @@ import Util exposing (onNavigate)
 import Compare exposing (concat, by, Comparator)
 import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
-
 import GraphQl as GQL
+import Encode
+import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 
 
-main : Program Never Model Msg
+main : RouteUrlProgram Never Model Msg
 main =
-    Navigation.program (fromLocation >> SetRoute)
-        { init = init
+    RouteUrl.program
+        { delta2url = delta2url
+        , location2messages = location2messages
+        , init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -38,11 +42,12 @@ main =
 type alias Model =
     { locationTo : Maybe Route
     , locationFrom : Maybe Route
+    , hash : String
     , cards : CardList
     , deck : Deck
     , card : Maybe String
     , filterRarity : List CardRarity
-    , filterSet : List String
+    , filterSet : List CardSet
     , filterType : List CardType
     , rarityOpen : Bool
     , setOpen : Bool
@@ -50,22 +55,76 @@ type alias Model =
 
 
 type Msg
-    = NavigateTo String
-    | SetRoute (Maybe Route)
+    = SetRoute Route
     | CardsLoaded (Result Http.Error CardList)
     | Decrement String
     | Increment String
     | ExportDeck
     | AddRarityFilter CardRarity
     | RemoveRarityFilter CardRarity
-    | AddSetFilter String
-    | RemoveSetFilter String
-    -- Currently unused
+    | AddSetFilter CardSet
+    | RemoveSetFilter CardSet
+      -- Currently unused
     | AddTypeFilter CardType
     | RemoveTypeFilter CardType
     | LoadDeck Deck
     | ToggleOpenRarity
     | ToggleOpenSet
+
+
+delta2url : Model -> Model -> Maybe UrlChange
+delta2url prevModel nextModel =
+    let
+        hash =
+            hashDeck nextModel nextModel.deck
+
+        querystring =
+            hashQuery hash
+    in
+        case nextModel.locationTo of
+            Just Route.Home ->
+                Just
+                    { entry = NewEntry
+                    , url = "/" ++ querystring
+                    }
+
+            Just Route.Deck ->
+                Just
+                    { entry = NewEntry
+                    , url = "/deck" ++ querystring
+                    }
+
+            Just (Route.Card uid) ->
+                Just
+                    { entry = NewEntry
+                    , url = "/card/" ++ uid ++ querystring
+                    }
+
+            Just Route.Search ->
+                Just
+                    { entry = NewEntry
+                    , url = "/search" ++ querystring
+                    }
+
+            Nothing ->
+                Just
+                    { entry = ModifyEntry
+                    , url = querystring
+                    }
+
+
+location2messages : Location -> List Msg
+location2messages location =
+    let
+        route =
+            fromLocation location
+    in
+        case route of
+            Just route ->
+                [ SetRoute route ]
+
+            Nothing ->
+                []
 
 
 maybeIncrement : String -> Deck -> Deck
@@ -116,10 +175,12 @@ notZero : String -> Int -> Bool
 notZero _ count =
     count /= 0
 
+
 battleTypeOrder : Card -> Int
 battleTypeOrder { card_type, stats } =
     -- That hackiness, tho
-    if card_type /= Battle then 0
+    if card_type /= Battle then
+        0
     else
         case toBattleType stats of
             Just (Strength rank) ->
@@ -150,6 +211,7 @@ typeOrder cardType =
         Event ->
             3
 
+
 cardListSort : Comparator Card
 cardListSort =
     concat
@@ -160,28 +222,32 @@ cardListSort =
         ]
 
 
+hashDeck : Model -> Deck -> Maybe String
+hashDeck model deck =
+    Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
+
+
+hashQuery : Maybe String -> String
+hashQuery maybeHash =
+    Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetRoute route ->
             case route of
-                Just Route.Home ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
+                Route.Home ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-                Just Route.Deck ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
+                Route.Deck ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-                Just (Route.Card cardId) ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route, card = Just cardId }, Cmd.none )
+                Route.Card cardId ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route, card = Just cardId }, Cmd.none )
 
-                Just Route.Search ->
-                    ( { model | locationFrom = model.locationTo, locationTo = route }, Cmd.none )
-
-                Nothing ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
-
-        NavigateTo pathname ->
-            ( model, newUrl pathname )
+                Route.Search ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
         LoadDeck deck ->
             ( { model | deck = deck }, Cmd.none )
@@ -258,6 +324,7 @@ update msg model =
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
+
         ToggleOpenSet ->
             ( { model | setOpen = not model.setOpen }, Cmd.none )
 
@@ -267,12 +334,13 @@ view model =
     applicationShell model
 
 
-linkTo : String -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
+linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
 linkTo pathname =
     let
         linkAttrs =
-            [ href pathname
-            , onNavigate (NavigateTo pathname)
+            -- TODO: fix href
+            [ href ""
+            , onNavigate (SetRoute pathname)
             ]
     in
         (\attrs contents -> a (List.append attrs linkAttrs) contents)
@@ -289,13 +357,14 @@ logo title =
 downloadButton : Html Msg
 downloadButton =
     button [ class "navbar-button", onClick ExportDeck ]
-           [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+        [ img [ src "/icons/ios-download-outline.svg" ] [] ]
+
 
 getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
         Just Route.Home ->
-            linkTo "/search"
+            linkTo Route.Search
                 [ class "navbar-button" ]
                 [ img [ src "/icons/ios-search-white.svg" ] [] ]
 
@@ -335,8 +404,8 @@ decklistText model =
 navbarBottom : Model -> Html Msg
 navbarBottom model =
     nav [ class "navbar-bottom" ]
-        [ linkTo "/" [ class "navitem" ] [ text "Cards" ]
-        , linkTo "/deck" [ class "navitem" ] [ decklistText model ]
+        [ linkTo Route.Home [ class "navitem" ] [ text "Cards" ]
+        , linkTo Route.Deck [ class "navitem" ] [ decklistText model ]
         ]
 
 
@@ -348,34 +417,41 @@ filterRarity : CardRarity -> Card -> Bool
 filterRarity rarity card =
     card.rarity == rarity
 
-filterSet : String -> Card -> Bool
+
+filterSet : CardSet -> Card -> Bool
 filterSet set card =
     card.set == set
+
 
 filterType : CardType -> Card -> Bool
 filterType cardType card =
     card.card_type == cardType
 
+
 type alias Filters filters =
-    { filters | filterRarity : List CardRarity, filterSet : List String, filterType : List CardType }
+    { filters | filterRarity : List CardRarity, filterSet : List CardSet, filterType : List CardType }
+
 
 applyRarityFilters : List CardRarity -> Card -> Bool
 applyRarityFilters filters card =
     List.any (\rarity -> filterRarity rarity card) filters
 
-applySetFilters : List String -> Card -> Bool
+
+applySetFilters : List CardSet -> Card -> Bool
 applySetFilters filters card =
     List.any (\set -> filterSet set card) filters
+
 
 applyTypeFilters : List CardType -> Card -> Bool
 applyTypeFilters filters card =
     List.any (\cardType -> filterType cardType card) filters
 
+
 applyFilters : Filters filters -> Card -> Bool
 applyFilters filters card =
-     (applyRarityFilters filters.filterRarity card) &&
-     (applySetFilters filters.filterSet card) &&
-     (applyTypeFilters filters.filterType card)
+    (applyRarityFilters filters.filterRarity card)
+        && (applySetFilters filters.filterSet card)
+        && (applyTypeFilters filters.filterType card)
 
 
 cardListPane : Model -> Html Msg
@@ -419,6 +495,7 @@ statsView : CardStatList -> List (Html Msg)
 statsView stats =
     List.map statView stats
 
+
 statView : CardStat -> Html Msg
 statView stat =
     case stat of
@@ -427,11 +504,13 @@ statView stat =
                 [ img [ class "card-stat-icon", src ("/icons/strength.png") ] []
                 , span [ class "card-stat-text" ] [ text (toString rank) ]
                 ]
+
         CardStat.Intelligence rank ->
             div [ class "card-stat" ]
                 [ img [ class "card-stat-icon", src ("/icons/intelligence.png") ] []
                 , span [ class "card-stat-text" ] [ text (toString rank) ]
                 ]
+
         CardStat.Special rank ->
             div [ class "card-stat" ]
                 [ img [ class "card-stat-icon", src ("/icons/special.png") ] []
@@ -446,9 +525,11 @@ cardEffect effect =
 
 cardTrait : String -> String
 cardTrait trait =
-    if trait == ""
-        then ""
-        else  " (" ++ trait ++ ")"
+    if trait == "" then
+        ""
+    else
+        " (" ++ trait ++ ")"
+
 
 cardText : Card -> Html Msg
 cardText card =
@@ -459,6 +540,7 @@ cardText card =
             , text <| toBattleCardRank card
             , text <| cardTrait card.trait
             ]
+
         -- , cardTrait card.trait
         , cardEffect card.effect
         ]
@@ -469,6 +551,7 @@ cardStats card =
     div [ class "card-stats" ]
         (mpView card.mp :: statsView card.stats)
 
+
 previewBanner : Card -> Html Msg
 previewBanner card =
     case card.preview of
@@ -478,10 +561,11 @@ previewBanner card =
         Nothing ->
             text ""
 
+
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ linkTo ("/card/" ++ card.uid)
+        [ linkTo (Route.Card card.uid)
             [ class "card-thumbnail" ]
             [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
             , previewBanner card
@@ -595,30 +679,40 @@ addToRank item list =
         Nothing ->
             Just [ item ]
 
+
 type BattleType
     = Strength Int
     | Intelligence Int
     | Special Int
     | Multi Int
-    -- | StrengthIntelligence Int
-    -- | StrengthSpecial Int
-    -- | IntelligenceSpecial Int
-    -- | StrengthIntelligenceSpecial Int
+
+
+
+-- | StrengthIntelligence Int
+-- | StrengthSpecial Int
+-- | IntelligenceSpecial Int
+-- | StrengthIntelligenceSpecial Int
+
 
 battleTypeFoldr : CardStat -> Maybe BattleType -> Maybe BattleType
 battleTypeFoldr stat battleType =
-    case (battleType, stat) of
-        (Nothing, CardStat.Strength rank) ->
+    case ( battleType, stat ) of
+        ( Nothing, CardStat.Strength rank ) ->
             Just (Strength rank)
-        (Nothing, CardStat.Intelligence rank) ->
+
+        ( Nothing, CardStat.Intelligence rank ) ->
             Just (Intelligence rank)
-        (Nothing, CardStat.Special rank) ->
+
+        ( Nothing, CardStat.Special rank ) ->
             Just (Special rank)
-        (Just _, CardStat.Strength rank) ->
+
+        ( Just _, CardStat.Strength rank ) ->
             Just (Multi rank)
-        (Just _, CardStat.Intelligence rank) ->
+
+        ( Just _, CardStat.Intelligence rank ) ->
             Just (Multi rank)
-        (Just _, CardStat.Special rank) ->
+
+        ( Just _, CardStat.Special rank ) ->
             Just (Multi rank)
 
 
@@ -728,20 +822,31 @@ deckSectionView cards =
                 [ charactersView rows.characters
                 , eventsView rows.events
                 , battleCardView rows.battle
-                ])
+                ]
+            )
+
 
 toRank : CardStat -> Maybe Int -> Maybe Int
 toRank stat rank =
     case stat of
-        CardStat.Strength rank -> Just rank
-        CardStat.Intelligence rank -> Just rank
-        CardStat.Special rank -> Just rank
+        CardStat.Strength rank ->
+            Just rank
+
+        CardStat.Intelligence rank ->
+            Just rank
+
+        CardStat.Special rank ->
+            Just rank
 
 
 toBattleCardRank : Card -> String
 toBattleCardRank card =
     let
-        rank = if card.card_type == Battle then List.foldr toRank Nothing card.stats else Nothing
+        rank =
+            if card.card_type == Battle then
+                List.foldr toRank Nothing card.stats
+            else
+                Nothing
     in
         case rank of
             Just rank ->
@@ -760,7 +865,7 @@ deckCardView card =
                 , class "list-item"
                 ]
                 [ div [ class "deck-card-details" ]
-                    [ linkTo ("/card/" ++ card.uid)
+                    [ linkTo (Route.Card card.uid)
                         [ class "card-title" ]
                         [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
                         , text ("(" ++ card.uid ++ ") ")
@@ -787,20 +892,22 @@ deckListPane model =
         ]
         -- TODO: use |> operator
         [ div [ class "column-footer" ]
-              [ div [ class "column-label" ] [ decklistText model ]
-              , downloadButton
-              ]
+            [ div [ class "column-label" ] [ decklistText model ]
+            , downloadButton
+            ]
         , deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
         ]
+
 
 previewedBy : Card -> Html Msg
 previewedBy card =
     case card.preview of
         Just preview ->
-            div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href preview.previewUrl ] [ text preview.previewer ]]
+            div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href preview.previewUrl ] [ text preview.previewer ] ]
 
         Nothing ->
             text ""
+
 
 largeImg : Card -> Html Msg
 largeImg card =
@@ -808,6 +915,7 @@ largeImg card =
         [ img [ class "card-full", src card.image_url ] []
         , previewedBy card
         ]
+
 
 cardPane : Model -> Html Msg
 cardPane model =
@@ -949,12 +1057,14 @@ updateRarityFilter rarity isChecked =
     else
         RemoveRarityFilter rarity
 
-updateSetFilter : String -> Bool -> Msg
+
+updateSetFilter : CardSet -> Bool -> Msg
 updateSetFilter set isChecked =
     if isChecked then
         AddSetFilter set
     else
         RemoveSetFilter set
+
 
 updateTypeFilter : CardType -> Bool -> Msg
 updateTypeFilter cardType isChecked =
@@ -976,16 +1086,20 @@ buildQuery : Model -> String
 buildQuery model =
     let
         rarityQuery =
-            if List.length model.filterRarity == 0 then ""
-            else (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
+            if List.length model.filterRarity == 0 then
+                ""
+            else
+                (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
 
         setQuery =
-            if List.length model.filterSet == 0 then ""
-            else (++) "set:" (String.join "," model.filterSet)
-
+            if List.length model.filterSet == 0 then
+                ""
+            else
+                (++) "set:" (String.join "," <| List.map cardSetToString model.filterSet)
     in
         -- TODO: this adds the space before if no rarities selected
         rarityQuery ++ " " ++ setQuery
+
 
 searchPane : Model -> Html Msg
 searchPane model =
@@ -995,10 +1109,11 @@ searchPane model =
         ]
         [ input [ type_ "search", placeholder "Search", class "search-box", value (buildQuery model) ] []
         , div [ class "help-text" ] [ text "Need help?" ]
+
         -- TODO: maybe a button?
         -- , div [ class "signpost" ] [ text "Card Type" ]
         -- , div [ class "signpost" ] [ text "Rank" ]
-        , div [ classList [("option-container", True), ("is-open", model.rarityOpen)] ]
+        , div [ classList [ ( "option-container", True ), ( "is-open", model.rarityOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]
             , div [ class "option-body" ]
                 [ checkbox "Common" (List.member Common model.filterRarity) (updateRarityFilter Common)
@@ -1010,14 +1125,15 @@ searchPane model =
                 , checkbox "Starter" (List.member Starter model.filterRarity) (updateRarityFilter Starter)
                 ]
             ]
-        , div [ classList [("option-container", True), ("is-open", model.setOpen)] ]
+        , div [ classList [ ( "option-container", True ), ( "is-open", model.setOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenSet ] [ text "Set" ]
             , div [ class "option-body" ]
-                [ checkbox "Attack on Titan" (List.member "AT" model.filterSet) (updateSetFilter "AT")
-                , checkbox "Green Lantern" (List.member "GL" model.filterSet) (updateSetFilter "GL")
-                , checkbox "Justice Leauge" (List.member "JL" model.filterSet) (updateSetFilter "JL")
+                [ checkbox "Attack on Titan" (List.member AT model.filterSet) (updateSetFilter AT)
+                , checkbox "Green Lantern" (List.member GL model.filterSet) (updateSetFilter GL)
+                , checkbox "Justice Leauge" (List.member JL model.filterSet) (updateSetFilter JL)
                 ]
             ]
+
         --     div [ class "list-item-header" ] [ text "Rarity" ]
         -- , div [ class "list-item-header" ] [ text "Rarity" ]
         -- , checkbox "Character" (List.member Character model.filterType) (updateTypeFilter Character)
@@ -1053,10 +1169,9 @@ searchPane model =
         , button
             [ class "search-button"
             , href ("/")
-            , onNavigate (NavigateTo "/")
+            , onNavigate (SetRoute Route.Home)
             ]
             [ text "Search" ]
-        -- , button [ class "auto-button", disabled True ] [ text "Auto Filtering" ]
         ]
 
 
@@ -1088,28 +1203,22 @@ subscriptions model =
     Sub.map LoadDeck (onSessionLoaded Deck.decoder)
 
 
-init : Location -> ( Model, Cmd Msg )
-init location =
-    let
-        route =
-            fromLocation location
-    in
-        ( { locationTo = route
-          , locationFrom = Nothing
-          , cards = []
-          , card = getCardId route
-          , deck = Dict.empty
-          , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
-          , filterSet = ["AT", "GL", "JL"]
-          , filterType =
-            [ -- TODO: This isn't flexible
-              Character
-            , Event
-            , Battle
-            ]
-          , rarityOpen = False
-          , setOpen = False
-          }
-        , Request.CardList.load
-            |> GQL.send CardsLoaded
-        )
+init : ( Model, Cmd Msg )
+init =
+    ( { locationTo = Nothing
+      , locationFrom = Nothing
+      , hash = ""
+      , cards = []
+      , card = getCardId Nothing
+      , deck = Dict.empty
+      , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
+      , filterSet = [ AT, GL, JL ]
+
+      -- TODO: This isn't flexible
+      , filterType = [ Character, Event, Battle ]
+      , rarityOpen = False
+      , setOpen = False
+      }
+    , Request.CardList.load
+        |> GQL.send CardsLoaded
+    )

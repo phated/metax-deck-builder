@@ -2,15 +2,18 @@ module Data.Card exposing (Card, decoder)
 
 import Json.Decode exposing (int, string, nullable, field, maybe, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
+import Data.CardSet as CardSet exposing (CardSet)
 import Data.CardType as CardType exposing (CardType)
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardStatList as CardStatList exposing (CardStatList)
 
+
 type alias CardPreview =
     { previewer : String
     , previewUrl : String
     }
+
 
 previewDecoder : Decoder CardPreview
 previewDecoder =
@@ -18,9 +21,10 @@ previewDecoder =
         |> required "previewer" string
         |> required "previewUrl" string
 
+
 type alias Card =
     { uid : String
-    , set : String
+    , set : CardSet
     , number : Int
     , rarity : CardRarity
     , title : String
@@ -39,13 +43,13 @@ decoder : Decoder Card
 decoder =
     decode Card
         |> required "uid" string
-        |> required "set" string
+        |> custom (field "set" CardSet.decoder)
         |> required "number" int
         |> required "rarity" CardRarity.decoder
         |> required "title" string
         |> optional "subtitle" (maybe string) Nothing
         |> custom (field "type" CardType.decoder)
-        |> optionalAt ["trait", "name"] string ""
+        |> optionalAt [ "trait", "name" ] string ""
         |> required "mp" int
         |> custom CardEffect.decoder
         |> custom (field "stats" CardStatList.decoder)
