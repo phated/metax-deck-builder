@@ -723,6 +723,29 @@
   {
     "number": 18,
     "subtitle": null,
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "Panini Games Blog",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://paninigames.com/2018/03/20/aot-previews-enlist-now/"
+    },
+    "effect": "Push a Scout Regiment Character you control to search your deck for a Cadet Corps Character and play it.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "C18-AT",
+    "title": "Devastation",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C18-AT.jpg"
+  },
+  {
+    "number": 18,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [],
     "preview": null,
@@ -1177,7 +1200,7 @@
   {
     "number": 26,
     "subtitle": null,
-    "updatedAt": "2018-03-19T01:41:28.000Z",
+    "updatedAt": "2018-03-19T21:22:05.000Z",
     "stats": [],
     "preview": {
       "updatedAt": "2018-03-16T00:10:29.000Z",
@@ -1186,7 +1209,7 @@
       "isActive": true,
       "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-2/"
     },
-    "effect": "Discard an Intelligence Battle Card with a rank of 7 from your hand to discard a random card frmo your opponent's VP Pile.",
+    "effect": "Discard an Intelligence Battle Card with a rank of 7 from your hand to discard a random card from your opponent's VP Pile.",
     "set": "AT",
     "mp": -5,
     "trait": null,
@@ -1525,6 +1548,29 @@
     "title": "Reinforcements",
     "type": "Event",
     "imageUrl": "https://metaxdb.com/images/C30-JL.jpg"
+  },
+  {
+    "number": 31,
+    "subtitle": null,
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-4/"
+    },
+    "effect": "If you control a Cadet Corps Character, search your deck for a Battle Card and place it in your hand.",
+    "set": "AT",
+    "mp": -1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "C31-AT",
+    "title": "Training",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C31-AT.jpg"
   },
   {
     "number": 31,
@@ -3125,6 +3171,34 @@
     "title": "Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C53-JL.jpg"
+  },
+  {
+    "number": 54,
+    "subtitle": null,
+    "updatedAt": "2018-03-21T04:32:32.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 6
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:32.000Z",
+      "previewer": "MetaX DB",
+      "createdAt": "2018-03-21T04:32:32.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.facebook.com/metaxdb/photos/a.381267352284015.1073741827.381249082285842/384115591999191/"
+    },
+    "effect": "Your pushed Characters cannot be targeted until the end of the next turn.",
+    "set": "AT",
+    "mp": -1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-21T04:32:32.000Z",
+    "uid": "C54-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C54-AT.jpg"
   },
   {
     "number": 54,
@@ -4732,6 +4806,44 @@
   },
   {
     "number": 101,
+    "subtitle": "Determined Trainee",
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 3
+      },
+      {
+        "type": "Intelligence",
+        "rank": 3
+      },
+      {
+        "type": "Special",
+        "rank": 7
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "Panini Games Blog",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://paninigames.com/2018/03/20/aot-previews-enlist-now/"
+    },
+    "effect": "PLAY: Choose up to 3 cards from your opponent's discard pile, then swap each of them facedown with a random card in your VP Pile.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Cadet Corps"
+    },
+    "rarity": "R",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "R101-AT",
+    "title": "Eren Jaeger",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/R101-AT.jpg"
+  },
+  {
+    "number": 101,
     "subtitle": "Tyrant",
     "updatedAt": "2018-03-19T01:41:27.000Z",
     "stats": [
@@ -5247,6 +5359,44 @@
     "title": "The Flash",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/R106-JL.jpg"
+  },
+  {
+    "number": 107,
+    "subtitle": "Stoic",
+    "updatedAt": "2018-03-21T04:32:32.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 4
+      },
+      {
+        "type": "Intelligence",
+        "rank": 4
+      },
+      {
+        "type": "Special",
+        "rank": 6
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:32.000Z",
+      "previewer": "Panini Games Blog",
+      "createdAt": "2018-03-21T04:32:32.000Z",
+      "isActive": true,
+      "previewUrl": "https://paninigames.com/2018/03/20/aot-previews-enlist-now/"
+    },
+    "effect": "PLAY: Search your deck for a card and discard it.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Cadet Corps"
+    },
+    "rarity": "R",
+    "createdAt": "2018-03-21T04:32:32.000Z",
+    "uid": "R107-AT",
+    "title": "Mikasa Ackermann",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/R107-AT.jpg"
   },
   {
     "number": 107,
@@ -9313,6 +9463,40 @@
   },
   {
     "number": 61,
+    "subtitle": "Outgoing Cadet",
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 3
+      },
+      {
+        "type": "Special",
+        "rank": 5
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "Panini Games Blog",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://paninigames.com/2018/03/20/aot-previews-enlist-now/"
+    },
+    "effect": "CONSTANT: Your pushed Characters cannot be targeted.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Cadet Corps"
+    },
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U61-AT",
+    "title": "Conny Springer",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/U61-AT.jpg"
+  },
+  {
+    "number": 61,
     "subtitle": "Former Test Pilot",
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [
@@ -9366,6 +9550,40 @@
     "title": "Batgirl",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/U61-JL.jpg"
+  },
+  {
+    "number": 62,
+    "subtitle": "Hot Head",
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 6
+      },
+      {
+        "type": "Special",
+        "rank": 4
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "Panini Games Blog",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://paninigames.com/2018/03/20/aot-previews-enlist-now/"
+    },
+    "effect": "CONSTANT: Whenever an opponent's effect discards 1 or more cards from your hand, discard the top 2 cards of your opponent's deck.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Cadet Corps"
+    },
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U62-AT",
+    "title": "Jean Kirschtein",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/U62-AT.jpg"
   },
   {
     "number": 62,
@@ -9426,6 +9644,40 @@
     "title": "Batman",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/U62-JL.jpg"
+  },
+  {
+    "number": 63,
+    "subtitle": "Quiet Teammate",
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 6
+      },
+      {
+        "type": "Special",
+        "rank": 6
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "MetaX TCG Community",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.facebook.com/groups/MetaXTCGCommunity/permalink/1667117050048503/"
+    },
+    "effect": "PLAY: If you control another Scout Regiment Character, gain 1 MP for each card in your hand, to a maximum of 5.",
+    "set": "AT",
+    "mp": 1,
+    "trait": {
+      "name": "Scout Regiment"
+    },
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U63-AT",
+    "title": "Bertholdt Hoover",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/U63-AT.jpg"
   },
   {
     "number": 63,
@@ -9952,6 +10204,40 @@
     "title": "Nightwing",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/U68-JL.jpg"
+  },
+  {
+    "number": 69,
+    "subtitle": "Reliable",
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 6
+      },
+      {
+        "type": "Intelligence",
+        "rank": 5
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "MetaX TCG Community",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "https://www.facebook.com/groups/MetaXTCGCommunity/permalink/1667117050048503/"
+    },
+    "effect": "PLAY: Your opponent discards a random card from their hand, then each player draws a card.",
+    "set": "AT",
+    "mp": 2,
+    "trait": {
+      "name": "Scout Regiment"
+    },
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U69-AT",
+    "title": "Reiner Braun",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/U69-AT.jpg"
   },
   {
     "number": 69,
@@ -11343,6 +11629,34 @@
   {
     "number": 91,
     "subtitle": null,
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 4
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-4/"
+    },
+    "effect": "ATTACK: If this card is used in a Team Attack, look at your opponent's hand and draw a card.",
+    "set": "AT",
+    "mp": 2,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U91-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/U91-AT.jpg"
+  },
+  {
+    "number": 91,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [],
     "preview": null,
@@ -11657,6 +11971,34 @@
     "title": "Strength / Intelligence / Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/U95-JL.jpg"
+  },
+  {
+    "number": 96,
+    "subtitle": null,
+    "updatedAt": "2018-03-21T04:32:31.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 6
+      }
+    ],
+    "preview": {
+      "updatedAt": "2018-03-21T04:32:31.000Z",
+      "previewer": "TAK Games",
+      "createdAt": "2018-03-21T04:32:31.000Z",
+      "isActive": true,
+      "previewUrl": "http://www.tak-games.com.au/2018/03/metax-tcg-attack-on-titan-preview-4/"
+    },
+    "effect": "ATTACK: Until the end of your turn, negate all DEFEND effects.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-21T04:32:31.000Z",
+    "uid": "U96-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/U96-AT.jpg"
   },
   {
     "number": 96,
