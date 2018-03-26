@@ -3,7 +3,7 @@ module Encode exposing (hash)
 import Data.Card exposing (Card)
 import Data.CardRarity exposing (stringToCardRarity, CardRarity(Starter, Common, Uncommon, Rare, XRare, URare, Promo))
 import Data.CardSet exposing (stringToCardSet, CardSet(JL, GL, AT))
-import Array
+import Array exposing (Array)
 import Encoding.Integral exposing (decodeBin, decodeDec, encodeBin)
 
 
@@ -45,6 +45,7 @@ setToInt set =
             2
 
 
+sixtyfour : Array String
 sixtyfour =
     Array.fromList
         [ "A"
