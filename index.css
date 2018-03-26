@@ -56,17 +56,18 @@ body {
   flex-grow: 1;
   flex-basis: 0;
 
-  padding: 10px 8px 5px;
-  border-right: 1px solid grey;
+  padding: 5px;
+  margin: 0 5px 5px;
 }
 
-.navitem.selected {
-  background: #444;
-  /*color: #32a1f9;*/
+.navbar-icon {
+  max-height: 100%;
+  vertical-align: middle;
+  margin-right: 5px;
 }
 
-.navitem:last-child {
-  border-right-color: transparent;
+.navitem.active {
+  border-bottom: 3px solid #fff;
 }
 
 .pane-root {
@@ -79,77 +80,53 @@ body {
   padding: 50px 0;
   height: 100vh;
   box-sizing: border-box;
-}
-
-/* Animations when transition from->to pages */
-/* TODO: Finish these */
-.from-home.to-deck,
-.from-deck.to-home {
   transition: transform .3s;
 }
 
-.from-home.to-search,
-.from-deck.to-search {
-  animation: .3s slideSearchIn;
-}
-.from-search.to-home,
-.from-search.to-deck {
-  animation: .3s slideSearchOut;
-}
-
+/* Animations when transition from->to pages */
 .from-home.to-card,
 .from-deck.to-card {
+  transition: none;
   animation: .3s slideCardIn;
 }
 .from-card.to-home,
 .from-card.to-deck {
+  transition: none;
   animation: .3s slideCardOut;
 }
 
-.to-deck {
+.to-search {
+  transform: translate3d(0, 0, 0);
+}
+.to-home {
   transform: translate3d(-100%, 0, 0);
 }
-.to-search {
+.to-deck {
   transform: translate3d(-200%, 0, 0);
 }
-.to-card {
+.to-info {
   transform: translate3d(-300%, 0, 0);
 }
-
-@keyframes slideSearchIn {
-  from {
-    transform: translate3d(-200%, -100vh, 0);
-  }
-
-  to {
-    transform: translate3d(-200%, 0, 0);
-  }
+.to-card {
+  transform: translate3d(-400%, 0, 0);
 }
-@keyframes slideSearchOut {
-  from {
-    transform: translate3d(-200%, 0, 0);
-  }
 
-  to {
-    transform: translate3d(-200%, -100vh, 0);
-  }
-}
 @keyframes slideCardIn {
   from {
-    transform: translate3d(-300%, -100vh, 0);
+    transform: translate3d(-400%, -100vh, 0);
   }
 
   to {
-    transform: translate3d(-300%, 0, 0);
+    transform: translate3d(-400%, 0, 0);
   }
 }
 @keyframes slideCardOut {
   from {
-    transform: translate3d(-300%, 0, 0);
+    transform: translate3d(-400%, 0, 0);
   }
 
   to {
-    transform: translate3d(-300%, -100vh, 0);
+    transform: translate3d(-400%, -100vh, 0);
   }
 }
 
@@ -661,4 +638,40 @@ body {
 }
 .previewed-by a {
   color: #fff;
+}
+
+/* TODO: avoid IDs */
+#info-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Patreon stuff */
+.patreon {
+  font-size: 1rem;
+  flex-grow: 1;
+}
+
+.patreon > div {
+  margin-top: 10px;
+}
+
+.patreon-rank-5 {
+  font-weight: 700;
+}
+
+.patreon-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Attribution stuff */
+.attributions {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.attributions a {
+  color: #303030;
 }
