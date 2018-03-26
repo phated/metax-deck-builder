@@ -1,8 +1,8 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (nav, div, img, text, button, a, span, label, input, Html)
-import Html.Attributes exposing (href, class, classList, id, src, disabled, type_, placeholder, value, checked)
+import Html exposing (nav, div, img, text, button, a, span, label, input, li, ul, Html)
+import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Navigation exposing (newUrl, modifyUrl, Location)
 import Dict exposing (Dict)
@@ -39,6 +39,13 @@ main =
         }
 
 
+type alias Attribution =
+    { name : String
+    , author : String
+    , link : String
+    }
+
+
 type alias Model =
     { locationTo : Maybe Route
     , locationFrom : Maybe Route
@@ -51,6 +58,8 @@ type alias Model =
     , filterType : List CardType
     , rarityOpen : Bool
     , setOpen : Bool
+    , patrons : List String
+    , attributions : List Attribution
     }
 
 
@@ -104,6 +113,12 @@ delta2url prevModel nextModel =
                 Just
                     { entry = NewEntry
                     , url = "/search" ++ querystring
+                    }
+
+            Just Route.Info ->
+                Just
+                    { entry = NewEntry
+                    , url = "/info" ++ querystring
                     }
 
             Nothing ->
@@ -249,6 +264,9 @@ update msg model =
                 Route.Search ->
                     ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
+                Route.Info ->
+                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
+
         LoadDeck deck ->
             ( { model | deck = deck }, Cmd.none )
 
@@ -364,9 +382,7 @@ getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
         Just Route.Home ->
-            linkTo Route.Search
-                [ class "navbar-button" ]
-                [ img [ src "/icons/ios-search-white.svg" ] [] ]
+            text ""
 
         Just Route.Deck ->
             downloadButton
@@ -375,6 +391,9 @@ getNavbarIcon location =
             text ""
 
         Just Route.Search ->
+            text ""
+
+        Just Route.Info ->
             text ""
 
         Nothing ->
@@ -391,21 +410,88 @@ navbarTop model =
 
 decklistText : Model -> Html Msg
 decklistText model =
+    text <| (deckSize model)
+
+
+deckSize : Model -> String
+deckSize model =
     let
         deckContents =
             (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
 
-        deckSize =
+        size =
             sum deckContents
     in
-        text ("Deck (" ++ (toString deckSize) ++ ")")
+        toString size
+
+
+searchIcon : Model -> Html Msg
+searchIcon model =
+    let
+        classes =
+            case model.locationTo of
+                Just Route.Search ->
+                    "navitem active"
+
+                _ ->
+                    "navitem"
+    in
+        linkTo Route.Search [ class classes ] [ img [ class "navbar-icon", src "/icons/search.final.svg" ] [] ]
+
+
+cardListIcon : Model -> Html Msg
+cardListIcon model =
+    let
+        classes =
+            case model.locationTo of
+                Just Route.Home ->
+                    "navitem active"
+
+                _ ->
+                    "navitem"
+    in
+        linkTo Route.Home [ class classes ] [ img [ class "navbar-icon", src "/icons/cards.final.svg" ] [] ]
+
+
+deckIcon : Model -> Html Msg
+deckIcon model =
+    let
+        classes =
+            case model.locationTo of
+                Just Route.Deck ->
+                    "navitem active"
+
+                _ ->
+                    "navitem"
+    in
+        linkTo Route.Deck
+            [ class classes ]
+            [ img [ class "navbar-icon", src "/icons/deck.final.svg" ] []
+            , span [] [ decklistText model ]
+            ]
+
+
+infoIcon : Model -> Html Msg
+infoIcon model =
+    let
+        classes =
+            case model.locationTo of
+                Just Route.Info ->
+                    "navitem active"
+
+                _ ->
+                    "navitem"
+    in
+        linkTo Route.Info [ class classes ] [ img [ class "navbar-icon", src "/icons/info.final.svg" ] [] ]
 
 
 navbarBottom : Model -> Html Msg
 navbarBottom model =
     nav [ class "navbar-bottom" ]
-        [ linkTo Route.Home [ class "navitem" ] [ text "Cards" ]
-        , linkTo Route.Deck [ class "navitem" ] [ decklistText model ]
+        [ searchIcon model
+        , cardListIcon model
+        , deckIcon model
+        , infoIcon model
         ]
 
 
@@ -960,75 +1046,24 @@ cardPane model =
 
 getClassList : ( Maybe Route, Maybe Route ) -> List ( String, Bool )
 getClassList ( from, to ) =
-    case ( from, to ) of
-        -- From Nothing
-        ( Nothing, Just Route.Home ) ->
-            [ ( "pane-container", True ), ( "to-home", True ) ]
+    let
+        fromClass =
+            case from of
+                Just route ->
+                    "from-" ++ Route.toClassString route
 
-        ( Nothing, Just Route.Deck ) ->
-            [ ( "pane-container", True ), ( "to-deck", True ) ]
+                Nothing ->
+                    ""
 
-        ( Nothing, Just (Route.Card _) ) ->
-            [ ( "pane-container", True ), ( "to-card", True ) ]
+        toClass =
+            case to of
+                Just route ->
+                    "to-" ++ Route.toClassString route
 
-        ( Nothing, Just Route.Search ) ->
-            [ ( "pane-container", True ), ( "to-search", True ) ]
-
-        -- From Home
-        ( Just Route.Home, Just Route.Home ) ->
-            [ ( "pane-container", True ), ( "from-home", True ), ( "to-home", True ) ]
-
-        ( Just Route.Home, Just Route.Deck ) ->
-            [ ( "pane-container", True ), ( "from-home", True ), ( "to-deck", True ) ]
-
-        ( Just Route.Home, Just (Route.Card _) ) ->
-            [ ( "pane-container", True ), ( "from-home", True ), ( "to-card", True ) ]
-
-        ( Just Route.Home, Just Route.Search ) ->
-            [ ( "pane-container", True ), ( "from-home", True ), ( "to-search", True ) ]
-
-        -- From Deck
-        ( Just Route.Deck, Just Route.Home ) ->
-            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-home", True ) ]
-
-        ( Just Route.Deck, Just Route.Deck ) ->
-            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-deck", True ) ]
-
-        ( Just Route.Deck, Just (Route.Card _) ) ->
-            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-card", True ) ]
-
-        ( Just Route.Deck, Just Route.Search ) ->
-            [ ( "pane-container", True ), ( "from-deck", True ), ( "to-search", True ) ]
-
-        -- From Card
-        ( Just (Route.Card _), Just Route.Home ) ->
-            [ ( "pane-container", True ), ( "from-card", True ), ( "to-home", True ) ]
-
-        ( Just (Route.Card _), Just Route.Deck ) ->
-            [ ( "pane-container", True ), ( "from-card", True ), ( "to-deck", True ) ]
-
-        ( Just (Route.Card _), Just (Route.Card _) ) ->
-            [ ( "pane-container", True ), ( "from-card", True ), ( "to-card", True ) ]
-
-        ( Just (Route.Card _), Just Route.Search ) ->
-            [ ( "pane-container", True ), ( "from-card", True ), ( "to-search", True ) ]
-
-        -- From Search
-        ( Just Route.Search, Just Route.Home ) ->
-            [ ( "pane-container", True ), ( "from-search", True ), ( "to-home", True ) ]
-
-        ( Just Route.Search, Just Route.Deck ) ->
-            [ ( "pane-container", True ), ( "from-search", True ), ( "to-deck", True ) ]
-
-        ( Just Route.Search, Just (Route.Card _) ) ->
-            [ ( "pane-container", True ), ( "from-search", True ), ( "to-card", True ) ]
-
-        ( Just Route.Search, Just Route.Search ) ->
-            [ ( "pane-container", True ), ( "from-search", True ), ( "to-search", True ) ]
-
-        -- To Nothing
-        ( _, Nothing ) ->
-            [ ( "pane-container", True ) ]
+                Nothing ->
+                    ""
+    in
+        [ ( "pane-container", True ), ( fromClass, True ), ( toClass, True ) ]
 
 
 getCardId : Maybe Route -> Maybe String
@@ -1044,6 +1079,9 @@ getCardId location =
             Just id
 
         Just Route.Search ->
+            Nothing
+
+        Just Route.Info ->
             Nothing
 
         Nothing ->
@@ -1175,6 +1213,49 @@ searchPane model =
         ]
 
 
+patreonView : Model -> Html Msg
+patreonView model =
+    div [ class "patreon" ]
+        [ div [] [ text "Our work is supported by our Patrons on Patreon." ]
+        , div []
+            [ text "Extra "
+            , img [ class "card-stat-icon", src "/icons/special.png" ] []
+            , text " thanks our Rank 5 Patrons: "
+            , span [ class "patreon-rank-5" ] (List.map text model.patrons)
+            ]
+        , div [ class "patreon" ] [ text "For development updates and extra features, subscribe to us on Patreon!" ]
+        , a [ class "patreon-link", href "https://www.patreon.com/metaxdb" ] [ img [ src "/icons/patron.png", alt "Become a Patron" ] [] ]
+        ]
+
+
+toListLink : Attribution -> Html Msg
+toListLink attribution =
+    li []
+        [ a [ href attribution.link ]
+            [ text attribution.name
+            , text " by "
+            , text attribution.author
+            ]
+        ]
+
+
+iconThanksView : Model -> Html Msg
+iconThanksView model =
+    div [ class "attributions" ]
+        [ text "Icons provided by The Noun Project:"
+        , ul []
+            (List.map toListLink model.attributions)
+        ]
+
+
+infoPane : Model -> Html Msg
+infoPane model =
+    div [ id "info-pane", class "pane" ]
+        [ patreonView model
+        , iconThanksView model
+        ]
+
+
 paneContainer : Model -> Html Msg
 paneContainer model =
     let
@@ -1182,9 +1263,10 @@ paneContainer model =
             getClassList <| ( .locationFrom model, .locationTo model )
     in
         div [ classList containerClasses ]
-            [ cardListPane model
+            [ searchPane model
+            , cardListPane model
             , deckListPane model
-            , searchPane model
+            , infoPane model
             , cardPane model
             ]
 
@@ -1218,6 +1300,13 @@ init =
       , filterType = [ Character, Event, Battle ]
       , rarityOpen = False
       , setOpen = False
+      , patrons = [ "Matt Smith" ]
+      , attributions =
+            [ Attribution "Search Icon" "Icon Depot" "https://thenounproject.com/icon/1165408/"
+            , Attribution "Cards Icon" "Daniel Solis" "https://thenounproject.com/icon/219514/"
+            , Attribution "Deck Icon" "Michael G Brown" "https://thenounproject.com/icon/1156459/"
+            , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
+            ]
       }
     , Request.CardList.load
         |> GQL.send CardsLoaded
