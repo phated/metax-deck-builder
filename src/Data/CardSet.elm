@@ -44,10 +44,10 @@ cardSetToString : CardSet -> String
 cardSetToString cardSet =
     case cardSet of
         JL ->
-            "Character"
+            "JL"
 
         GL ->
-            "Event"
+            "GL"
 
         AT ->
-            "Battle"
+            "AT"
