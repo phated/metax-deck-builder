@@ -158,6 +158,7 @@ body {
 
 /* TODO: make these pane much better */
 #search-pane,
+#card-pane,
 #info-pane {
   display: flex;
   flex-direction: column;
@@ -166,10 +167,6 @@ body {
 /* All other styles are defined only in desktop mode */
 .column-footer {
   display: none;
-}
-
-#card-pane {
-  padding: 10px 20px 20px;
 }
 
 .search-button {
@@ -236,23 +233,41 @@ body {
   padding-bottom: 8px;
 }
 
+.card-image-container {
+  flex: 0;
+  margin-right: 8px;
+  text-align: center;
+}
+
 .card-thumbnail {
+  display: block;
   position: relative;
   max-width: 100%;
   max-height: 100px;
-  margin-right: 8px;
 }
 .card-thumbnail img {
   border-radius: 3px;
 }
 .card-full {
   width: 100%;
+  border-radius: 3px;
+}
+.card-number {
+  padding-top: 4px;
+}
+
+.card-full-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 4px;
+
+  border: 1px solid #d3d3d3;
+  border-radius: 3px;
 }
 
 .card-full-wrapper {
   position: relative;
-  margin-bottom: 10px;
-  max-width: 500px;
+  margin-bottom: 8px;
 }
 
 .card-text {
@@ -264,7 +279,7 @@ body {
 }
 .card-title {
   font-weight: 700;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -578,8 +593,8 @@ body {
   border-radius: 0 0 3px 3px;
 }
 .previewed-by {
-  bottom: 4px;
-  padding: 10px;
+  bottom: 3px;
+  padding: 8px;
 }
 .previewed-by a {
   color: #fff;
