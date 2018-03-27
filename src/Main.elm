@@ -651,10 +651,13 @@ previewBanner card =
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
-        [ linkTo (Route.Card card.uid)
-            [ class "card-thumbnail" ]
-            [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-            , previewBanner card
+        [ div [ class "card-image-container" ]
+            [ linkTo (Route.Card card.uid)
+                [ class "card-thumbnail" ]
+                [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                , previewBanner card
+                ]
+            , div [ class "card-number" ] [ text card.uid ]
             ]
         , cardText card
         , cardStats card
@@ -1017,12 +1020,14 @@ cardPane model =
                             [ id "card-pane"
                             , class "pane"
                             ]
-                            [ largeImg card
-                            , div [ class "card-details" ]
-                                [ cardText card
-                                , cardStats card
+                            [ div [ class "card-full-container" ]
+                                [ largeImg card
+                                , div [ class "card-details" ]
+                                    [ cardText card
+                                    , cardStats card
+                                    ]
+                                , stepper ( card, count )
                                 ]
-                            , stepper ( card, count )
                             ]
 
                     Nothing ->
