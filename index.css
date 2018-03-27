@@ -304,6 +304,7 @@ body {
 .card-stat-mp {
   flex-grow: 1;
   text-align: right;
+  margin-bottom: 4px;
 }
 .card-stat-icon {
   max-width: 20px;
