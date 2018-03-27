@@ -237,11 +237,19 @@ body {
   flex: 0;
   margin-right: 8px;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .card-thumbnail {
   display: block;
   position: relative;
+
+  /* Ensure the sizing looks good before images load */
+  min-height: 100px;
+  min-width: 72px;
+  /* Don't grow to large */
   max-width: 100%;
   max-height: 100px;
 }
@@ -254,6 +262,7 @@ body {
 }
 .card-number {
   padding-top: 4px;
+  margin-top: auto;
 }
 
 .card-full-container {
@@ -268,6 +277,8 @@ body {
 .card-full-wrapper {
   position: relative;
   margin-bottom: 8px;
+
+  min-height: 400px;
 }
 
 .card-text {
