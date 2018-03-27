@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   display: block;
   margin: 0;
@@ -9,10 +13,8 @@ body {
   text-align: center;
 }
 
-.navbar-top,
-.navbar-bottom {
-  box-sizing: border-box;
-  /*padding: 10px 8px 5px;*/
+.topbar,
+.navbar {
   background: #303030;
   height: 50px;
   color: #fff;
@@ -28,42 +30,43 @@ body {
   cursor: pointer;
 }
 
-.navbar-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-.navbar-top .logo {
+.topbar .logo {
   margin-right: 20px;
-  padding: 9px 10px;
+  padding: 9px 8px;
   text-align: left;
   flex-grow: 1;
 }
 .logo img {
   vertical-align: middle;
+}
+.topbar .logo img {
   margin-right: 10px;
 }
 
-.navbar-bottom {
+.navbar {
   box-shadow: 0 10px 10px 10px #808080;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
 }
-.navbar-bottom .navitem {
+.navbar .navitem {
   flex-grow: 1;
   flex-basis: 0;
 
   padding: 5px;
   margin: 0 5px 5px;
 }
+.navbar .logo {
+  display: none;
+}
 
 .navbar-icon {
   max-height: 100%;
+  max-width: 100%;
   vertical-align: middle;
-  margin-right: 5px;
+  /* margin-right: 5px; */
+}
+
+.deck-size {
+  display: inline-block;
+  margin-left: 5px;
 }
 
 .navitem.active {
@@ -72,14 +75,18 @@ body {
 
 .pane-root {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .pane-container {
+  flex: 1;
+
   display: flex;
   will-change: transform;
-  padding: 50px 0;
-  height: 100vh;
-  box-sizing: border-box;
+  /* padding: 0; */
+  /* height: calc(100vh - 100px); */
   transition: transform .3s;
 }
 
@@ -131,12 +138,23 @@ body {
 }
 
 .pane {
-  width: 100%;
-  height: 100%;
+  flex-grow: 1;
   flex-shrink: 0;
+  flex-basis: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 8px;
+
   overflow-x: auto;
-  padding: 0 8px;
-  box-sizing: border-box;
+  padding: 8px;
+}
+
+/* TODO: make these pane much better */
+#search-pane,
+#info-pane {
+  display: flex;
+  flex-direction: column;
 }
 
 /* All other styles are defined only in desktop mode */
@@ -148,7 +166,7 @@ body {
   padding: 10px 20px 20px;
 }
 
-.search-button, .auto-button {
+.search-button {
   border: none;
   background: #303030;
   color: #fff;
@@ -160,56 +178,66 @@ body {
   border-radius: 4px;
 }
 
-.auto-button {
-  display: none;
-  background: #d3d3d3;
-  color: #999999;
+.list-item-header,
+.list-item-sub-header {
+  font-weight: 700;
+  text-align: center;
+
+  border-radius: 3px;
+
+  grid-column: 1 / -1;
 }
 
 .list-item-header {
-  font-weight: 700;
-  text-align: center;
-  padding: 10px;
+  padding: 8px;
   font-size: 1.1rem;
-  border-bottom: 1px solid #d3d3d3;
+
+  background-color: #303030;
+  color: #fff;
 }
 
 .list-item-sub-header {
-  text-align: center;
   padding: 4px;
-  border-bottom: 1px solid #d3d3d3;
+  font-size: 0.9rem;
+
+  border: 1px solid #d3d3d3;
 }
-.list-item-warning {
-  text-align: center;
-   padding: 4px;
-  /* background: #ebcccc; */
-   background: #f4adad;
-  /* color: #a94442; */
+.with-warning {
+  background: #f4adad;
   color: #852725;
-  border-radius: 0 0 3px 3px;
+  border-color: #c61827;
+}
+.warning-message {
+  margin-top: 4px;
+  font-weight: 400;
 }
 
 .list-item {
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
-  padding: 8px 0;
-  min-height: 70px;
-  border-bottom: 1px solid #d3d3d3
+
+  padding: 4px;
+
+  border: 1px solid #d3d3d3;
+  border-radius: 3px;
 }
 
 .card-details {
   display: flex;
-  padding-bottom: 10px;
+  flex-grow: 1;
+  flex-shrink: 0;
+
+  padding-bottom: 8px;
 }
 
 .card-thumbnail {
   position: relative;
-  border-radius: 3px;
   max-width: 100%;
   max-height: 100px;
-  margin-right: 10px;
+  margin-right: 8px;
+}
+.card-thumbnail img {
+  border-radius: 3px;
 }
 .card-full {
   width: 100%;
@@ -309,12 +337,12 @@ body {
 .stepper-decrement {
   order: 1;
   /* border-right: 1px solid #d3d3d3; */
-  border-radius: 5px 0 0 5px;
+  border-radius: 3px 0 0 3px;
 }
 .stepper-increment {
   order: 3;
   /* border-left: 1px solid #d3d3d3; */
-  border-radius: 0 5px 5px 0;
+  border-radius: 0 3px 3px 0;
 }
 
 /* From https://github.com/mladenplavsic/css-ripple-effect */
@@ -368,11 +396,13 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
+  padding: 5px 10px;
 }
 .navbar-button img {
-  padding: 5px 10px;
-  width: 35px;
+  max-width: 35px;
+}
+.navbar .export-button {
+  display: none;
 }
 
 .view-icon {
@@ -411,102 +441,7 @@ body {
   background-image: url(/icons/ios-checkmark.svg);
 }
 
-/* Non-mobiled */
-@media only screen and (min-width: 768px) {
-  .navbar-bottom {
-    display: none;
-  }
 
-  .pane-container {
-    transform: translate3d(0%, 0, 0);
-    padding-bottom: 0;
-    /* border-right: 1px solid #d3d3d3;
-    border-left: 1px solid #d3d3d3;
-    margin: 0 auto; */
-  }
-
-  .to-deck {
-    transform: none;
-  }
-
-  .pane {
-    flex-shrink: 1;
-    border-right: 1px solid #d3d3d3;
-  }
-
-  #search-pane {
-    order: 1;
-    max-width: 200px;
-  }
-
-  #card-list-pane {
-    order: 2;
-  }
-
-  #card-pane {
-    order: 3;
-    max-width: 380px;
-    overflow-y: scroll;
-  }
-
-  #deck-list-pane {
-    order: 4;
-    border-right: none;
-  }
-
-  /* In desktop mode, you can see the auto filtering, I think */
-  .search-button {
-    display: none;
-  }
-
-  .auto-button {
-    display: block;
-  }
-
-  /* Turn the deck into a column with a bunch of hacky stuff to avoid position: sticky */
-  .column-wrapper {
-    position: relative;
-    padding: 0;
-    /* Hide the contents to position footer absolutely */
-    overflow: hidden;
-  }
-
-  .column-contents {
-    /* Needed to scroll properly */
-    box-sizing: border-box;
-    height: 100%;
-    padding: 0 8px 50px;
-    overflow-x: auto;
-  }
-
-  /* TODO: a lot of these styles are copied from navitem */
-  /* This only shows on desktop */
-  .column-footer {
-    display: flex;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 50px;
-    background: #303030;
-    color: #fff;
-    font-size: 20px;
-    z-index: 10;
-  }
-
-  .column-footer > * {
-    margin: auto;
-  }
-  .column-label {
-    flex-grow: 1;
-    text-align: center;
-  }
-
-  /* Hide the search button on desktop */
-  .navbar-top .navbar-button {
-    display: none;
-  }
-}
 
 .search-box {
   -webkit-appearance: textfield;
@@ -631,6 +566,7 @@ body {
   /* background: #0c7e43; */
   background: #c96b14;
   text-align: center;
+  border-radius: 0 0 3px 3px;
 }
 .previewed-by {
   bottom: 4px;
@@ -638,12 +574,6 @@ body {
 }
 .previewed-by a {
   color: #fff;
-}
-
-/* TODO: avoid IDs */
-#info-pane {
-  display: flex;
-  flex-direction: column;
 }
 
 /* Patreon stuff */
