@@ -50,6 +50,7 @@ exports.trait = {
   "Garrison Regiment": "cjes4ulp5170k0183wz5ewix6",
   "Military Police Regiment": "cjes4ushb170o0183gqvjd1pr",
   "Titan": "cjes4v11x170t0183yn2ripoe",
-  "Cadet Corps": "cjes4vgkg170x0183kj04xyew"
+  "Cadet Corps": "cjes4vgkg170x0183kj04xyew",
+  "Human": "cjf8iuklm49ie0183uw7s0iq4"
 };
 
