@@ -20,7 +20,7 @@ import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
 import Compare exposing (concat, by, Comparator)
-import Route exposing (fromLocation, Route)
+import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as GQL
 import Encode
@@ -353,12 +353,11 @@ view model =
 
 
 linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
-linkTo pathname =
+linkTo route =
     let
         linkAttrs =
-            -- TODO: fix href
-            [ href ""
-            , onNavigate (SetRoute pathname)
+            [ href <| toHref route
+            , onNavigate (SetRoute route)
             ]
     in
         (\attrs contents -> a (List.append attrs linkAttrs) contents)
@@ -366,7 +365,8 @@ linkTo pathname =
 
 logo : String -> Html Msg
 logo title =
-    div [ class "navitem logo" ]
+    linkTo Route.Home
+        [ class "navitem logo" ]
         [ img [ src "/icons/logo.png" ] []
         , text title
         ]
