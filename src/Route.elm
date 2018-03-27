@@ -1,4 +1,4 @@
-module Route exposing (Route(..), route, fromLocation, toClassString)
+module Route exposing (Route(..), route, fromLocation, toHref, toClassString)
 
 import Navigation exposing (Location)
 import UrlParser as Url exposing ((</>), Parser, oneOf, parsePath, s, string)
@@ -26,6 +26,25 @@ route =
 fromLocation : Location -> Maybe Route
 fromLocation location =
     parsePath route location
+
+
+toHref : Route -> String
+toHref route =
+    case route of
+        Home ->
+            "/"
+
+        Deck ->
+            "/deck"
+
+        Card id ->
+            "/card/" ++ id
+
+        Search ->
+            "/search"
+
+        Info ->
+            "/info"
 
 
 toClassString : Route -> String
