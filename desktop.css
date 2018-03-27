@@ -1,0 +1,61 @@
+/* Non-mobiled */
+@media only screen and (min-width: 768px) {
+  .pane-root {
+    flex-direction: row;
+  }
+
+  .topbar {
+    display: none;
+  }
+
+  .navbar {
+    order: -1;
+    box-shadow: none;
+    height: 100%;
+    width: 50px;
+    flex-direction: column;
+  }
+
+  .navbar .logo {
+    display: block;
+    padding: 5px 0;
+  }
+
+  .navbar .navitem {
+    flex: 0;
+    margin-top: 5px;
+  }
+
+  /* TODO: gross specifity */
+  .navbar .navitem-cards {
+    padding: 5px 0;
+  }
+
+  .navbar .navitem-deck {
+    margin-bottom: 0;
+  }
+
+  .deck-size {
+    margin: 5px 0 0;
+  }
+
+  .pane-container {
+    /* calc due to navbar on side */
+    width: calc(100vw - 50px);
+  }
+
+  .navbar-button {
+    margin-top: auto;
+    padding: 0;
+  }
+  .navbar-button img {
+    max-width: 100%;
+  }
+  .navbar .export-button {
+    display: block;
+  }
+
+  .patreon-link {
+    text-align: start;
+  }
+}

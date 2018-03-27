@@ -1,7 +1,7 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (nav, div, img, text, button, a, span, label, input, li, ul, Html)
+import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Navigation exposing (newUrl, modifyUrl, Location)
@@ -374,7 +374,7 @@ logo title =
 
 downloadButton : Html Msg
 downloadButton =
-    button [ class "navbar-button", onClick ExportDeck ]
+    button [ class "navbar-button export-button", onClick ExportDeck ]
         [ img [ src "/icons/ios-download-outline.svg" ] [] ]
 
 
@@ -402,7 +402,7 @@ getNavbarIcon location =
 
 navbarTop : Model -> Html Msg
 navbarTop model =
-    nav [ class "navbar-top" ]
+    header [ class "topbar" ]
         [ logo "MetaX DB"
         , getNavbarIcon <| .locationTo model
         ]
@@ -431,10 +431,10 @@ searchIcon model =
         classes =
             case model.locationTo of
                 Just Route.Search ->
-                    "navitem active"
+                    "navitem navitem-search active"
 
                 _ ->
-                    "navitem"
+                    "navitem navitem-search"
     in
         linkTo Route.Search [ class classes ] [ img [ class "navbar-icon", src "/icons/search.final.svg" ] [] ]
 
@@ -445,10 +445,10 @@ cardListIcon model =
         classes =
             case model.locationTo of
                 Just Route.Home ->
-                    "navitem active"
+                    "navitem navitem-cards active"
 
                 _ ->
-                    "navitem"
+                    "navitem navitem-cards"
     in
         linkTo Route.Home [ class classes ] [ img [ class "navbar-icon", src "/icons/cards.final.svg" ] [] ]
 
@@ -459,15 +459,15 @@ deckIcon model =
         classes =
             case model.locationTo of
                 Just Route.Deck ->
-                    "navitem active"
+                    "navitem navitem-deck active"
 
                 _ ->
-                    "navitem"
+                    "navitem navitem-deck"
     in
         linkTo Route.Deck
             [ class classes ]
             [ img [ class "navbar-icon", src "/icons/deck.final.svg" ] []
-            , span [] [ decklistText model ]
+            , span [ class "deck-size" ] [ decklistText model ]
             ]
 
 
@@ -477,21 +477,23 @@ infoIcon model =
         classes =
             case model.locationTo of
                 Just Route.Info ->
-                    "navitem active"
+                    "navitem navitem-info active"
 
                 _ ->
-                    "navitem"
+                    "navitem navitem-info"
     in
         linkTo Route.Info [ class classes ] [ img [ class "navbar-icon", src "/icons/info.final.svg" ] [] ]
 
 
 navbarBottom : Model -> Html Msg
 navbarBottom model =
-    nav [ class "navbar-bottom" ]
-        [ searchIcon model
+    nav [ class "navbar" ]
+        [ logo ""
+        , searchIcon model
         , cardListIcon model
         , deckIcon model
         , infoIcon model
+        , downloadButton
         ]
 
 
@@ -692,9 +694,9 @@ sectionHeader title count =
     List.singleton (div [ class "list-item-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
 
 
-sectionSubHeader : String -> Int -> List (Html Msg)
-sectionSubHeader title count =
-    List.singleton (div [ class "list-item-sub-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
+sectionSubHeader : Html Msg -> List (Html Msg)
+sectionSubHeader content =
+    List.singleton (div [ class "list-item-sub-header" ] [ content ])
 
 
 sum : List ( Maybe Card, Int ) -> Int
@@ -724,26 +726,42 @@ eventsView events =
         []
 
 
-bcWarningView : List (Html Msg)
-bcWarningView =
-    List.singleton (div [ class "list-item-warning" ] [ text "You have too many Battle Cards at this Type/Rank" ])
+bcWarningView : Int -> Maybe (Html Msg)
+bcWarningView count =
+    if count > 3 then
+        Just <| div [ class "warning-message" ] [ text "You have too many Battle Cards at this Type/Rank" ]
+    else
+        Nothing
 
 
 battleCardSubSection : String -> List ( Maybe Card, Int ) -> List (Html Msg)
 battleCardSubSection title cards =
     if List.length cards > 0 then
         let
+            count =
+                sum cards
+
             warning =
-                if sum cards > 3 then
-                    bcWarningView
-                else
-                    []
+                bcWarningView count
+
+            countString =
+                toString count
+
+            titleText =
+                div [ class "subheader-title" ] [ text <| title ++ " (" ++ countString ++ ")" ]
         in
-            List.concat
-                [ sectionSubHeader title (sum cards)
-                , warning
-                , (List.map deckCardView cards)
-                ]
+            case warning of
+                Just warning ->
+                    List.concat
+                        [ List.singleton <| div [ class "list-item-sub-header with-warning" ] [ titleText, warning ]
+                        , (List.map deckCardView cards)
+                        ]
+
+                Nothing ->
+                    List.concat
+                        [ List.singleton <| div [ class "list-item-sub-header" ] [ titleText ]
+                        , (List.map deckCardView cards)
+                        ]
     else
         []
 
@@ -897,19 +915,18 @@ groupTypes ( card, count ) result =
             result
 
 
-deckSectionView : List ( Maybe Card, Int ) -> Html Msg
+deckSectionView : List ( Maybe Card, Int ) -> List (Html Msg)
 deckSectionView cards =
     let
         rows =
             List.foldl groupTypes (DeckGroups [] [] []) cards
     in
-        div [ class "column-contents" ]
-            (List.concat
-                [ charactersView rows.characters
-                , eventsView rows.events
-                , battleCardView rows.battle
-                ]
-            )
+        (List.concat
+            [ charactersView rows.characters
+            , eventsView rows.events
+            , battleCardView rows.battle
+            ]
+        )
 
 
 toRank : CardStat -> Maybe Int -> Maybe Int
@@ -950,19 +967,7 @@ deckCardView card =
                 [ id ("deck_" ++ card.uid)
                 , class "list-item"
                 ]
-                [ div [ class "deck-card-details" ]
-                    [ linkTo (Route.Card card.uid)
-                        [ class "card-title" ]
-                        [ img [ src "/icons/ios-search.svg", class "view-icon" ] []
-                        , text ("(" ++ card.uid ++ ") ")
-                        , text card.title
-                        , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
-                        , text <| toBattleCardRank card
-                        ]
-                    , mpView card.mp
-                    ]
-                , div [ class "deck-card-stats" ]
-                    (statsView card.stats)
+                [ cardDetails card
                 , stepper ( card, count )
                 ]
 
@@ -974,15 +979,9 @@ deckListPane : Model -> Html Msg
 deckListPane model =
     div
         [ id "deck-list-pane"
-        , class "pane column-wrapper"
+        , class "pane"
         ]
-        -- TODO: use |> operator
-        [ div [ class "column-footer" ]
-            [ div [ class "column-label" ] [ decklistText model ]
-            , downloadButton
-            ]
-        , deckSectionView (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
-        ]
+        (deckSectionView <| List.map (Tuple.mapFirst <| lookup model) <| Dict.toList model.deck)
 
 
 previewedBy : Card -> Html Msg
