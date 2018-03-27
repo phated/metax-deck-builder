@@ -616,7 +616,7 @@ cardTrait trait =
     if trait == "" then
         ""
     else
-        " (" ++ trait ++ ")"
+        trait
 
 
 cardText : Card -> Html Msg
@@ -626,10 +626,8 @@ cardText card =
             [ text card.title
             , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
             , text <| toBattleCardRank card
-            , text <| cardTrait card.trait
             ]
-
-        -- , cardTrait card.trait
+        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
         , cardEffect card.effect
         ]
 

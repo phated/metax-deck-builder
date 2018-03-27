@@ -263,12 +263,15 @@ body {
   transition: max-height 2s;
 }
 .card-title {
-  flex-grow: 1;
   font-weight: 700;
   margin-bottom: 5px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+}
+.card-effect {
+  margin-top: auto;
+  padding-top: 20px;
 }
 .card-effect img {
   max-width: 12px;
