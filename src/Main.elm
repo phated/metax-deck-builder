@@ -1222,7 +1222,7 @@ patreonView model =
         , div []
             [ text "Extra "
             , img [ class "card-stat-icon", src "/icons/special.png" ] []
-            , text " thanks our Rank 5+ Patrons: "
+            , text " thanks to our Rank 5+ Patrons: "
             , span [ class "patreon-rank-5" ] (List.map text model.patrons)
             ]
         , div [ class "patreon" ] [ text "For development updates and extra features, subscribe to us on Patreon!" ]
