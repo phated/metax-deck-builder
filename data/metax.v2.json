@@ -455,6 +455,30 @@
   },
   {
     "number": 14,
+    "subtitle": "Doctor",
+    "updatedAt": "2018-03-27T23:05:43.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 6
+      }
+    ],
+    "preview": null,
+    "effect": "PUSH: Discard all Battle Cards attached to target Character.",
+    "set": "AT",
+    "mp": 4,
+    "trait": {
+      "name": "Human"
+    },
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:05:43.000Z",
+    "uid": "C14-AT",
+    "title": "Grisha Jaeger",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/C14-AT.jpg"
+  },
+  {
+    "number": 14,
     "subtitle": "Possessed",
     "updatedAt": "2018-03-19T01:41:27.000Z",
     "stats": [
@@ -1041,6 +1065,23 @@
   {
     "number": 22,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "KO target damaged Character with a maximum rank of 7 or higher to draw 2 cards.",
+    "set": "AT",
+    "mp": 0,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C22-AT",
+    "title": "Finisher",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C22-AT.jpg"
+  },
+  {
+    "number": 22,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [],
     "preview": null,
@@ -1071,6 +1112,23 @@
     "title": "Echolocation",
     "type": "Event",
     "imageUrl": "https://metaxdb.com/images/C22-JL.jpg"
+  },
+  {
+    "number": 23,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "Your opponent's Battle Card effects are negated until the end of the turn. Search your discard pile for a Basic Battle Card and place it in your hand.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C23-AT",
+    "title": "Frightened",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C23-AT.jpg"
   },
   {
     "number": 23,
@@ -1162,6 +1220,23 @@
     "title": "Injustice",
     "type": "Event",
     "imageUrl": "https://metaxdb.com/images/C24-JL.jpg"
+  },
+  {
+    "number": 25,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "Place 2 Battle Cards from your discard pile into your hand, then discard a random card from your hand.",
+    "set": "AT",
+    "mp": -1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C25-AT",
+    "title": "Joke's On You",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C25-AT.jpg"
   },
   {
     "number": 25,
@@ -1518,6 +1593,23 @@
   {
     "number": 30,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "Target Character cannot attack next turn. Draw a Card.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C30-AT",
+    "title": "Tension",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C30-AT.jpg"
+  },
+  {
+    "number": 30,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:31.000Z",
     "stats": [],
     "preview": null,
@@ -1615,6 +1707,23 @@
     "title": "Strength",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C31-JL.jpg"
+  },
+  {
+    "number": 32,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "Attach 2 Battle Cards with a rank of 3 from your discard pile to target Character.",
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C32-AT",
+    "title": "Triple Threat",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/C32-AT.jpg"
   },
   {
     "number": 32,
@@ -1735,6 +1844,28 @@
   {
     "number": 34,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 1
+      }
+    ],
+    "preview": null,
+    "effect": "ATTACK: Shuffle a card from your hand into your deck, then draw 2 cards.",
+    "set": "AT",
+    "mp": -1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C34-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C34-AT.jpg"
+  },
+  {
+    "number": 34,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:28.000Z",
     "stats": [
       {
@@ -1775,6 +1906,28 @@
     "title": "Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C34-JL.jpg"
+  },
+  {
+    "number": 35,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 1
+      }
+    ],
+    "preview": null,
+    "effect": "ATTACK: If the Character using this card is KO'd this turn, draw 2 cards.",
+    "set": "AT",
+    "mp": 2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C35-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C35-AT.jpg"
   },
   {
     "number": 35,
@@ -1963,6 +2116,28 @@
     "title": "Strength",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C37-JL.jpg"
+  },
+  {
+    "number": 38,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 2
+      }
+    ],
+    "preview": null,
+    "effect": "Gain 1 MP for each different Trait you control.",
+    "set": "AT",
+    "mp": 1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C38-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C38-AT.jpg"
   },
   {
     "number": 38,
@@ -2325,6 +2500,28 @@
   {
     "number": 42,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 3
+      }
+    ],
+    "preview": null,
+    "effect": "ATTACK: Characters with the same Trait as this card's user may attack this turn.",
+    "set": "AT",
+    "mp": 1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C42-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C42-AT.jpg"
+  },
+  {
+    "number": 42,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:31.000Z",
     "stats": [
       {
@@ -2365,6 +2562,28 @@
     "title": "Intelligence",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C42-JL.jpg"
+  },
+  {
+    "number": 43,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 3
+      }
+    ],
+    "preview": null,
+    "effect": "DEFEND: You may return a Regiment Character you control outside of the Battle Zone to its owner's hand.",
+    "set": "AT",
+    "mp": 1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C43-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C43-AT.jpg"
   },
   {
     "number": 43,
@@ -2625,6 +2844,28 @@
     "title": "Intelligence",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C46-JL.jpg"
+  },
+  {
+    "number": 47,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 4
+      }
+    ],
+    "preview": null,
+    "effect": "DEFEND: Until the end of your next turn, Characters may attack and Link the turn they enter play.",
+    "set": "AT",
+    "mp": 2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C47-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C47-AT.jpg"
   },
   {
     "number": 47,
@@ -2907,6 +3148,28 @@
     "title": "Deadman",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/C5-JL.jpg"
+  },
+  {
+    "number": 50,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 5
+      }
+    ],
+    "preview": null,
+    "effect": "ATTACK: If this card is used in a Team Attack, search your discard pile for a Character with a CONSTANT effect and play it.",
+    "set": "AT",
+    "mp": 1,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C50-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C50-AT.jpg"
   },
   {
     "number": 50,
@@ -3243,6 +3506,28 @@
     "title": "Strength",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/C54-JL.jpg"
+  },
+  {
+    "number": 55,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 6
+      }
+    ],
+    "preview": null,
+    "effect": "DEFEND: Shuffle any number of cards from your hand into your deck, then draw the same amount back.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "C",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "C55-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/C55-AT.jpg"
   },
   {
     "number": 55,
@@ -4164,6 +4449,38 @@
     "title": "Lex Luther",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/P12-JL.jpg"
+  },
+  {
+    "number": 13,
+    "subtitle": "Humanity's Strongest Soldier",
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 3
+      },
+      {
+        "type": "Intelligence",
+        "rank": 5
+      },
+      {
+        "type": "Special",
+        "rank": 6
+      }
+    ],
+    "preview": null,
+    "effect": "PLAY: Until the end of your next turn, your Scout Regiment Characters cannot be targeted, may Link the turn they enter play, and may Link for 0 MP.",
+    "set": "AT",
+    "mp": 3,
+    "trait": {
+      "name": "Scout Regiment"
+    },
+    "rarity": "P",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "P13-AT",
+    "title": "Captain Levi",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/P13-AT.jpg"
   },
   {
     "number": 13,
@@ -6579,6 +6896,23 @@
   {
     "number": 123,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "KO a non-Titan Character you control to search your deck for a Titan Character and play it.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "R123-AT",
+    "title": "Titanic Transformation",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/R123-AT.jpg"
+  },
+  {
+    "number": 123,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:26.000Z",
     "stats": [],
     "preview": null,
@@ -6924,6 +7258,28 @@
     "title": "Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/R128-JL.jpg"
+  },
+  {
+    "number": 129,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 3
+      }
+    ],
+    "preview": null,
+    "effect": "If your opponent controls more Characters than you, search your discard pile for up to 2 Characters and place them in your hand.",
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "R129-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/R129-AT.jpg"
   },
   {
     "number": 129,
@@ -7652,6 +8008,28 @@
   {
     "number": 139,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 7
+      }
+    ],
+    "preview": null,
+    "effect": "If your opponent has more than 4 VP, discard random cards from their VP pile until they have 4 VP.",
+    "set": "AT",
+    "mp": -7,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "R139-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/R139-AT.jpg"
+  },
+  {
+    "number": 139,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:28.000Z",
     "stats": [
       {
@@ -7700,6 +8078,28 @@
     "title": "Special",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/R139-JL.jpg"
+  },
+  {
+    "number": 140,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 7
+      }
+    ],
+    "preview": null,
+    "effect": "Draw a card for each prepped Character your opponent controls.",
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "R",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "R140-AT",
+    "title": "Strength",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/R140-AT.jpg"
   },
   {
     "number": 140,
@@ -10293,6 +10693,34 @@
   },
   {
     "number": 70,
+    "subtitle": "Posing",
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 6
+      },
+      {
+        "type": "Special",
+        "rank": 5
+      }
+    ],
+    "preview": null,
+    "effect": "PUSH: KO target Character with a Strength Battle Card attached as Damage.",
+    "set": "AT",
+    "mp": 1,
+    "trait": {
+      "name": "Titan"
+    },
+    "rarity": "U",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "U70-AT",
+    "title": "Proud Titan",
+    "type": "Character",
+    "imageUrl": "https://metaxdb.com/images/U70-AT.jpg"
+  },
+  {
+    "number": 70,
     "subtitle": "Tomar-Re",
     "updatedAt": "2018-03-19T01:41:33.000Z",
     "stats": [
@@ -10749,6 +11177,23 @@
     "title": "Sinestro",
     "type": "Character",
     "imageUrl": "https://metaxdb.com/images/U75-JL.jpg"
+  },
+  {
+    "number": 76,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": "Draw 2 cards, then end your Planning Step.",
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "U76-AT",
+    "title": "Preparations",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/U76-AT.jpg"
   },
   {
     "number": 76,
@@ -11219,6 +11664,28 @@
     "title": "Passion for the Hunt",
     "type": "Event",
     "imageUrl": "https://metaxdb.com/images/U83-JL.jpg"
+  },
+  {
+    "number": 84,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Intelligence",
+        "rank": 2
+      }
+    ],
+    "preview": null,
+    "effect": "Draw 2 cards, then place a card from your hand on the bottom of your deck.",
+    "set": "AT",
+    "mp": 1,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "U84-AT",
+    "title": "Intelligence",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/U84-AT.jpg"
   },
   {
     "number": 84,
@@ -11923,6 +12390,28 @@
   {
     "number": 95,
     "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Special",
+        "rank": 6
+      }
+    ],
+    "preview": null,
+    "effect": "ATTACK: If your opponent assigns any defenders this turn, they must defend this attack first if possible.",
+    "set": "AT",
+    "mp": -1,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "U95-AT",
+    "title": "Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/U95-AT.jpg"
+  },
+  {
+    "number": 95,
+    "subtitle": null,
     "updatedAt": "2018-03-19T01:41:27.000Z",
     "stats": [
       {
@@ -12187,6 +12676,36 @@
     "title": "Strength",
     "type": "Battle",
     "imageUrl": "https://metaxdb.com/images/U98-JL.jpg"
+  },
+  {
+    "number": 99,
+    "subtitle": null,
+    "updatedAt": "2018-03-27T23:04:39.000Z",
+    "stats": [
+      {
+        "type": "Strength",
+        "rank": 7
+      },
+      {
+        "type": "Intelligence",
+        "rank": 7
+      },
+      {
+        "type": "Special",
+        "rank": 7
+      }
+    ],
+    "preview": null,
+    "effect": null,
+    "set": "AT",
+    "mp": -2,
+    "trait": null,
+    "rarity": "U",
+    "createdAt": "2018-03-27T23:04:39.000Z",
+    "uid": "U99-AT",
+    "title": "Strength / Intelligence / Special",
+    "type": "Battle",
+    "imageUrl": "https://metaxdb.com/images/U99-AT.jpg"
   },
   {
     "number": 99,
