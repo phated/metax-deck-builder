@@ -28,7 +28,7 @@ effectDecoder =
 
 oldEffectDecoder : Decoder CardEffect
 oldEffectDecoder =
-    field "effect_old"
+    field "effectOld"
         (oneOf
             [ (map toEffect string)
             , null (Any "")
