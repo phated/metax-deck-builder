@@ -39,8 +39,8 @@ oldEffectDecoder =
 decoder : Decoder CardEffect
 decoder =
     oneOf
-        [ effectDecoder
-        , oldEffectDecoder
+        [ oldEffectDecoder
+        , effectDecoder
         ]
 
 

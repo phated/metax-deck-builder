@@ -25,6 +25,11 @@ cardsQuery =
                         [ Gql.field "name"
                         ]
                 , Gql.field "effectOld"
+                , Gql.field "effect"
+                    |> Gql.withSelectors
+                        [ Gql.field "symbol"
+                        , Gql.field "text"
+                        ]
                 , Gql.field "stats"
                     |> Gql.withSelectors
                         [ Gql.field "type"
