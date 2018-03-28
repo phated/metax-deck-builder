@@ -16,12 +16,32 @@ type CardEffect
     | Any String
 
 
+effectDecoder : Decoder CardEffect
+effectDecoder =
+    field "effect"
+        (oneOf
+            [ (map toEffect string)
+            , null (Any "")
+            ]
+        )
+
+
+oldEffectDecoder : Decoder CardEffect
+oldEffectDecoder =
+    field "effect_old"
+        (oneOf
+            [ (map toEffect string)
+            , null (Any "")
+            ]
+        )
+
+
 decoder : Decoder CardEffect
 decoder =
-    field "effect" (oneOf [
-        (map toEffect string),
-        null (Any "")
-    ])
+    oneOf
+        [ effectDecoder
+        , oldEffectDecoder
+        ]
 
 
 
