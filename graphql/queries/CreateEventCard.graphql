@@ -5,6 +5,7 @@ mutation CreateEventCard(
   $set: CardSet!
   $title: String!
   $mp: Int!
+  $symbol: CardSymbol!
   $effect: String
   $imageUrl: String!
 ) {
@@ -16,7 +17,10 @@ mutation CreateEventCard(
     title: $title
     type: Event
     mp: $mp
-    effect: $effect
+    effect: {
+      symbol: $symbol
+      text: $effect
+    }
     imageUrl: $imageUrl
   ) {
     id

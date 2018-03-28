@@ -11,7 +11,10 @@ query AllData {
       name
     }
     mp
-    effect
+    effect {
+      symbol
+      text
+    }
     stats {
       type
       rank

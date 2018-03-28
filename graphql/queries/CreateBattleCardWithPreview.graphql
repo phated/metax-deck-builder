@@ -5,6 +5,7 @@ mutation CreateBattleCardWithPreview(
   $set: CardSet!
   $title: String!
   $mp: Int!
+  $symbol: CardSymbol!
   $effect: String
   $statsIds: [ID!]
   $imageUrl: String!
@@ -19,7 +20,10 @@ mutation CreateBattleCardWithPreview(
     title: $title
     type: Battle
     mp: $mp
-    effect: $effect
+    effect: {
+      symbol: $symbol
+      text: $effect
+    }
     statsIds: $statsIds
     imageUrl: $imageUrl
     preview: {

@@ -43,6 +43,7 @@ var conv = csv({
     type: 'string',
     trait: toTrait,
     mp: 'number',
+    symbol: stringOrUndefined,
     effect: stringOrUndefined,
     strength: toStats,
     intelligence: toStats,

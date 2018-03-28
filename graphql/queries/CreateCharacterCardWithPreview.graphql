@@ -7,6 +7,7 @@ mutation CreateCharacterCardWithPreview(
   $subtitle: String!
   $traitId: ID!
   $mp: Int!
+  $symbol: CardSymbol!
   $effect: String
   $statsIds: [ID!]
   $imageUrl: String!
@@ -23,7 +24,10 @@ mutation CreateCharacterCardWithPreview(
     type: Character
     traitId: $traitId
     mp: $mp
-    effect: $effect
+    effect: {
+      symbol: $symbol
+      text: $effect
+    }
     statsIds: $statsIds
     imageUrl: $imageUrl
     preview: {
