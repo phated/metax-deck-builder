@@ -10,7 +10,7 @@ import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..))
-import Data.CardEffect exposing (CardEffect(..), effectToString, effectToHtml)
+import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter), cardRarityToString)
 import Data.CardSet exposing (CardSet(JL, GL, AT), cardSetToString)
 import Data.CardStatList exposing (CardStatList)
@@ -233,7 +233,7 @@ cardListSort =
         [ by (typeOrder << .card_type)
         , by battleTypeOrder
         , by .title
-        , by (effectToString << .effect)
+        , by (.text << .effect)
         ]
 
 
@@ -608,7 +608,7 @@ statView stat =
 
 cardEffect : CardEffect -> Html Msg
 cardEffect effect =
-    div [ class "card-effect" ] (effectToHtml effect)
+    div [ class "card-effect" ] (CardEffect.toHtml effect)
 
 
 cardTrait : String -> String
