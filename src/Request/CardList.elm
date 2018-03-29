@@ -1,10 +1,8 @@
 module Request.CardList exposing (load)
 
--- import Http
-
 import Data.CardList as CardList exposing (CardList)
 import GraphQl as Gql exposing (Operation, Query, Named)
-import Json.Decode exposing (Decoder, field, string, map2, at, list)
+import Json.Decode exposing (at)
 
 
 cardsQuery : Operation Query Named
@@ -24,7 +22,6 @@ cardsQuery =
                     |> Gql.withSelectors
                         [ Gql.field "name"
                         ]
-                , Gql.field "effectOld"
                 , Gql.field "effect"
                     |> Gql.withSelectors
                         [ Gql.field "symbol"
@@ -45,6 +42,7 @@ cardsQuery =
         ]
 
 
+load : Gql.Request Query Named CardList
 load =
     Gql.query
         "https://api.graph.cool/simple/v1/cjerpcdas51ih01414psrg6wa"
