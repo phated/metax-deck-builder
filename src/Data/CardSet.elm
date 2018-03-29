@@ -1,7 +1,6 @@
-module Data.CardSet exposing (CardSet(..), decoder, stringToCardSet, cardSetToString)
+module Data.CardSet exposing (CardSet(..), decoder, toString, toInt)
 
-import Json.Decode exposing (string, andThen, Decoder)
-import Json.Decode.Extra exposing (fromResult)
+import Json.Decode exposing (string, andThen, succeed, fail, Decoder)
 
 
 type CardSet
@@ -12,36 +11,11 @@ type CardSet
 
 decoder : Decoder CardSet
 decoder =
-    string |> andThen (fromString >> fromResult)
+    string |> andThen stringToCardSet
 
 
-fromString : String -> Result String CardSet
-fromString =
-    Result.fromMaybe "Invalid card set." << stringToCardSet
-
-
-
--- Utils
-
-
-stringToCardSet : String -> Maybe CardSet
-stringToCardSet cardSet =
-    case cardSet of
-        "JL" ->
-            Just JL
-
-        "GL" ->
-            Just GL
-
-        "AT" ->
-            Just AT
-
-        _ ->
-            Nothing
-
-
-cardSetToString : CardSet -> String
-cardSetToString cardSet =
+toString : CardSet -> String
+toString cardSet =
     case cardSet of
         JL ->
             "JL"
@@ -51,3 +25,36 @@ cardSetToString cardSet =
 
         AT ->
             "AT"
+
+
+toInt : CardSet -> Int
+toInt set =
+    case set of
+        JL ->
+            0
+
+        GL ->
+            1
+
+        AT ->
+            2
+
+
+
+-- Utils
+
+
+stringToCardSet : String -> Decoder CardSet
+stringToCardSet cardSet =
+    case cardSet of
+        "JL" ->
+            succeed JL
+
+        "GL" ->
+            succeed GL
+
+        "AT" ->
+            succeed AT
+
+        _ ->
+            fail "Invalid card set."

@@ -2,22 +2,9 @@ module Encode exposing (hash)
 
 import Data.Card exposing (Card)
 import Data.CardRarity as CardRarity exposing (CardRarity)
-import Data.CardSet exposing (stringToCardSet, CardSet(JL, GL, AT))
+import Data.CardSet as CardSet exposing (CardSet)
 import Array exposing (Array)
 import Encoding.Integral exposing (decodeBin, decodeDec, encodeBin)
-
-
-setToInt : CardSet -> Int
-setToInt set =
-    case set of
-        JL ->
-            0
-
-        GL ->
-            1
-
-        AT ->
-            2
 
 
 sixtyfour : Array String
@@ -113,7 +100,7 @@ encodeSet : CardSet -> Int
 encodeSet set =
     let
         val =
-            setToInt set
+            CardSet.toInt set
     in
         val * 2
 
