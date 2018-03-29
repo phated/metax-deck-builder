@@ -7,19 +7,7 @@ import Data.CardType as CardType exposing (CardType)
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardStatList as CardStatList exposing (CardStatList)
-
-
-type alias CardPreview =
-    { previewer : String
-    , previewUrl : String
-    }
-
-
-previewDecoder : Decoder CardPreview
-previewDecoder =
-    decode CardPreview
-        |> required "previewer" string
-        |> required "previewUrl" string
+import Data.CardPreview as CardPreview exposing (CardPreview)
 
 
 type alias Card =
@@ -54,4 +42,4 @@ decoder =
         |> custom (field "effect" CardEffect.decoder)
         |> custom (field "stats" CardStatList.decoder)
         |> required "imageUrl" string
-        |> optional "preview" (maybe previewDecoder) Nothing
+        |> optional "preview" (maybe CardPreview.decoder) Nothing
