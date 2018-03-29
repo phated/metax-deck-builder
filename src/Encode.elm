@@ -1,35 +1,10 @@
 module Encode exposing (hash)
 
 import Data.Card exposing (Card)
-import Data.CardRarity exposing (stringToCardRarity, CardRarity(Starter, Common, Uncommon, Rare, XRare, URare, Promo))
+import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardSet exposing (stringToCardSet, CardSet(JL, GL, AT))
 import Array exposing (Array)
 import Encoding.Integral exposing (decodeBin, decodeDec, encodeBin)
-
-
-rarityToInt : CardRarity -> Int
-rarityToInt rarity =
-    case rarity of
-        Starter ->
-            0
-
-        Common ->
-            1
-
-        Uncommon ->
-            2
-
-        Rare ->
-            3
-
-        Promo ->
-            4
-
-        XRare ->
-            5
-
-        URare ->
-            6
 
 
 setToInt : CardSet -> Int
@@ -124,7 +99,7 @@ encodeRarity : CardRarity -> Int
 encodeRarity rarity =
     let
         val =
-            rarityToInt rarity
+            CardRarity.toInt rarity
     in
         val * 8192
 

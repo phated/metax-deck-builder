@@ -11,7 +11,7 @@ import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..))
 import Data.CardEffect as CardEffect exposing (CardEffect)
-import Data.CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter), cardRarityToString)
+import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Data.CardSet exposing (CardSet(JL, GL, AT), cardSetToString)
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
@@ -1129,7 +1129,7 @@ buildQuery model =
             if List.length model.filterRarity == 0 then
                 ""
             else
-                (++) "rarity:" (String.join "," <| List.map cardRarityToString model.filterRarity)
+                (++) "rarity:" (String.join "," <| List.map CardRarity.toString model.filterRarity)
 
         setQuery =
             if List.length model.filterSet == 0 then

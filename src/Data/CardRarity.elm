@@ -1,8 +1,6 @@
-module Data.CardRarity exposing (CardRarity(..), decoder, stringToCardRarity, cardRarityToString)
+module Data.CardRarity exposing (CardRarity(..), decoder, toString, toInt)
 
-import Regex exposing (find, regex, Match, HowMany(AtMost))
-import Json.Decode exposing (string, andThen, Decoder)
-import Json.Decode.Extra exposing (fromResult)
+import Json.Decode exposing (string, andThen, succeed, fail, Decoder)
 
 
 type CardRarity
@@ -17,45 +15,11 @@ type CardRarity
 
 decoder : Decoder CardRarity
 decoder =
-    string |> andThen (fromString >> fromResult)
-
-fromString : String -> Result String CardRarity
-fromString =
-    -- TODO: A lot of this can go away when a rarity column is added to the data
-    Result.fromMaybe "Invalid card rarity." << toRarity
+    string |> andThen stringToCardRarity
 
 
--- Utils
-stringToCardRarity : String -> Maybe CardRarity
-stringToCardRarity rarity =
-    case rarity of
-        "C" ->
-            Just Common
-
-        "U" ->
-            Just Uncommon
-
-        "R" ->
-            Just Rare
-
-        "XR" ->
-            Just XRare
-
-        "UR" ->
-            Just URare
-
-        "P" ->
-            Just Promo
-
-        "S" ->
-            Just Starter
-
-        _ ->
-            Nothing
-
-
-cardRarityToString : CardRarity -> String
-cardRarityToString rarity =
+toString : CardRarity -> String
+toString rarity =
     case rarity of
         Common ->
             "C"
@@ -79,30 +43,58 @@ cardRarityToString rarity =
             "S"
 
 
--- TODO: How can this be more type safe?
+toInt : CardRarity -> Int
+toInt rarity =
+    case rarity of
+        Starter ->
+            0
 
-matchToRarity : Match -> Maybe CardRarity
-matchToRarity match =
-    case match.submatches of
-        [ Just m ] ->
-            stringToCardRarity m
+        Common ->
+            1
 
-        [] ->
-            Nothing
+        Uncommon ->
+            2
+
+        Rare ->
+            3
+
+        Promo ->
+            4
+
+        XRare ->
+            5
+
+        URare ->
+            6
+
+
+
+-- Utils
+
+
+stringToCardRarity : String -> Decoder CardRarity
+stringToCardRarity rarity =
+    case rarity of
+        "C" ->
+            succeed Common
+
+        "U" ->
+            succeed Uncommon
+
+        "R" ->
+            succeed Rare
+
+        "XR" ->
+            succeed XRare
+
+        "UR" ->
+            succeed URare
+
+        "P" ->
+            succeed Promo
+
+        "S" ->
+            succeed Starter
 
         _ ->
-            Nothing
-
-
-toRarity : String -> Maybe CardRarity
-toRarity id =
-    let
-        match =
-            List.head (find (AtMost 1) (regex "^(C|U(?!R)|R|XR|UR|P|S)") id)
-    in
-        case match of
-            Just m ->
-                matchToRarity m
-
-            Nothing ->
-                Nothing
+            fail "Invalid card rarity."
