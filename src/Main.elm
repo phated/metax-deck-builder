@@ -10,9 +10,9 @@ import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType exposing (CardType(..))
+import Data.CardSet as CardSet exposing (CardSet(JL, GL, AT))
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
-import Data.CardSet exposing (CardSet(JL, GL, AT), cardSetToString)
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
 import Data.Deck as Deck exposing (Deck)
@@ -1135,7 +1135,7 @@ buildQuery model =
             if List.length model.filterSet == 0 then
                 ""
             else
-                (++) "set:" (String.join "," <| List.map cardSetToString model.filterSet)
+                (++) "set:" (String.join "," <| List.map CardSet.toString model.filterSet)
     in
         -- TODO: this adds the space before if no rarities selected
         rarityQuery ++ " " ++ setQuery
