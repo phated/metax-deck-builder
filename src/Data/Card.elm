@@ -51,7 +51,7 @@ decoder =
         |> custom (field "type" CardType.decoder)
         |> optionalAt [ "trait", "name" ] string ""
         |> required "mp" int
-        |> custom CardEffect.decoder
+        |> custom (field "effect" CardEffect.decoder)
         |> custom (field "stats" CardStatList.decoder)
         |> required "imageUrl" string
         |> optional "preview" (maybe previewDecoder) Nothing
