@@ -4,7 +4,7 @@ import Json.Encode exposing (encode, string, int, list, object, Value)
 import Json.Helpers exposing (encodeMap)
 import Data.Deck exposing (Deck)
 import Data.Card exposing (Card)
-import Data.CardType exposing (CardType, cardTypeToString)
+import Data.CardType as CardType exposing (CardType)
 import Data.CardList exposing (CardList)
 import Dict
 import Ports
@@ -21,16 +21,18 @@ save deck =
 toExport : CardList -> ( String, Int ) -> Maybe Value
 toExport cards ( cardId, quantity ) =
     let
-        card = lookup cards cardId
+        card =
+            lookup cards cardId
     in
         case card of
             Just card ->
-                Just <| object
-                    [ ( "quantity", int quantity )
-                    , ( "id", string cardId )
-                    , ( "title", string <| .title card )
-                    , ( "card_type", string (cardTypeToString <| .card_type card ) )
-                    ]
+                Just <|
+                    object
+                        [ ( "quantity", int quantity )
+                        , ( "id", string cardId )
+                        , ( "title", string <| .title card )
+                        , ( "card_type", string (CardType.toString <| .card_type card) )
+                        ]
 
             Nothing ->
                 Nothing
