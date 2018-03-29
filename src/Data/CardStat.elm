@@ -1,7 +1,7 @@
 module Data.CardStat exposing (CardStat(..), decoder)
 
-import Json.Decode exposing (map, map2, int, field, string, andThen, Decoder)
-import Json.Decode.Extra exposing (fromResult)
+import Json.Decode exposing (int, string, succeed, fail, Decoder)
+import Json.Decode.Pipeline exposing (decode, required, resolve)
 
 
 type CardStat
@@ -10,44 +10,29 @@ type CardStat
     | Special Int
 
 
-type alias StatRecord =
-    { type_ : String
-    , rank : Int
-    }
-
-
-decodeRecord : Decoder StatRecord
-decodeRecord =
-    map2 StatRecord
-        (field "type" string)
-        (field "rank" int)
-
-
 decoder : Decoder CardStat
 decoder =
-    decodeRecord |> andThen (fromRecord >> fromResult)
-
-
-fromRecord : StatRecord -> Result String CardStat
-fromRecord =
-    Result.fromMaybe "Invalid card stat." << recordToCardStat
+    decode toCardStat
+        |> required "type" string
+        |> required "rank" int
+        |> resolve
 
 
 
 -- Utils
 
 
-recordToCardStat : StatRecord -> Maybe CardStat
-recordToCardStat record =
-    case record.type_ of
+toCardStat : String -> Int -> Decoder CardStat
+toCardStat type_ rank =
+    case type_ of
         "Strength" ->
-            Just (Strength record.rank)
+            succeed (Strength rank)
 
         "Intelligence" ->
-            Just (Intelligence record.rank)
+            succeed (Intelligence rank)
 
         "Special" ->
-            Just (Special record.rank)
+            succeed (Special rank)
 
         _ ->
-            Nothing
+            fail "Invalid card stat."
