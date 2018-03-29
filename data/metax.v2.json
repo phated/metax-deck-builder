@@ -9727,6 +9727,26 @@
   },
   {
     "number": 2,
+    "subtitle": null,
+    "updatedAt": "2018-03-29T19:24:33.000Z",
+    "stats": [],
+    "preview": null,
+    "effect": {
+      "symbol": "NONE",
+      "text": "Shuffle a Scout Regiment Character you control into its owner's deck to search your deck or discard pile for a Scout Regiment Character with a CONSTANT effect and play it."
+    },
+    "set": "AT",
+    "mp": -3,
+    "trait": null,
+    "rarity": "S",
+    "createdAt": "2018-03-29T19:24:33.000Z",
+    "uid": "S2-AT",
+    "title": "Elite Scout Regiment",
+    "type": "Event",
+    "imageUrl": "https://metaxdb.com/images/S2-AT.jpg"
+  },
+  {
+    "number": 2,
     "subtitle": "Collector of Worlds",
     "updatedAt": "2018-03-19T01:41:31.000Z",
     "stats": [
