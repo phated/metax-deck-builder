@@ -113,6 +113,7 @@ location2messages location =
 
 hashDeck : Model -> Deck -> Maybe String
 hashDeck model deck =
+    -- TODO: This should only use the deck so it can go inside the Deck component
     Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
 
 
@@ -275,6 +276,7 @@ decklistText model =
 
 deckSize : Model -> String
 deckSize model =
+    -- TODO: This should use only the deck so it can go inside the Deck component
     let
         deckContents =
             (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))

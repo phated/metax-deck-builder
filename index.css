@@ -55,6 +55,10 @@ body {
   flex-grow: 1;
   flex-basis: 0;
 
+  /*
+  padding: 8px 4px 4px
+  margin: 0 4px 4px
+  */
   padding: 5px;
   margin: 0 5px 5px;
 }
