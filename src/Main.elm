@@ -46,7 +46,6 @@ type alias Model =
     , hash : String
     , cards : CardList
     , deck : Deck
-    , card : Maybe String
     , filterRarity : List CardRarity
     , filterSet : List CardSet
     , filterType : List CardType
@@ -126,21 +125,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetRoute route ->
-            case route of
-                Route.Home ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
-
-                Route.Deck ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
-
-                Route.Card cardId ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just route, card = Just cardId }, Cmd.none )
-
-                Route.Search ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
-
-                Route.Info ->
-                    ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
+            ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
         LoadDeck deck ->
             ( { model | deck = deck }, Cmd.none )
@@ -839,8 +824,8 @@ largeImg card =
 
 cardPane : Model -> Html Msg
 cardPane model =
-    case .card model of
-        Just cardId ->
+    case .locationTo model of
+        Just (Route.Card cardId) ->
             let
                 card =
                     lookup model cardId
@@ -872,7 +857,7 @@ cardPane model =
                             [ text "Card not found"
                             ]
 
-        Nothing ->
+        _ ->
             div
                 [ id "card-pane"
                 , class "pane align-center"
@@ -1116,7 +1101,6 @@ init =
       , locationFrom = Nothing
       , hash = ""
       , cards = []
-      , card = getCardId Nothing
       , deck = Dict.empty
       , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
       , filterSet = [ AT, GL, JL ]
