@@ -1,40 +1,63 @@
-module Data.Deck exposing (Deck, decoder, increment, decrement)
+module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, count)
 
-import Dict exposing (Dict)
+import AllDict exposing (AllDict)
 import Json.Decode exposing (int, string, decodeValue, decodeString, dict, Decoder, Value)
+import Data.Card exposing (Card)
 
 
 type alias Deck =
-    Dict String Int
+    AllDict Card Int String
+
+
+empty : Deck
+empty =
+    AllDict.empty toComparable
+
+
+toList : Deck -> List ( Card, Int )
+toList deck =
+    AllDict.toList deck
+
+
+count : Card -> Deck -> Int
+count card deck =
+    AllDict.get card deck
+        |> Maybe.withDefault 0
 
 
 decoder : Value -> Deck
 decoder session =
-    session
-        |> decodeValue string
-        |> Result.andThen (decodeString (dict int))
-        |> Result.withDefault Dict.empty
+    -- session
+    --     |> decodeValue string
+    --     |> Result.andThen (decodeString (dict int))
+    --     |> Result.withDefault empty
+    empty
 
 
-increment : String -> Deck -> Deck
-increment cardId deck =
-    Dict.update cardId maybeIncrement deck
+increment : Card -> Deck -> Deck
+increment card deck =
+    AllDict.update card maybeIncrement deck
 
 
-decrement : String -> Deck -> Deck
-decrement cardId deck =
+decrement : Card -> Deck -> Deck
+decrement card deck =
     let
         updatedDeck =
-            Dict.update cardId maybeDecrement deck
+            AllDict.update card maybeDecrement deck
     in
-        Dict.filter notZero updatedDeck
+        AllDict.filter notZero updatedDeck
 
 
 
 -- Utils
 
 
-notZero : String -> Int -> Bool
+toComparable : Card -> String
+toComparable card =
+    card.uid
+
+
+notZero : Card -> Int -> Bool
 notZero _ count =
     count /= 0
 
