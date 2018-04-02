@@ -4,7 +4,7 @@ import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
-import Navigation exposing (newUrl, modifyUrl, Location)
+import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
@@ -85,34 +85,10 @@ delta2url prevModel nextModel =
             hashQuery hash
     in
         case nextModel.locationTo of
-            Just Route.Home ->
+            Just route ->
                 Just
                     { entry = NewEntry
-                    , url = "/" ++ querystring
-                    }
-
-            Just Route.Deck ->
-                Just
-                    { entry = NewEntry
-                    , url = "/deck" ++ querystring
-                    }
-
-            Just (Route.Card uid) ->
-                Just
-                    { entry = NewEntry
-                    , url = "/card/" ++ uid ++ querystring
-                    }
-
-            Just Route.Search ->
-                Just
-                    { entry = NewEntry
-                    , url = "/search" ++ querystring
-                    }
-
-            Just Route.Info ->
-                Just
-                    { entry = NewEntry
-                    , url = "/info" ++ querystring
+                    , url = (Route.toHref route) ++ querystring
                     }
 
             Nothing ->
