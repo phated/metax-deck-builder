@@ -112,55 +112,6 @@ location2messages location =
                 []
 
 
-maybeIncrement : String -> Deck -> Deck
-maybeIncrement cardId deck =
-    Dict.update cardId increment deck
-
-
-increment : Maybe Int -> Maybe Int
-increment value =
-    case value of
-        Just value ->
-            let
-                val =
-                    if value < 3 then
-                        value + 1
-                    else
-                        value
-            in
-                Just val
-
-        Nothing ->
-            Just 1
-
-
-maybeDecrement : String -> Deck -> Deck
-maybeDecrement cardId deck =
-    Dict.update cardId decrement deck
-
-
-decrement : Maybe Int -> Maybe Int
-decrement value =
-    case value of
-        Just value ->
-            let
-                val =
-                    if value > 0 then
-                        value - 1
-                    else
-                        value
-            in
-                Just val
-
-        Nothing ->
-            Just 0
-
-
-notZero : String -> Int -> Bool
-notZero _ count =
-    count /= 0
-
-
 hashDeck : Model -> Deck -> Maybe String
 hashDeck model deck =
     Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
@@ -208,14 +159,14 @@ update msg model =
         Increment cardId ->
             let
                 deck =
-                    maybeIncrement cardId model.deck
+                    Deck.increment cardId model.deck
             in
                 ( { model | deck = deck }, Request.Deck.save deck )
 
         Decrement cardId ->
             let
                 deck =
-                    Dict.filter notZero (maybeDecrement cardId model.deck)
+                    Deck.decrement cardId model.deck
             in
                 ( { model | deck = deck }, Request.Deck.save deck )
 
