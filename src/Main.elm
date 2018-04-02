@@ -14,14 +14,13 @@ import Data.CardSet as CardSet exposing (CardSet(JL, GL, AT))
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Data.CardStatList exposing (CardStatList)
-import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
+import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
 import Data.Attribution as Attribution exposing (Attribution)
 import Data.BattleType as BattleType exposing (BattleType)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
-import Compare exposing (concat, by, Comparator)
 import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as GQL
@@ -162,39 +161,6 @@ notZero _ count =
     count /= 0
 
 
-battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, stats } =
-    -- That hackiness, tho
-    if card_type /= Battle then
-        0
-    else
-        case toBattleType stats of
-            Just (Strength rank) ->
-                0 + rank
-
-            Just (Intelligence rank) ->
-                7 + rank
-
-            Just (Special rank) ->
-                14 + rank
-
-            Just (Multi rank) ->
-                21 + rank
-
-            Nothing ->
-                28
-
-
-cardListSort : Comparator Card
-cardListSort =
-    concat
-        [ by (CardType.toInt << .card_type)
-        , by battleTypeOrder
-        , by .title
-        , by (.text << .effect)
-        ]
-
-
 hashDeck : Model -> Deck -> Maybe String
 hashDeck model deck =
     Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
@@ -230,7 +196,7 @@ update msg model =
 
         CardsLoaded (Ok cards) ->
             -- TODO: Deck ID
-            ( { model | cards = (List.sortWith cardListSort cards) }, loadSession "" )
+            ( { model | cards = (CardList.sort cards) }, loadSession "" )
 
         CardsLoaded (Err err) ->
             let
@@ -741,35 +707,6 @@ addToRank item list =
 
         Nothing ->
             Just [ item ]
-
-
-
-
-battleTypeFoldr : CardStat -> Maybe BattleType -> Maybe BattleType
-battleTypeFoldr stat battleType =
-    case ( battleType, stat ) of
-        ( Nothing, CardStat.Strength rank ) ->
-            Just (Strength rank)
-
-        ( Nothing, CardStat.Intelligence rank ) ->
-            Just (Intelligence rank)
-
-        ( Nothing, CardStat.Special rank ) ->
-            Just (Special rank)
-
-        ( Just _, CardStat.Strength rank ) ->
-            Just (Multi rank)
-
-        ( Just _, CardStat.Intelligence rank ) ->
-            Just (Multi rank)
-
-        ( Just _, CardStat.Special rank ) ->
-            Just (Multi rank)
-
-
-toBattleType : CardStatList -> Maybe BattleType
-toBattleType stats =
-    List.foldr battleTypeFoldr Nothing stats
 
 
 groupBattleCards : ( Maybe Card, Int ) -> BattleCardGroups -> BattleCardGroups
