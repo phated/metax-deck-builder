@@ -9,7 +9,7 @@ import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
-import Data.CardType exposing (CardType(..))
+import Data.CardType as CardType exposing (CardType(..))
 import Data.CardSet as CardSet exposing (CardSet(JL, GL, AT))
 import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
@@ -214,23 +214,10 @@ battleTypeOrder { card_type, stats } =
                 28
 
 
-typeOrder : CardType -> Int
-typeOrder cardType =
-    case cardType of
-        Character ->
-            1
-
-        Battle ->
-            2
-
-        Event ->
-            3
-
-
 cardListSort : Comparator Card
 cardListSort =
     concat
-        [ by (typeOrder << .card_type)
+        [ by (CardType.toInt << .card_type)
         , by battleTypeOrder
         , by .title
         , by (.text << .effect)

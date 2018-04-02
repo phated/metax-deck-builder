@@ -1,4 +1,4 @@
-module Data.CardType exposing (CardType(..), decoder, toString)
+module Data.CardType exposing (CardType(..), decoder, toString, toInt)
 
 import Json.Decode exposing (string, andThen, succeed, fail, Decoder)
 
@@ -27,13 +27,26 @@ toString cardType =
             "Battle"
 
 
+toInt : CardType -> Int
+toInt cardType =
+    case cardType of
+        Character ->
+            1
+
+        Battle ->
+            2
+
+        Event ->
+            3
+
+
 
 -- Utils
 
 
 stringToCardType : String -> Decoder CardType
-stringToCardType card_type =
-    case card_type of
+stringToCardType cardType =
+    case cardType of
         "Character" ->
             succeed Character
 
