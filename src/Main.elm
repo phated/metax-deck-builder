@@ -17,6 +17,7 @@ import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
 import Data.Deck as Deck exposing (Deck)
 import Data.Attribution as Attribution exposing (Attribution)
+import Data.BattleType as BattleType exposing (BattleType)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
@@ -742,18 +743,6 @@ addToRank item list =
             Just [ item ]
 
 
-type BattleType
-    = Strength Int
-    | Intelligence Int
-    | Special Int
-    | Multi Int
-
-
-
--- | StrengthIntelligence Int
--- | StrengthSpecial Int
--- | IntelligenceSpecial Int
--- | StrengthIntelligenceSpecial Int
 
 
 battleTypeFoldr : CardStat -> Maybe BattleType -> Maybe BattleType
@@ -789,17 +778,17 @@ groupBattleCards ( card, count ) result =
         Just { card_type, stats } ->
             case card_type of
                 Battle ->
-                    case toBattleType stats of
-                        Just (Strength rank) ->
+                    case BattleType.toBattleType stats of
+                        Just (BattleType.Strength rank) ->
                             { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
 
-                        Just (Intelligence rank) ->
+                        Just (BattleType.Intelligence rank) ->
                             { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
 
-                        Just (Special rank) ->
+                        Just (BattleType.Special rank) ->
                             { result | special = Dict.update rank (addToRank ( card, count )) result.special }
 
-                        Just (Multi rank) ->
+                        Just (BattleType.Multi rank) ->
                             { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
 
                         Nothing ->
