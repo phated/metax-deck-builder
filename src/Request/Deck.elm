@@ -1,48 +1,43 @@
 module Request.Deck exposing (save, export)
 
 import Json.Encode exposing (encode, string, int, list, object, Value)
-import Json.Helpers exposing (encodeMap)
 import Data.Deck exposing (Deck)
 import Data.Card exposing (Card)
 import Data.CardType as CardType exposing (CardType)
 import Data.CardList exposing (CardList)
-import Dict
+import Data.Deck as Deck
 import Ports
+
+
+toEncoder : ( Card, Int ) -> Value
+toEncoder ( card, count ) =
+    list [ string card.uid, int count ]
 
 
 save : Deck -> Cmd msg
 save deck =
-    encodeMap string int deck
+    List.map toEncoder (Deck.toList deck)
+        |> list
         |> encode 0
         |> Just
         |> Ports.storeSession
 
 
-toExport : CardList -> ( String, Int ) -> Maybe Value
-toExport cards ( cardId, quantity ) =
-    let
-        card =
-            lookup cards cardId
-    in
-        case card of
-            Just card ->
-                Just <|
-                    object
-                        [ ( "quantity", int quantity )
-                        , ( "id", string cardId )
-                        , ( "title", string <| .title card )
-                        , ( "card_type", string (CardType.toString <| .card_type card) )
-                        ]
-
-            Nothing ->
-                Nothing
+toExport : ( Card, Int ) -> Value
+toExport ( card, quantity ) =
+    object
+        [ ( "quantity", int quantity )
+        , ( "id", string card.uid )
+        , ( "title", string <| .title card )
+        , ( "card_type", string (CardType.toString <| .card_type card) )
+        ]
 
 
-export : CardList -> Deck -> Cmd msg
-export cards deck =
+export : Deck -> Cmd msg
+export deck =
     let
         exportDeck =
-            List.filterMap (toExport cards) (Dict.toList deck)
+            List.map toExport (Deck.toList deck)
     in
         encode 0 (list exportDeck)
             |> Just

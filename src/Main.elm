@@ -59,8 +59,8 @@ type alias Model =
 type Msg
     = SetRoute Route
     | CardsLoaded (Result Http.Error CardList)
-    | Decrement String
-    | Increment String
+    | Decrement Card
+    | Increment Card
     | ExportDeck
     | AddRarityFilter CardRarity
     | RemoveRarityFilter CardRarity
@@ -114,7 +114,8 @@ location2messages location =
 hashDeck : Model -> Deck -> Maybe String
 hashDeck model deck =
     -- TODO: This should only use the deck so it can go inside the Deck component
-    Encode.hash (List.map (Tuple.mapFirst (lookup model)) (Dict.toList deck))
+    Deck.toList deck
+        |> Encode.hash
 
 
 hashQuery : Maybe String -> String
@@ -142,22 +143,22 @@ update msg model =
             in
                 ( model, Cmd.none )
 
-        Increment cardId ->
+        Increment card ->
             let
                 deck =
-                    Deck.increment cardId model.deck
+                    Deck.increment card model.deck
             in
                 ( { model | deck = deck }, Request.Deck.save deck )
 
-        Decrement cardId ->
+        Decrement card ->
             let
                 deck =
-                    Deck.decrement cardId model.deck
+                    Deck.decrement card model.deck
             in
                 ( { model | deck = deck }, Request.Deck.save deck )
 
         ExportDeck ->
-            ( model, Request.Deck.export model.cards model.deck )
+            ( model, Request.Deck.export model.deck )
 
         AddRarityFilter rarity ->
             let
@@ -279,7 +280,7 @@ deckSize model =
     -- TODO: This should use only the deck so it can go inside the Deck component
     let
         deckContents =
-            (List.map (Tuple.mapFirst (lookup model)) (Dict.toList model.deck))
+            Deck.toList model.deck
 
         size =
             sum deckContents
@@ -423,8 +424,8 @@ stepper ( card, count ) =
             (count == 3)
     in
         div [ class "stepper-container" ]
-            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card.uid) ] [ text "-" ]
-            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card.uid) ] [ text "+" ]
+            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card) ] [ text "-" ]
+            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card) ] [ text "+" ]
             , div [ class "count-container" ] [ text (toString count) ]
             ]
 
@@ -530,7 +531,7 @@ cardView : Model -> Card -> Html Msg
 cardView model card =
     let
         count =
-            Maybe.withDefault 0 (Dict.get card.uid model.deck)
+            Deck.count card model.deck
     in
         div
             [ id card.uid
@@ -562,12 +563,12 @@ sectionSubHeader content =
     List.singleton (div [ class "list-item-sub-header" ] [ content ])
 
 
-sum : List ( Maybe Card, Int ) -> Int
+sum : List ( Card, Int ) -> Int
 sum cards =
     (List.sum (List.map Tuple.second cards))
 
 
-charactersView : List ( Maybe Card, Int ) -> List (Html Msg)
+charactersView : List ( Card, Int ) -> List (Html Msg)
 charactersView characters =
     if List.length characters > 0 then
         List.concat
@@ -578,7 +579,7 @@ charactersView characters =
         []
 
 
-eventsView : List ( Maybe Card, Int ) -> List (Html Msg)
+eventsView : List ( Card, Int ) -> List (Html Msg)
 eventsView events =
     if List.length events > 0 then
         List.concat
@@ -597,7 +598,7 @@ bcWarningView count =
         Nothing
 
 
-battleCardSubSection : String -> List ( Maybe Card, Int ) -> List (Html Msg)
+battleCardSubSection : String -> List ( Card, Int ) -> List (Html Msg)
 battleCardSubSection title cards =
     if List.length cards > 0 then
         let
@@ -630,14 +631,14 @@ battleCardSubSection title cards =
 
 
 type alias BattleCardGroups =
-    { strength : Dict Int (List ( Maybe Card, Int ))
-    , intelligence : Dict Int (List ( Maybe Card, Int ))
-    , special : Dict Int (List ( Maybe Card, Int ))
-    , multi : Dict Int (List ( Maybe Card, Int ))
+    { strength : Dict Int (List ( Card, Int ))
+    , intelligence : Dict Int (List ( Card, Int ))
+    , special : Dict Int (List ( Card, Int ))
+    , multi : Dict Int (List ( Card, Int ))
     }
 
 
-addToRank : ( Maybe Card, Int ) -> Maybe (List ( Maybe Card, Int )) -> Maybe (List ( Maybe Card, Int ))
+addToRank : ( Card, Int ) -> Maybe (List ( Card, Int )) -> Maybe (List ( Card, Int ))
 addToRank item list =
     case list of
         Just list ->
@@ -647,44 +648,39 @@ addToRank item list =
             Just [ item ]
 
 
-groupBattleCards : ( Maybe Card, Int ) -> BattleCardGroups -> BattleCardGroups
+groupBattleCards : ( Card, Int ) -> BattleCardGroups -> BattleCardGroups
 groupBattleCards ( card, count ) result =
-    case card of
-        Just { card_type, stats } ->
-            case card_type of
-                Battle ->
-                    case BattleType.toBattleType stats of
-                        Just (BattleType.Strength rank) ->
-                            { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
+    case card.card_type of
+        Battle ->
+            case BattleType.toBattleType card.stats of
+                Just (BattleType.Strength rank) ->
+                    { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
 
-                        Just (BattleType.Intelligence rank) ->
-                            { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
+                Just (BattleType.Intelligence rank) ->
+                    { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
 
-                        Just (BattleType.Special rank) ->
-                            { result | special = Dict.update rank (addToRank ( card, count )) result.special }
+                Just (BattleType.Special rank) ->
+                    { result | special = Dict.update rank (addToRank ( card, count )) result.special }
 
-                        Just (BattleType.Multi rank) ->
-                            { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
+                Just (BattleType.Multi rank) ->
+                    { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
 
-                        Nothing ->
-                            result
-
-                Character ->
+                Nothing ->
                     result
 
-                Event ->
-                    result
+        Character ->
+            result
 
-        Nothing ->
+        Event ->
             result
 
 
-toRows : String -> Int -> List ( Maybe Card, Int ) -> List (Html Msg) -> List (Html Msg)
+toRows : String -> Int -> List ( Card, Int ) -> List (Html Msg) -> List (Html Msg)
 toRows title rank cards result =
     List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) cards)
 
 
-battleCardView : List ( Maybe Card, Int ) -> List (Html Msg)
+battleCardView : List ( Card, Int ) -> List (Html Msg)
 battleCardView battle =
     if List.length battle > 0 then
         let
@@ -713,31 +709,26 @@ battleCardView battle =
 
 
 type alias DeckGroups =
-    { characters : List ( Maybe Card, Int )
-    , events : List ( Maybe Card, Int )
-    , battle : List ( Maybe Card, Int )
+    { characters : List ( Card, Int )
+    , events : List ( Card, Int )
+    , battle : List ( Card, Int )
     }
 
 
-groupTypes : ( Maybe Card, Int ) -> DeckGroups -> DeckGroups
+groupTypes : ( Card, Int ) -> DeckGroups -> DeckGroups
 groupTypes ( card, count ) result =
-    case card of
-        Just { card_type } ->
-            case card_type of
-                Character ->
-                    { result | characters = ( card, count ) :: result.characters }
+    case card.card_type of
+        Character ->
+            { result | characters = ( card, count ) :: result.characters }
 
-                Event ->
-                    { result | events = ( card, count ) :: result.events }
+        Event ->
+            { result | events = ( card, count ) :: result.events }
 
-                Battle ->
-                    { result | battle = ( card, count ) :: result.battle }
-
-        Nothing ->
-            result
+        Battle ->
+            { result | battle = ( card, count ) :: result.battle }
 
 
-deckSectionView : List ( Maybe Card, Int ) -> List (Html Msg)
+deckSectionView : List ( Card, Int ) -> List (Html Msg)
 deckSectionView cards =
     let
         rows =
@@ -781,20 +772,15 @@ toBattleCardRank card =
                 ""
 
 
-deckCardView : ( Maybe Card, Int ) -> Html Msg
-deckCardView card =
-    case card of
-        ( Just card, count ) ->
-            div
-                [ id ("deck_" ++ card.uid)
-                , class "list-item"
-                ]
-                [ cardDetails card
-                , stepper ( card, count )
-                ]
-
-        ( Nothing, _ ) ->
-            div [] []
+deckCardView : ( Card, Int ) -> Html Msg
+deckCardView ( card, count ) =
+    div
+        [ id ("deck_" ++ card.uid)
+        , class "list-item"
+        ]
+        [ cardDetails card
+        , stepper ( card, count )
+        ]
 
 
 deckListPane : Model -> Html Msg
@@ -803,7 +789,7 @@ deckListPane model =
         [ id "deck-list-pane"
         , class "pane"
         ]
-        (deckSectionView <| List.map (Tuple.mapFirst <| lookup model) <| Dict.toList model.deck)
+        (deckSectionView <| Deck.toList model.deck)
 
 
 previewedBy : Card -> Html Msg
@@ -831,9 +817,6 @@ cardPane model =
             let
                 card =
                     lookup model cardId
-
-                count =
-                    Maybe.withDefault 0 (Dict.get cardId model.deck)
             in
                 case card of
                     Just card ->
@@ -847,7 +830,7 @@ cardPane model =
                                     [ cardText card
                                     , cardStats card
                                     ]
-                                , stepper ( card, count )
+                                , stepper ( card, Deck.count card model.deck )
                                 ]
                             ]
 
@@ -1103,7 +1086,7 @@ init =
       , locationFrom = Nothing
       , hash = ""
       , cards = []
-      , deck = Dict.empty
+      , deck = Deck.empty
       , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
       , filterSet = [ AT, GL, JL ]
 
