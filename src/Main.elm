@@ -16,6 +16,7 @@ import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat(Strength, Intelligence, Special))
 import Data.Deck as Deck exposing (Deck)
+import Data.Attribution as Attribution exposing (Attribution)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
@@ -37,13 +38,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-type alias Attribution =
-    { name : String
-    , author : String
-    , link : String
-    }
 
 
 type alias Model =
@@ -1217,23 +1211,12 @@ patreonView model =
         ]
 
 
-toListLink : Attribution -> Html Msg
-toListLink attribution =
-    li []
-        [ a [ href attribution.link ]
-            [ text attribution.name
-            , text " by "
-            , text attribution.author
-            ]
-        ]
-
-
 iconThanksView : Model -> Html Msg
 iconThanksView model =
     div [ class "attributions" ]
         [ text "Icons provided by The Noun Project:"
         , ul []
-            (List.map toListLink model.attributions)
+            (List.map Attribution.toHtml model.attributions)
         ]
 
 
