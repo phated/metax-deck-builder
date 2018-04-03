@@ -45,6 +45,6 @@ cardsQuery =
 load : Gql.Request Query Named CardList
 load =
     Gql.query
-        "https://api.graph.cool/simple/v1/cjerpcdas51ih01414psrg6wa"
+        "https://api.graph.cool/simple/v1/metaxdb"
         cardsQuery
         (at [ "allCards" ] CardList.decoder)
