@@ -4,6 +4,7 @@ import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
+import Html.Helpers
 import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
@@ -264,22 +265,22 @@ getNavbarIcon : Maybe Route -> Html Msg
 getNavbarIcon location =
     case location of
         Just Route.Home ->
-            text ""
+            Html.Helpers.nothing
 
         Just Route.Deck ->
             downloadButton
 
         Just (Route.Card _) ->
-            text ""
+            Html.Helpers.nothing
 
         Just Route.Search ->
-            text ""
+            Html.Helpers.nothing
 
         Just Route.Info ->
-            text ""
+            Html.Helpers.nothing
 
         Nothing ->
-            text ""
+            Html.Helpers.nothing
 
 
 navbarTop : Model -> Html Msg
@@ -517,7 +518,7 @@ previewBanner card =
             div [ class "preview-banner" ] [ text "Preview" ]
 
         Nothing ->
-            text ""
+            Html.Helpers.nothing
 
 
 cardDetails : Card -> Html Msg
@@ -808,7 +809,7 @@ previewedBy card =
             div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href preview.previewUrl ] [ text preview.previewer ] ]
 
         Nothing ->
-            text ""
+            Html.Helpers.nothing
 
 
 largeImg : Card -> Html Msg
