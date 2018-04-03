@@ -69,7 +69,7 @@ type Msg
       -- Currently unused
     | AddTypeFilter CardType
     | RemoveTypeFilter CardType
-    | LoadDeck Deck
+    | LoadDeck (List ( String, Int ))
     | ToggleOpenRarity
     | ToggleOpenSet
 
@@ -123,14 +123,35 @@ hashQuery maybeHash =
     Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
 
 
+importedToDeckItem : Model -> ( String, Int ) -> Maybe ( Card, Int )
+importedToDeckItem model ( uid, count ) =
+    let
+        card =
+            lookup model uid
+    in
+        case card of
+            Just card ->
+                Just ( card, count )
+
+            Nothing ->
+                Nothing
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetRoute route ->
             ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-        LoadDeck deck ->
-            ( { model | deck = deck }, Cmd.none )
+        LoadDeck imported ->
+            -- TODO: It feels really bad to to this mapping from UID to actual Card. Maybe this should be stored?
+            let
+                deck =
+                    imported
+                        |> List.filterMap (importedToDeckItem model)
+                        |> Deck.fromList
+            in
+                ( { model | deck = deck }, Cmd.none )
 
         CardsLoaded (Ok cards) ->
             -- TODO: Deck ID
