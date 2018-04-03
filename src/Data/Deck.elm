@@ -1,4 +1,4 @@
-module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count)
+module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count, sum)
 
 import AllDict exposing (AllDict)
 import Json.Decode exposing (keyValuePairs, int, string, decodeValue, decodeString, Decoder, Value)
@@ -28,6 +28,12 @@ count : Card -> Deck -> Int
 count card deck =
     AllDict.get card deck
         |> Maybe.withDefault 0
+
+
+sum : Deck -> Int
+sum deck =
+    AllDict.values deck
+        |> List.sum
 
 
 decoder : Value -> List ( String, Int )

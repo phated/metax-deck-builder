@@ -293,20 +293,9 @@ navbarTop model =
 
 decklistText : Model -> Html Msg
 decklistText model =
-    text <| (deckSize model)
-
-
-deckSize : Model -> String
-deckSize model =
-    -- TODO: This should use only the deck so it can go inside the Deck component
-    let
-        deckContents =
-            Deck.toList model.deck
-
-        size =
-            sum deckContents
-    in
-        toString size
+    Deck.sum model.deck
+        |> toString
+        |> text
 
 
 searchIcon : Model -> Html Msg
