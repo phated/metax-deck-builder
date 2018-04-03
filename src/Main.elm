@@ -874,28 +874,6 @@ getClassList ( from, to ) =
         [ ( "pane-container", True ), ( fromClass, True ), ( toClass, True ) ]
 
 
-getCardId : Maybe Route -> Maybe String
-getCardId location =
-    case location of
-        Just Route.Home ->
-            Nothing
-
-        Just Route.Deck ->
-            Nothing
-
-        Just (Route.Card id) ->
-            Just id
-
-        Just Route.Search ->
-            Nothing
-
-        Just Route.Info ->
-            Nothing
-
-        Nothing ->
-            Nothing
-
-
 updateRarityFilter : CardRarity -> Bool -> Msg
 updateRarityFilter rarity isChecked =
     if isChecked then
@@ -955,10 +933,6 @@ searchPane model =
         ]
         [ input [ type_ "search", placeholder "Search", class "search-box", value (buildQuery model) ] []
         , div [ class "help-text" ] [ text "Need help?" ]
-
-        -- TODO: maybe a button?
-        -- , div [ class "signpost" ] [ text "Card Type" ]
-        -- , div [ class "signpost" ] [ text "Rank" ]
         , div [ classList [ ( "option-container", True ), ( "is-open", model.rarityOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]
             , div [ class "option-body" ]
@@ -979,39 +953,6 @@ searchPane model =
                 , checkbox "Justice Leauge" (List.member JL model.filterSet) (updateSetFilter JL)
                 ]
             ]
-
-        --     div [ class "list-item-header" ] [ text "Rarity" ]
-        -- , div [ class "list-item-header" ] [ text "Rarity" ]
-        -- , checkbox "Character" (List.member Character model.filterType) (updateTypeFilter Character)
-        -- , checkbox "Event" (List.member Event model.filterType) (updateTypeFilter Event)
-        -- , checkbox "Battle - Strength 1" (List.member (Battle <| Strength 1) model.filterType) (updateTypeFilter (Battle <| Strength 1))
-        -- , checkbox "Battle - Strength 2" (List.member (Battle <| Strength 2) model.filterType) (updateTypeFilter (Battle <| Strength 2))
-        -- , checkbox "Battle - Strength 3" (List.member (Battle <| Strength 3) model.filterType) (updateTypeFilter (Battle <| Strength 3))
-        -- , checkbox "Battle - Strength 4" (List.member (Battle <| Strength 4) model.filterType) (updateTypeFilter (Battle <| Strength 4))
-        -- , checkbox "Battle - Strength 5" (List.member (Battle <| Strength 5) model.filterType) (updateTypeFilter (Battle <| Strength 5))
-        -- , checkbox "Battle - Strength 6" (List.member (Battle <| Strength 6) model.filterType) (updateTypeFilter (Battle <| Strength 6))
-        -- , checkbox "Battle - Strength 7" (List.member (Battle <| Strength 7) model.filterType) (updateTypeFilter (Battle <| Strength 7))
-        -- , checkbox "Battle - Int 1" (List.member (Battle <| Intelligence 1) model.filterType) (updateTypeFilter (Battle <| Intelligence 1))
-        -- , checkbox "Battle - Int 2" (List.member (Battle <| Intelligence 2) model.filterType) (updateTypeFilter (Battle <| Intelligence 2))
-        -- , checkbox "Battle - Int 3" (List.member (Battle <| Intelligence 3) model.filterType) (updateTypeFilter (Battle <| Intelligence 3))
-        -- , checkbox "Battle - Int 4" (List.member (Battle <| Intelligence 4) model.filterType) (updateTypeFilter (Battle <| Intelligence 4))
-        -- , checkbox "Battle - Int 5" (List.member (Battle <| Intelligence 5) model.filterType) (updateTypeFilter (Battle <| Intelligence 5))
-        -- , checkbox "Battle - Int 6" (List.member (Battle <| Intelligence 6) model.filterType) (updateTypeFilter (Battle <| Intelligence 6))
-        -- , checkbox "Battle - Int 7" (List.member (Battle <| Intelligence 7) model.filterType) (updateTypeFilter (Battle <| Intelligence 7))
-        -- , checkbox "Battle - Special 1" (List.member (Battle <| Special 1) model.filterType) (updateTypeFilter (Battle <| Special 1))
-        -- , checkbox "Battle - Special 2" (List.member (Battle <| Special 2) model.filterType) (updateTypeFilter (Battle <| Special 2))
-        -- , checkbox "Battle - Special 3" (List.member (Battle <| Special 3) model.filterType) (updateTypeFilter (Battle <| Special 3))
-        -- , checkbox "Battle - Special 4" (List.member (Battle <| Special 4) model.filterType) (updateTypeFilter (Battle <| Special 4))
-        -- , checkbox "Battle - Special 5" (List.member (Battle <| Special 5) model.filterType) (updateTypeFilter (Battle <| Special 5))
-        -- , checkbox "Battle - Special 6" (List.member (Battle <| Special 6) model.filterType) (updateTypeFilter (Battle <| Special 6))
-        -- , checkbox "Battle - Special 7" (List.member (Battle <| Special 7) model.filterType) (updateTypeFilter (Battle <| Special 7))
-        -- , checkbox "Battle - Multi 1" (List.member (Battle <| Multi 1) model.filterType) (updateTypeFilter (Battle <| Multi 1))
-        -- , checkbox "Battle - Multi 2" (List.member (Battle <| Multi 2) model.filterType) (updateTypeFilter (Battle <| Multi 2))
-        -- , checkbox "Battle - Multi 3" (List.member (Battle <| Multi 3) model.filterType) (updateTypeFilter (Battle <| Multi 3))
-        -- , checkbox "Battle - Multi 4" (List.member (Battle <| Multi 4) model.filterType) (updateTypeFilter (Battle <| Multi 4))
-        -- , checkbox "Battle - Multi 5" (List.member (Battle <| Multi 5) model.filterType) (updateTypeFilter (Battle <| Multi 5))
-        -- , checkbox "Battle - Multi 6" (List.member (Battle <| Multi 6) model.filterType) (updateTypeFilter (Battle <| Multi 6))
-        -- , checkbox "Battle - Multi 7" (List.member (Battle <| Multi 7) model.filterType) (updateTypeFilter (Battle <| Multi 7))
         , button
             [ class "search-button"
             , href ("/")
