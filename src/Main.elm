@@ -25,7 +25,6 @@ import Util exposing (onNavigate)
 import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as GQL
-import Encode
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 
 
@@ -78,7 +77,7 @@ delta2url : Model -> Model -> Maybe UrlChange
 delta2url prevModel nextModel =
     let
         hash =
-            hashDeck nextModel nextModel.deck
+            Deck.hash nextModel.deck
 
         querystring =
             hashQuery hash
@@ -109,13 +108,6 @@ location2messages location =
 
             Nothing ->
                 []
-
-
-hashDeck : Model -> Deck -> Maybe String
-hashDeck model deck =
-    -- TODO: This should only use the deck so it can go inside the Deck component
-    Deck.toList deck
-        |> Encode.hash
 
 
 hashQuery : Maybe String -> String

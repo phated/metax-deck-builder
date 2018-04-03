@@ -1,8 +1,9 @@
-module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count, sum)
+module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count, sum, hash)
 
 import AllDict exposing (AllDict)
 import Json.Decode exposing (keyValuePairs, int, string, decodeValue, decodeString, Decoder, Value)
 import Data.Card exposing (Card)
+import Encode
 
 
 type alias Deck =
@@ -34,6 +35,12 @@ sum : Deck -> Int
 sum deck =
     AllDict.values deck
         |> List.sum
+
+
+hash : Deck -> Maybe String
+hash deck =
+    toList deck
+        |> Encode.hash
 
 
 decoder : Value -> List ( String, Int )
