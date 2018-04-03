@@ -1,11 +1,9 @@
 module Request.Deck exposing (save, export)
 
 import Json.Encode exposing (encode, string, int, list, object, Value)
-import Data.Deck exposing (Deck)
 import Data.Card exposing (Card)
+import Data.Deck as Deck exposing (Deck)
 import Data.CardType as CardType exposing (CardType)
-import Data.CardList exposing (CardList)
-import Data.Deck as Deck
 import Ports
 
 
@@ -42,18 +40,3 @@ export deck =
         encode 0 (list exportDeck)
             |> Just
             |> Ports.exportSession
-
-
-
--- TODO: dedupe
-
-
-idMatches : String -> Card -> Bool
-idMatches cardId card =
-    card.uid == cardId
-
-
-lookup : CardList -> String -> Maybe Card
-lookup cards cardId =
-    List.filter (idMatches cardId) cards
-        |> List.head
