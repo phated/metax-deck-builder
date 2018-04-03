@@ -1,7 +1,7 @@
-module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, count)
+module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count)
 
 import AllDict exposing (AllDict)
-import Json.Decode exposing (int, string, decodeValue, decodeString, dict, Decoder, Value)
+import Json.Decode exposing (keyValuePairs, int, string, decodeValue, decodeString, Decoder, Value)
 import Data.Card exposing (Card)
 
 
@@ -19,19 +19,24 @@ toList deck =
     AllDict.toList deck
 
 
+fromList : List ( Card, Int ) -> Deck
+fromList cards =
+    AllDict.fromList toComparable cards
+
+
 count : Card -> Deck -> Int
 count card deck =
     AllDict.get card deck
         |> Maybe.withDefault 0
 
 
-decoder : Value -> Deck
+decoder : Value -> List ( String, Int )
 decoder session =
-    -- session
-    --     |> decodeValue string
-    --     |> Result.andThen (decodeString (dict int))
-    --     |> Result.withDefault empty
-    empty
+    -- TODO: This is a frustrating data type to work with
+    session
+        |> decodeValue string
+        |> Result.andThen (decodeString (keyValuePairs int))
+        |> Result.withDefault []
 
 
 increment : Card -> Deck -> Deck

@@ -9,15 +9,15 @@ import Data.Deck as Deck
 import Ports
 
 
-toEncoder : ( Card, Int ) -> Value
+toEncoder : ( Card, Int ) -> ( String, Value )
 toEncoder ( card, count ) =
-    list [ string card.uid, int count ]
+    ( card.uid, int count )
 
 
 save : Deck -> Cmd msg
 save deck =
     List.map toEncoder (Deck.toList deck)
-        |> list
+        |> object
         |> encode 0
         |> Just
         |> Ports.storeSession
