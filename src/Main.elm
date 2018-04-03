@@ -43,7 +43,6 @@ main =
 type alias Model =
     { locationTo : Maybe Route
     , locationFrom : Maybe Route
-    , hash : String
     , cards : CardList
     , deck : Deck
     , filterRarity : List CardRarity
@@ -1094,7 +1093,6 @@ init : ( Model, Cmd Msg )
 init =
     ( { locationTo = Nothing
       , locationFrom = Nothing
-      , hash = ""
       , cards = []
       , deck = Deck.empty
       , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
