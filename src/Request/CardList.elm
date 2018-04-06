@@ -1,50 +1,54 @@
-module Request.CardList exposing (load)
+module Request.CardList exposing (load, toNamedQuery, allCards)
 
 import Data.CardList as CardList exposing (CardList)
-import GraphQl as Gql exposing (Operation, Query, Named)
+import GraphQl as Gql exposing (Operation, Query, Named, Value)
 import Json.Decode exposing (at)
 
 
-cardsQuery : Operation Query Named
-cardsQuery =
+allCards : Value Query
+allCards =
+    Gql.field "allCards"
+        |> Gql.withSelectors
+            [ Gql.field "uid"
+            , Gql.field "set"
+            , Gql.field "number"
+            , Gql.field "rarity"
+            , Gql.field "mp"
+            , Gql.field "type"
+            , Gql.field "title"
+            , Gql.field "subtitle"
+            , Gql.field "trait"
+                |> Gql.withSelectors
+                    [ Gql.field "name"
+                    ]
+            , Gql.field "effect"
+                |> Gql.withSelectors
+                    [ Gql.field "symbol"
+                    , Gql.field "text"
+                    ]
+            , Gql.field "stats"
+                |> Gql.withSelectors
+                    [ Gql.field "type"
+                    , Gql.field "rank"
+                    ]
+            , Gql.field "imageUrl"
+            , Gql.field "preview"
+                |> Gql.withSelectors
+                    [ Gql.field "previewer"
+                    , Gql.field "previewUrl"
+                    ]
+            ]
+
+
+toNamedQuery : Value Query -> Operation Query Named
+toNamedQuery query =
     Gql.named "AllCards"
-        [ Gql.field "allCards"
-            |> Gql.withSelectors
-                [ Gql.field "uid"
-                , Gql.field "set"
-                , Gql.field "number"
-                , Gql.field "rarity"
-                , Gql.field "mp"
-                , Gql.field "type"
-                , Gql.field "title"
-                , Gql.field "subtitle"
-                , Gql.field "trait"
-                    |> Gql.withSelectors
-                        [ Gql.field "name"
-                        ]
-                , Gql.field "effect"
-                    |> Gql.withSelectors
-                        [ Gql.field "symbol"
-                        , Gql.field "text"
-                        ]
-                , Gql.field "stats"
-                    |> Gql.withSelectors
-                        [ Gql.field "type"
-                        , Gql.field "rank"
-                        ]
-                , Gql.field "imageUrl"
-                , Gql.field "preview"
-                    |> Gql.withSelectors
-                        [ Gql.field "previewer"
-                        , Gql.field "previewUrl"
-                        ]
-                ]
-        ]
+        [ query ]
 
 
-load : Gql.Request Query Named CardList
-load =
+load : Value Query -> Gql.Request Query Named CardList
+load query =
     Gql.query
         "https://api.graph.cool/simple/v1/metaxdb"
-        cardsQuery
+        (toNamedQuery query)
         (at [ "allCards" ] CardList.decoder)
