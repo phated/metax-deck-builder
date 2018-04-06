@@ -26,6 +26,8 @@ import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as GQL
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
+import Data.Filters as Filters exposing (Filters)
+import Data.Filter exposing (Filter(FilterRarity, FilterSet))
 
 
 main : RouteUrlProgram Never Model Msg
@@ -45,9 +47,7 @@ type alias Model =
     , locationFrom : Maybe Route
     , cards : CardList
     , deck : Deck
-    , filterRarity : List CardRarity
-    , filterSet : List CardSet
-    , filterType : List CardType
+    , filters : Filters
     , rarityOpen : Bool
     , setOpen : Bool
     , patrons : List String
@@ -61,16 +61,11 @@ type Msg
     | Decrement Card
     | Increment Card
     | ExportDeck
-    | AddRarityFilter CardRarity
-    | RemoveRarityFilter CardRarity
-    | AddSetFilter CardSet
-    | RemoveSetFilter CardSet
-      -- Currently unused
-    | AddTypeFilter CardType
-    | RemoveTypeFilter CardType
     | LoadDeck (List ( String, Int ))
     | ToggleOpenRarity
     | ToggleOpenSet
+    | AddFilter Filter
+    | RemoveFilter Filter
 
 
 delta2url : Model -> Model -> Maybe UrlChange
@@ -173,47 +168,19 @@ update msg model =
         ExportDeck ->
             ( model, Request.Deck.export model.deck )
 
-        AddRarityFilter rarity ->
+        AddFilter filter ->
             let
-                updatedRarity =
-                    rarity :: model.filterRarity
+                filters =
+                    Filters.add filter model.filters
             in
-                ( { model | filterRarity = updatedRarity }, Cmd.none )
+                ( { model | filters = filters }, fetch filters )
 
-        RemoveRarityFilter rarity ->
+        RemoveFilter filter ->
             let
-                updatedRarity =
-                    List.filter ((/=) rarity) model.filterRarity
+                filters =
+                    Filters.remove filter model.filters
             in
-                ( { model | filterRarity = updatedRarity }, Cmd.none )
-
-        AddSetFilter set ->
-            let
-                updatedSet =
-                    set :: model.filterSet
-            in
-                ( { model | filterSet = updatedSet }, Cmd.none )
-
-        RemoveSetFilter set ->
-            let
-                updatedSet =
-                    List.filter ((/=) set) model.filterSet
-            in
-                ( { model | filterSet = updatedSet }, Cmd.none )
-
-        AddTypeFilter cardType ->
-            let
-                updatedType =
-                    cardType :: model.filterType
-            in
-                ( { model | filterType = updatedType }, Cmd.none )
-
-        RemoveTypeFilter cardType ->
-            let
-                updatedType =
-                    List.filter ((/=) cardType) model.filterType
-            in
-                ( { model | filterType = updatedType }, Cmd.none )
+                ( { model | filters = filters }, fetch filters )
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
@@ -225,6 +192,13 @@ update msg model =
 view : Model -> Html Msg
 view model =
     applicationShell model
+
+
+fetch : Filters -> Cmd Msg
+fetch filters =
+    Filters.applyFilters filters Request.CardList.allCards
+        |> Request.CardList.load
+        |> GQL.send CardsLoaded
 
 
 linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
@@ -362,58 +336,13 @@ navbarBottom model =
         ]
 
 
-
--- TODO: These should go somewhere else
-
-
-filterRarity : CardRarity -> Card -> Bool
-filterRarity rarity card =
-    card.rarity == rarity
-
-
-filterSet : CardSet -> Card -> Bool
-filterSet set card =
-    card.set == set
-
-
-filterType : CardType -> Card -> Bool
-filterType cardType card =
-    card.card_type == cardType
-
-
-type alias Filters filters =
-    { filters | filterRarity : List CardRarity, filterSet : List CardSet, filterType : List CardType }
-
-
-applyRarityFilters : List CardRarity -> Card -> Bool
-applyRarityFilters filters card =
-    List.any (\rarity -> filterRarity rarity card) filters
-
-
-applySetFilters : List CardSet -> Card -> Bool
-applySetFilters filters card =
-    List.any (\set -> filterSet set card) filters
-
-
-applyTypeFilters : List CardType -> Card -> Bool
-applyTypeFilters filters card =
-    List.any (\cardType -> filterType cardType card) filters
-
-
-applyFilters : Filters filters -> Card -> Bool
-applyFilters filters card =
-    (applyRarityFilters filters.filterRarity card)
-        && (applySetFilters filters.filterSet card)
-        && (applyTypeFilters filters.filterType card)
-
-
 cardListPane : Model -> Html Msg
 cardListPane model =
     div
         [ id "card-list-pane"
         , class "pane"
         ]
-        (List.map (cardView model) (List.filter (applyFilters model) model.cards))
+        (List.map (cardView model) model.cards)
 
 
 stepper : ( Card, Int ) -> Html Msg
@@ -874,28 +803,12 @@ getClassList ( from, to ) =
         [ ( "pane-container", True ), ( fromClass, True ), ( toClass, True ) ]
 
 
-updateRarityFilter : CardRarity -> Bool -> Msg
-updateRarityFilter rarity isChecked =
+toggleFilter : Filter -> Bool -> Msg
+toggleFilter filter isChecked =
     if isChecked then
-        AddRarityFilter rarity
+        AddFilter filter
     else
-        RemoveRarityFilter rarity
-
-
-updateSetFilter : CardSet -> Bool -> Msg
-updateSetFilter set isChecked =
-    if isChecked then
-        AddSetFilter set
-    else
-        RemoveSetFilter set
-
-
-updateTypeFilter : CardType -> Bool -> Msg
-updateTypeFilter cardType isChecked =
-    if isChecked then
-        AddTypeFilter cardType
-    else
-        RemoveTypeFilter cardType
+        RemoveFilter filter
 
 
 checkbox : String -> Bool -> (Bool -> Msg) -> Html Msg
@@ -906,51 +819,32 @@ checkbox label_ isChecked msg =
         ]
 
 
-buildQuery : Model -> String
-buildQuery model =
-    let
-        rarityQuery =
-            if List.length model.filterRarity == 0 then
-                ""
-            else
-                (++) "rarity:" (String.join "," <| List.map CardRarity.toString model.filterRarity)
-
-        setQuery =
-            if List.length model.filterSet == 0 then
-                ""
-            else
-                (++) "set:" (String.join "," <| List.map CardSet.toString model.filterSet)
-    in
-        -- TODO: this adds the space before if no rarities selected
-        rarityQuery ++ " " ++ setQuery
-
-
 searchPane : Model -> Html Msg
 searchPane model =
     div
         [ id "search-pane"
         , class "pane"
         ]
-        [ input [ type_ "search", placeholder "Search", class "search-box", value (buildQuery model) ] []
+        [ input [ type_ "search", placeholder "Search", class "search-box", value (Filters.toString model.filters) ] []
         , div [ class "help-text" ] [ text "Need help?" ]
         , div [ classList [ ( "option-container", True ), ( "is-open", model.rarityOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]
             , div [ class "option-body" ]
-                [ checkbox "Common" (List.member Common model.filterRarity) (updateRarityFilter Common)
-                , checkbox "Uncommon" (List.member Uncommon model.filterRarity) (updateRarityFilter Uncommon)
-                , checkbox "Rare" (List.member Rare model.filterRarity) (updateRarityFilter Rare)
-                , checkbox "XR" (List.member XRare model.filterRarity) (updateRarityFilter XRare)
-                , checkbox "UR" (List.member URare model.filterRarity) (updateRarityFilter URare)
-                , checkbox "Promo" (List.member Promo model.filterRarity) (updateRarityFilter Promo)
-                , checkbox "Starter" (List.member Starter model.filterRarity) (updateRarityFilter Starter)
+                [ checkbox "Common" (Filters.member (FilterRarity Common) model.filters) (toggleFilter <| FilterRarity Common)
+                , checkbox "Uncommon" (Filters.member (FilterRarity Uncommon) model.filters) (toggleFilter <| FilterRarity Uncommon)
+                , checkbox "Rare" (Filters.member (FilterRarity Rare) model.filters) (toggleFilter <| FilterRarity Rare)
+                , checkbox "XR" (Filters.member (FilterRarity XRare) model.filters) (toggleFilter <| FilterRarity XRare)
+                , checkbox "UR" (Filters.member (FilterRarity URare) model.filters) (toggleFilter <| FilterRarity URare)
+                , checkbox "Promo" (Filters.member (FilterRarity Promo) model.filters) (toggleFilter <| FilterRarity Promo)
+                , checkbox "Starter" (Filters.member (FilterRarity Starter) model.filters) (toggleFilter <| FilterRarity Starter)
                 ]
             ]
         , div [ classList [ ( "option-container", True ), ( "is-open", model.setOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenSet ] [ text "Set" ]
             , div [ class "option-body" ]
-                [ checkbox "Attack on Titan" (List.member AT model.filterSet) (updateSetFilter AT)
-                , checkbox "Green Lantern" (List.member GL model.filterSet) (updateSetFilter GL)
-                , checkbox "Justice Leauge" (List.member JL model.filterSet) (updateSetFilter JL)
+                [ checkbox "Attack on Titan" (Filters.member (FilterSet AT) model.filters) (toggleFilter <| FilterSet AT)
+                , checkbox "Green Lantern" (Filters.member (FilterSet GL) model.filters) (toggleFilter <| FilterSet GL)
+                , checkbox "Justice Leauge" (Filters.member (FilterSet JL) model.filters) (toggleFilter <| FilterSet JL)
                 ]
             ]
         , button
@@ -1025,25 +919,34 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { locationTo = Nothing
-      , locationFrom = Nothing
-      , cards = []
-      , deck = Deck.empty
-      , filterRarity = [ Common, Uncommon, Rare, XRare, URare ]
-      , filterSet = [ AT, GL, JL ]
+    let
+        filters =
+            Filters.fromList
+                [ FilterRarity Common
+                , FilterRarity Uncommon
+                , FilterRarity Rare
+                , FilterRarity XRare
+                , FilterRarity URare
+                , FilterSet AT
+                , FilterSet GL
+                , FilterSet JL
+                ]
 
-      -- TODO: This isn't flexible
-      , filterType = [ Character, Event, Battle ]
-      , rarityOpen = False
-      , setOpen = False
-      , patrons = [ "Matt Smith" ]
-      , attributions =
-            [ Attribution "Search Icon" "Icon Depot" "https://thenounproject.com/icon/1165408/"
-            , Attribution "Cards Icon" "Daniel Solis" "https://thenounproject.com/icon/219514/"
-            , Attribution "Deck Icon" "Michael G Brown" "https://thenounproject.com/icon/1156459/"
-            , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
-            ]
-      }
-    , Request.CardList.load
-        |> GQL.send CardsLoaded
-    )
+        model =
+            { locationTo = Nothing
+            , locationFrom = Nothing
+            , cards = []
+            , deck = Deck.empty
+            , filters = filters
+            , rarityOpen = False
+            , setOpen = False
+            , patrons = [ "Matt Smith" ]
+            , attributions =
+                [ Attribution "Search Icon" "Icon Depot" "https://thenounproject.com/icon/1165408/"
+                , Attribution "Cards Icon" "Daniel Solis" "https://thenounproject.com/icon/219514/"
+                , Attribution "Deck Icon" "Michael G Brown" "https://thenounproject.com/icon/1156459/"
+                , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
+                ]
+            }
+    in
+        ( model, fetch filters )
