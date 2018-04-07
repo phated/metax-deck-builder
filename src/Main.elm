@@ -24,10 +24,9 @@ import Request.CardList
 import Util exposing (onNavigate)
 import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
-import GraphQl as GQL
+import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
-import Data.Filters as Filters exposing (Filters)
-import Data.Filter exposing (Filter(FilterRarity, FilterSet))
+import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet))
 
 
 main : RouteUrlProgram Never Model Msg
@@ -57,7 +56,9 @@ type alias Model =
 
 type Msg
     = SetRoute Route
-    | CardsLoaded (Result Http.Error CardList)
+    | Booted (Result Http.Error CardList)
+      -- There's probably better name for this
+    | Filtered (Result Http.Error CardList)
     | Decrement Card
     | Increment Card
     | ExportDeck
@@ -66,6 +67,7 @@ type Msg
     | ToggleOpenSet
     | AddFilter Filter
     | RemoveFilter Filter
+    | Search
 
 
 delta2url : Model -> Model -> Maybe UrlChange
@@ -140,11 +142,21 @@ update msg model =
             in
                 ( { model | deck = deck }, Cmd.none )
 
-        CardsLoaded (Ok cards) ->
+        Booted (Ok cards) ->
             -- TODO: Deck ID
             ( { model | cards = (CardList.sort cards) }, loadSession "" )
 
-        CardsLoaded (Err err) ->
+        Booted (Err err) ->
+            let
+                test =
+                    Debug.log "err" err
+            in
+                ( model, Cmd.none )
+
+        Filtered (Ok cards) ->
+            ( { model | cards = (CardList.sort cards), locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
+
+        Filtered (Err err) ->
             let
                 test =
                     Debug.log "err" err
@@ -173,14 +185,17 @@ update msg model =
                 filters =
                     Filters.add filter model.filters
             in
-                ( { model | filters = filters }, fetch filters )
+                ( { model | filters = filters }, Cmd.none )
 
         RemoveFilter filter ->
             let
                 filters =
                     Filters.remove filter model.filters
             in
-                ( { model | filters = filters }, fetch filters )
+                ( { model | filters = filters }, Cmd.none )
+
+        Search ->
+            ( model, buildQuery model.filters |> Gql.send Filtered )
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
@@ -194,11 +209,10 @@ view model =
     applicationShell model
 
 
-fetch : Filters -> Cmd Msg
-fetch filters =
+buildQuery : Filters -> Gql.Request Gql.Query Gql.Named CardList
+buildQuery filters =
     Filters.applyFilters filters Request.CardList.allCards
         |> Request.CardList.load
-        |> GQL.send CardsLoaded
 
 
 linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
@@ -849,8 +863,7 @@ searchPane model =
             ]
         , button
             [ class "search-button"
-            , href ("/")
-            , onNavigate (SetRoute Route.Home)
+            , onClick Search
             ]
             [ text "Search" ]
         ]
@@ -949,4 +962,4 @@ init =
                 ]
             }
     in
-        ( model, fetch filters )
+        ( model, buildQuery filters |> Gql.send Booted )
