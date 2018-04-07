@@ -1,18 +1,25 @@
-module Data.Filters exposing (Filters, applyFilters, empty, fromList, toString, add, remove, member)
+module Data.Filters exposing (Filters, Filter(..), applyFilters, empty, fromList, toString, add, remove, member)
 
 import GraphQl as Gql exposing (Value, Query)
-import Data.Filter as Filter exposing (Filter(FilterRarity, FilterSet))
+import Data.CardRarity as CardRarity exposing (CardRarity)
+import Data.CardSet as CardSet exposing (CardSet)
+
+
+type Filter {- Used as the union type over the different filters -}
+    = FilterRarity CardRarity
+    | FilterSet CardSet
 
 
 type alias Filters =
-    { rarity : List Filter
-    , set : List Filter
+    {- Only store the actual type instead of the filter type. Unsure if this is better/worse -}
+    { rarity : List CardRarity
+    , set : List CardSet
     }
 
 
 empty : Filters
 empty =
-    { rarity = [], set = [] }
+    Filters [] []
 
 
 fromList : List Filter -> Filters
@@ -23,31 +30,31 @@ fromList filters =
 add : Filter -> Filters -> Filters
 add filter filters =
     case filter of
-        FilterRarity _ ->
-            { filters | rarity = filter :: filters.rarity }
+        FilterRarity rarity ->
+            { filters | rarity = rarity :: filters.rarity }
 
-        FilterSet _ ->
-            { filters | set = filter :: filters.set }
+        FilterSet set ->
+            { filters | set = set :: filters.set }
 
 
 remove : Filter -> Filters -> Filters
 remove filter filters =
     case filter of
-        FilterRarity _ ->
-            { filters | rarity = List.filter ((/=) filter) filters.rarity }
+        FilterRarity rarity ->
+            { filters | rarity = List.filter ((/=) rarity) filters.rarity }
 
-        FilterSet _ ->
-            { filters | set = List.filter ((/=) filter) filters.set }
+        FilterSet set ->
+            { filters | set = List.filter ((/=) set) filters.set }
 
 
 member : Filter -> Filters -> Bool
 member filter filters =
     case filter of
-        FilterRarity _ ->
-            List.member filter filters.rarity
+        FilterRarity rarity ->
+            List.member rarity filters.rarity
 
-        FilterSet _ ->
-            List.member filter filters.set
+        FilterSet set ->
+            List.member set filters.set
 
 
 toString : Filters -> String
@@ -57,13 +64,13 @@ toString filters =
             if List.length filters.rarity == 0 then
                 ""
             else
-                (++) "rarity:" (String.join "," <| List.map Filter.toString filters.rarity)
+                (++) "rarity:" (String.join "," <| List.map CardRarity.toString filters.rarity)
 
         setQuery =
             if List.length filters.set == 0 then
                 ""
             else
-                (++) "set:" (String.join "," <| List.map Filter.toString filters.set)
+                (++) "set:" (String.join "," <| List.map CardSet.toString filters.set)
     in
         -- TODO: this adds the space before if no rarities selected
         rarityQuery ++ " " ++ setQuery
@@ -75,5 +82,16 @@ toString filters =
 
 
 applyFilters : Filters -> Value Query -> Value Query
-applyFilters filters query =
-    List.foldr (\filter q -> q |> Filter.toQuery filter) query (List.concat [ filters.rarity, filters.set ])
+applyFilters filters =
+    let
+        rarityFilters =
+            String.join "," <| List.map CardRarity.toString filters.rarity
+
+        setFilters =
+            String.join "," <| List.map CardSet.toString filters.set
+    in
+        Gql.withArgument "filter" <|
+            Gql.queryArgs
+                [ ( "rarity_in", Gql.type_ <| "[" ++ rarityFilters ++ "]" )
+                , ( "set_in", Gql.type_ <| "[" ++ setFilters ++ "]" )
+                ]
