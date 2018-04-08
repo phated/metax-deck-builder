@@ -4,6 +4,7 @@ import AllDict exposing (AllDict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Data.Card exposing (Card)
+import Data.CardUID as CardUID
 import Encode
 import Compare exposing (concat, by, Comparator)
 import Data.CardType as CardType exposing (CardType(Character, Event, Battle))
@@ -79,7 +80,7 @@ encoder : Deck -> String
 encoder deck =
     let
         toEncoder ( card, count ) =
-            ( card.uid, Encode.int count )
+            ( CardUID.toString card.uid, Encode.int count )
     in
         List.map toEncoder (toList deck)
             |> Encode.object
@@ -92,7 +93,7 @@ encoder deck =
 
 toComparable : Card -> String
 toComparable card =
-    card.uid
+    CardUID.toString card.uid
 
 
 notZero : Card -> Int -> Bool

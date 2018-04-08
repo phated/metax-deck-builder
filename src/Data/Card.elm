@@ -8,10 +8,11 @@ import Data.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardStatList as CardStatList exposing (CardStatList)
 import Data.CardPreview as CardPreview exposing (CardPreview)
+import Data.CardUID as CardUID exposing (CardUID)
 
 
 type alias Card =
-    { uid : String
+    { uid : CardUID
     , set : CardSet
     , number : Int
     , rarity : CardRarity
@@ -30,7 +31,7 @@ type alias Card =
 decoder : Decoder Card
 decoder =
     decode Card
-        |> required "uid" string
+        |> required "uid" CardUID.decoder
         |> custom (field "set" CardSet.decoder)
         |> required "number" int
         |> required "rarity" CardRarity.decoder

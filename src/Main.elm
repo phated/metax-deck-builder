@@ -19,6 +19,7 @@ import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
 import Data.Attribution as Attribution exposing (Attribution)
 import Data.BattleType as BattleType exposing (BattleType)
+import Data.CardUID as CardUID exposing (CardUID)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
@@ -26,7 +27,7 @@ import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
-import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet))
+import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 
 
 main : RouteUrlProgram Never Model Msg
@@ -46,6 +47,7 @@ type alias Model =
     , locationFrom : Maybe Route
     , cards : CardList
     , deck : Deck
+    , importedDeck : List ( String, Int )
     , filters : Filters
     , rarityOpen : Bool
     , setOpen : Bool
@@ -59,10 +61,11 @@ type Msg
     | Booted (Result Http.Error CardList)
       -- There's probably better name for this
     | Filtered (Result Http.Error CardList)
+    | LoadDeckCards (Result Http.Error CardList)
     | Decrement Card
     | Increment Card
     | ExportDeck
-    | LoadDeck (List ( String, Int ))
+    | ImportDeck (List ( String, Int ))
     | ToggleOpenRarity
     | ToggleOpenSet
     | AddFilter Filter
@@ -112,11 +115,11 @@ hashQuery maybeHash =
     Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
 
 
-importedToDeckItem : Model -> ( String, Int ) -> Maybe ( Card, Int )
-importedToDeckItem model ( uid, count ) =
+importedToDeckItem : CardList -> ( String, Int ) -> Maybe ( Card, Int )
+importedToDeckItem cards ( uid, count ) =
     let
         card =
-            lookup model uid
+            lookup cards uid
     in
         case card of
             Just card ->
@@ -132,15 +135,29 @@ update msg model =
         SetRoute route ->
             ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
 
-        LoadDeck imported ->
+        LoadDeckCards (Ok cards) ->
             -- TODO: It feels really bad to to this mapping from UID to actual Card. Maybe this should be stored?
             let
                 deck =
-                    imported
-                        |> List.filterMap (importedToDeckItem model)
+                    model.importedDeck
+                        |> List.filterMap (importedToDeckItem cards)
                         |> Deck.fromList
             in
-                ( { model | deck = deck }, Cmd.none )
+                ( { model | deck = deck, importedDeck = [] }, Cmd.none )
+
+        LoadDeckCards (Err err) ->
+            let
+                test =
+                    Debug.log "err" err
+            in
+                ( model, Cmd.none )
+
+        ImportDeck imported ->
+            let
+                uids =
+                    Filters.fromList <| List.map (\( uid, _ ) -> FilterUID (CardUID.fromString uid)) imported
+            in
+                ( { model | importedDeck = imported }, buildQuery uids |> Gql.send LoadDeckCards )
 
         Booted (Ok cards) ->
             -- TODO: Deck ID
@@ -460,12 +477,12 @@ cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
         [ div [ class "card-image-container" ]
-            [ linkTo (Route.Card card.uid)
+            [ linkTo (Route.Card (CardUID.toString card.uid))
                 [ class "card-thumbnail" ]
                 [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
                 , previewBanner card
                 ]
-            , div [ class "card-number" ] [ text card.uid ]
+            , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
             ]
         , cardText card
         , cardStats card
@@ -479,7 +496,7 @@ cardView model card =
             Deck.count card model.deck
     in
         div
-            [ id card.uid
+            [ id (CardUID.toString card.uid)
             , class "list-item"
             ]
             [ cardDetails card
@@ -489,12 +506,12 @@ cardView model card =
 
 idMatches : String -> Card -> Bool
 idMatches cardId card =
-    card.uid == cardId
+    (CardUID.toString card.uid) == cardId
 
 
-lookup : Model -> String -> Maybe Card
-lookup model cardId =
-    List.filter (idMatches cardId) model.cards
+lookup : CardList -> String -> Maybe Card
+lookup cards cardId =
+    List.filter (idMatches cardId) cards
         |> List.head
 
 
@@ -720,7 +737,7 @@ toBattleCardRank card =
 deckCardView : ( Card, Int ) -> Html Msg
 deckCardView ( card, count ) =
     div
-        [ id ("deck_" ++ card.uid)
+        [ id ("deck_" ++ (CardUID.toString card.uid))
         , class "list-item"
         ]
         [ cardDetails card
@@ -761,7 +778,7 @@ cardPane model =
         Just (Route.Card cardId) ->
             let
                 card =
-                    lookup model cardId
+                    lookup model.cards cardId
             in
                 case card of
                     Just card ->
@@ -927,7 +944,7 @@ applicationShell model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map LoadDeck (onSessionLoaded Deck.decoder)
+    Sub.map ImportDeck (onSessionLoaded Deck.decoder)
 
 
 init : ( Model, Cmd Msg )
@@ -950,6 +967,7 @@ init =
             , locationFrom = Nothing
             , cards = []
             , deck = Deck.empty
+            , importedDeck = []
             , filters = filters
             , rarityOpen = False
             , setOpen = False
