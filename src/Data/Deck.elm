@@ -1,7 +1,8 @@
-module Data.Deck exposing (Deck, decoder, increment, decrement, empty, toList, fromList, count, sum, hash)
+module Data.Deck exposing (Deck, decoder, encoder, increment, decrement, empty, toList, fromList, count, sum, hash)
 
 import AllDict exposing (AllDict)
-import Json.Decode exposing (keyValuePairs, int, string, decodeValue, decodeString, Decoder, Value)
+import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
+import Json.Encode as Encode exposing (encode)
 import Data.Card exposing (Card)
 import Encode
 
@@ -43,15 +44,6 @@ hash deck =
         |> Encode.hash
 
 
-decoder : Value -> List ( String, Int )
-decoder session =
-    -- TODO: This is a frustrating data type to work with
-    session
-        |> decodeValue string
-        |> Result.andThen (decodeString (keyValuePairs int))
-        |> Result.withDefault []
-
-
 increment : Card -> Deck -> Deck
 increment card deck =
     AllDict.update card maybeIncrement deck
@@ -64,6 +56,30 @@ decrement card deck =
             AllDict.update card maybeDecrement deck
     in
         AllDict.filter notZero updatedDeck
+
+
+
+-- Encoder/Decoders
+
+
+decoder : Value -> List ( String, Int )
+decoder session =
+    -- TODO: This is a frustrating data type to work with
+    session
+        |> decodeValue Decode.string
+        |> Result.andThen (decodeString (Decode.keyValuePairs Decode.int))
+        |> Result.withDefault []
+
+
+encoder : Deck -> String
+encoder deck =
+    let
+        toEncoder ( card, count ) =
+            ( card.uid, Encode.int count )
+    in
+        List.map toEncoder (toList deck)
+            |> Encode.object
+            |> encode 0
 
 
 
