@@ -1,25 +1,28 @@
 module Data.Filters exposing (Filters, Filter(..), applyFilters, empty, fromList, toString, add, remove, member)
 
-import GraphQl as Gql exposing (Value, Query)
+import GraphQl as Gql exposing (Value, Query, Argument)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardSet as CardSet exposing (CardSet)
+import Data.CardUID as CardUID exposing (CardUID)
 
 
 type Filter {- Used as the union type over the different filters -}
     = FilterRarity CardRarity
     | FilterSet CardSet
+    | FilterUID CardUID
 
 
 type alias Filters =
     {- Only store the actual type instead of the filter type. Unsure if this is better/worse -}
     { rarity : List CardRarity
     , set : List CardSet
+    , uid : List CardUID
     }
 
 
 empty : Filters
 empty =
-    Filters [] []
+    Filters [] [] []
 
 
 fromList : List Filter -> Filters
@@ -36,6 +39,9 @@ add filter filters =
         FilterSet set ->
             { filters | set = set :: filters.set }
 
+        FilterUID uid ->
+            { filters | uid = uid :: filters.uid }
+
 
 remove : Filter -> Filters -> Filters
 remove filter filters =
@@ -46,6 +52,9 @@ remove filter filters =
         FilterSet set ->
             { filters | set = List.filter ((/=) set) filters.set }
 
+        FilterUID uid ->
+            { filters | uid = List.filter ((/=) uid) filters.uid }
+
 
 member : Filter -> Filters -> Bool
 member filter filters =
@@ -55,6 +64,9 @@ member filter filters =
 
         FilterSet set ->
             List.member set filters.set
+
+        FilterUID uid ->
+            List.member uid filters.uid
 
 
 toString : Filters -> String
@@ -71,6 +83,8 @@ toString filters =
                 ""
             else
                 (++) "set:" (String.join "," <| List.map CardSet.toString filters.set)
+
+        -- TODO: Add UID to the filter string
     in
         -- TODO: this adds the space before if no rarities selected
         rarityQuery ++ " " ++ setQuery
@@ -85,13 +99,36 @@ applyFilters : Filters -> Value Query -> Value Query
 applyFilters filters =
     let
         rarityFilters =
-            String.join "," <| List.map CardRarity.toString filters.rarity
+            List.map CardRarity.toString filters.rarity
 
         setFilters =
-            String.join "," <| List.map CardSet.toString filters.set
-    in
-        Gql.withArgument "filter" <|
-            Gql.queryArgs
-                [ ( "rarity_in", Gql.type_ <| "[" ++ rarityFilters ++ "]" )
-                , ( "set_in", Gql.type_ <| "[" ++ setFilters ++ "]" )
+            List.map CardSet.toString filters.set
+
+        uidFilters =
+            List.map CardUID.toGql filters.uid
+
+        activeFilters =
+            List.filterMap toGql
+                [ ( "rarity_in", rarityFilters )
+                , ( "set_in", setFilters )
+                , ( "uid_in", uidFilters )
                 ]
+    in
+        -- TODO: handle no filters at all
+        Gql.withArgument "filter" <| Gql.queryArgs activeFilters
+
+
+
+-- Utils
+
+
+toGql : ( String, List String ) -> Maybe ( String, Argument Query )
+toGql ( key, filters ) =
+    if List.length filters == 0 then
+        Nothing
+    else
+        let
+            str =
+                String.join "," filters
+        in
+            Just <| ( key, Gql.type_ <| "[" ++ str ++ "]" )

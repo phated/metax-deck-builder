@@ -4,6 +4,7 @@ import Json.Encode exposing (encode, string, int, list, object, Value)
 import Data.Card exposing (Card)
 import Data.Deck as Deck exposing (Deck)
 import Data.CardType as CardType exposing (CardType)
+import Data.CardUID as CardUID
 import Ports
 
 
@@ -18,7 +19,7 @@ toExport : ( Card, Int ) -> Value
 toExport ( card, quantity ) =
     object
         [ ( "quantity", int quantity )
-        , ( "id", string card.uid )
+        , ( "id", string (CardUID.toString card.uid) )
         , ( "title", string <| .title card )
         , ( "card_type", string (CardType.toString <| .card_type card) )
         ]
