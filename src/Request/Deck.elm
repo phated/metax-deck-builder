@@ -7,16 +7,9 @@ import Data.CardType as CardType exposing (CardType)
 import Ports
 
 
-toEncoder : ( Card, Int ) -> ( String, Value )
-toEncoder ( card, count ) =
-    ( card.uid, int count )
-
-
 save : Deck -> Cmd msg
 save deck =
-    List.map toEncoder (Deck.toList deck)
-        |> object
-        |> encode 0
+    Deck.encoder deck
         |> Just
         |> Ports.storeSession
 
