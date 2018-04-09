@@ -54,14 +54,13 @@ type alias Model =
     , setOpen : Bool
     , patrons : List String
     , attributions : List Attribution
+    , isLoading : Bool
     }
 
 
 type Msg
     = SetRoute Route
-    | Booted (Result Http.Error CardList)
-      -- There's probably better name for this
-    | Filtered (Result Http.Error CardList)
+    | CardsLoaded (Result Http.Error CardList)
     | LoadDeckCards (Result Http.Error CardList)
     | Decrement Card
     | Increment Card
@@ -78,9 +77,6 @@ type Msg
 delta2url : Model -> Model -> Maybe UrlChange
 delta2url prevModel nextModel =
     let
-        _ =
-            Debug.log "delta2url" True
-
         hash =
             Deck.hash nextModel.deck
 
@@ -115,9 +111,6 @@ delta2url prevModel nextModel =
 location2messages : Location -> List Msg
 location2messages location =
     let
-        _ =
-            Debug.log "location2messages" True
-
         qs =
             QueryString.parse location.search
 
@@ -129,16 +122,14 @@ location2messages location =
     in
         case route of
             Just route ->
-                [ SetRoute route, UpdateFilters filters ]
+                -- TODO: Are these executed in order?
+                [ SetRoute route
+                , UpdateFilters filters
+                , Search
+                ]
 
             Nothing ->
                 []
-
-
-
--- hashQuery : Maybe String -> String
--- hashQuery maybeHash =
---     Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
 
 
 importedToDeckItem : CardList -> ( String, Int ) -> Maybe ( Card, Int )
@@ -185,26 +176,15 @@ update msg model =
             in
                 ( { model | importedDeck = imported }, buildQuery uids |> Gql.send LoadDeckCards )
 
-        Booted (Ok cards) ->
-            -- TODO: Deck ID
-            ( { model | cards = (CardList.sort cards) }, loadSession "" )
+        CardsLoaded (Ok cards) ->
+            ( { model | isLoading = False, cards = (CardList.sort cards), locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
 
-        Booted (Err err) ->
+        CardsLoaded (Err err) ->
             let
                 test =
                     Debug.log "err" err
             in
-                ( model, Cmd.none )
-
-        Filtered (Ok cards) ->
-            ( { model | cards = (CardList.sort cards), locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
-
-        Filtered (Err err) ->
-            let
-                test =
-                    Debug.log "err" err
-            in
-                ( model, Cmd.none )
+                ( { model | isLoading = False }, Cmd.none )
 
         Increment card ->
             let
@@ -245,7 +225,7 @@ update msg model =
                 ( { model | filters = nextFilters }, Cmd.none )
 
         Search ->
-            ( model, buildQuery model.filters |> Gql.send Filtered )
+            ( { model | isLoading = True }, buildQuery model.filters |> Gql.send CardsLoaded )
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
@@ -914,8 +894,15 @@ searchPane model =
         , button
             [ class "search-button"
             , onClick Search
+            , disabled model.isLoading
             ]
-            [ text "Search" ]
+            [ text
+                (if model.isLoading then
+                    "Searching..."
+                 else
+                    "Search"
+                )
+            ]
         ]
 
 
@@ -983,25 +970,13 @@ subscriptions model =
 init : ( Model, Cmd Msg )
 init =
     let
-        filters =
-            Filters.fromList
-                [ FilterRarity Common
-                , FilterRarity Uncommon
-                , FilterRarity Rare
-                , FilterRarity XRare
-                , FilterRarity URare
-                , FilterSet AT
-                , FilterSet GL
-                , FilterSet JL
-                ]
-
         model =
             { locationTo = Nothing
             , locationFrom = Nothing
             , cards = []
             , deck = Deck.empty
             , importedDeck = []
-            , filters = filters
+            , filters = Filters.empty
             , rarityOpen = False
             , setOpen = False
             , patrons = [ "Matt Smith" ]
@@ -1011,6 +986,7 @@ init =
                 , Attribution "Deck Icon" "Michael G Brown" "https://thenounproject.com/icon/1156459/"
                 , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
                 ]
+            , isLoading = False
             }
     in
-        ( model, buildQuery filters |> Gql.send Booted )
+        ( model, loadSession "" )
