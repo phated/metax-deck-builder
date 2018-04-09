@@ -1,8 +1,8 @@
-module Util exposing (onNavigate)
+module Util exposing (onNavigate, decoderFromMaybe)
 
 import Html exposing (Attribute)
 import Html.Events exposing (onWithOptions)
-import Json.Decode exposing (succeed)
+import Json.Decode exposing (succeed, fail, Decoder)
 
 
 onNavigate : a -> Attribute a
@@ -13,3 +13,13 @@ onNavigate msg =
         , preventDefault = True
         }
         (succeed msg)
+
+
+decoderFromMaybe : String -> Maybe a -> Decoder a
+decoderFromMaybe failMessage maybeValue =
+    case maybeValue of
+        Just value ->
+            succeed value
+
+        Nothing ->
+            fail failMessage

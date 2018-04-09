@@ -1,6 +1,14 @@
-module Data.CardType exposing (CardType(..), decoder, toString, toInt)
+module Data.CardType
+    exposing
+        ( CardType(..)
+        , decoder
+        , toString
+        , fromString
+        , toInt
+        )
 
 import Json.Decode exposing (string, andThen, succeed, fail, Decoder)
+import Util exposing (decoderFromMaybe)
 
 
 type CardType
@@ -11,7 +19,23 @@ type CardType
 
 decoder : Decoder CardType
 decoder =
-    string |> andThen stringToCardType
+    string |> andThen (fromString >> decoderFromMaybe "Invalid card type.")
+
+
+fromString : String -> Maybe CardType
+fromString value =
+    case value of
+        "Character" ->
+            Just Character
+
+        "Event" ->
+            Just Event
+
+        "Battle" ->
+            Just Battle
+
+        _ ->
+            Nothing
 
 
 toString : CardType -> String
@@ -38,23 +62,3 @@ toInt cardType =
 
         Event ->
             3
-
-
-
--- Utils
-
-
-stringToCardType : String -> Decoder CardType
-stringToCardType cardType =
-    case cardType of
-        "Character" ->
-            succeed Character
-
-        "Event" ->
-            succeed Event
-
-        "Battle" ->
-            succeed Battle
-
-        _ ->
-            fail "Invalid card type."

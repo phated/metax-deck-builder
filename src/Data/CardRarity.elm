@@ -1,6 +1,14 @@
-module Data.CardRarity exposing (CardRarity(..), decoder, fromString, toString, toInt)
+module Data.CardRarity
+    exposing
+        ( CardRarity(..)
+        , decoder
+        , fromString
+        , toString
+        , toInt
+        )
 
 import Json.Decode exposing (string, andThen, succeed, fail, Decoder)
+import Util exposing (decoderFromMaybe)
 
 
 type CardRarity
@@ -15,7 +23,7 @@ type CardRarity
 
 decoder : Decoder CardRarity
 decoder =
-    string |> andThen stringToCardRarity
+    string |> andThen (fromString >> decoderFromMaybe "Invalid card rarity.")
 
 
 fromString : String -> Maybe CardRarity
@@ -94,17 +102,3 @@ toInt rarity =
 
         URare ->
             6
-
-
-
--- Utils
-
-
-stringToCardRarity : String -> Decoder CardRarity
-stringToCardRarity str =
-    case fromString str of
-        Just rarity ->
-            succeed rarity
-
-        Nothing ->
-            fail "Invalid card rarity."

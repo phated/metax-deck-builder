@@ -1,8 +1,15 @@
-module Data.CardSymbol exposing (CardSymbol(..), decoder, toHtml)
+module Data.CardSymbol
+    exposing
+        ( CardSymbol(..)
+        , decoder
+        , fromString
+        , toHtml
+        )
 
 import Html exposing (Html, img, text)
 import Html.Attributes exposing (src, class)
 import Json.Decode exposing (Decoder, string, andThen, succeed, fail)
+import Util exposing (decoderFromMaybe)
 
 
 type CardSymbol
@@ -16,7 +23,32 @@ type CardSymbol
 
 decoder : Decoder CardSymbol
 decoder =
-    string |> andThen stringToCardSymbol
+    string |> andThen (fromString >> decoderFromMaybe "Invalid card symbol.")
+
+
+fromString : String -> Maybe CardSymbol
+fromString value =
+    case value of
+        "CONSTANT" ->
+            Just Constant
+
+        "PLAY" ->
+            Just Play
+
+        "PUSH" ->
+            Just Push
+
+        "ATTACK" ->
+            Just Attack
+
+        "DEFEND" ->
+            Just Defend
+
+        "NONE" ->
+            Just None
+
+        _ ->
+            Nothing
 
 
 toHtml : CardSymbol -> Html msg
@@ -39,32 +71,3 @@ toHtml symbol =
 
         None ->
             text ""
-
-
-
--- Utils
-
-
-stringToCardSymbol : String -> Decoder CardSymbol
-stringToCardSymbol val =
-    case val of
-        "CONSTANT" ->
-            succeed Constant
-
-        "PLAY" ->
-            succeed Play
-
-        "PUSH" ->
-            succeed Push
-
-        "ATTACK" ->
-            succeed Attack
-
-        "DEFEND" ->
-            succeed Defend
-
-        "NONE" ->
-            succeed None
-
-        _ ->
-            fail "Invalid card symbol."
