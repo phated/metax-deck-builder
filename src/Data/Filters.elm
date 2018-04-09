@@ -16,8 +16,8 @@ module Data.Filters
 
 import GraphQl as Gql exposing (Value, Query, Argument)
 import QueryString exposing (QueryString)
-import Data.CardRarity as CardRarity exposing (CardRarity)
-import Data.CardSet as CardSet exposing (CardSet)
+import Data.CardRarity as CardRarity exposing (CardRarity(..))
+import Data.CardSet as CardSet exposing (CardSet(..))
 import Data.CardUID as CardUID exposing (CardUID)
 
 
@@ -39,6 +39,14 @@ type alias Filters =
 empty : Filters
 empty =
     Filters [] [] []
+
+
+default : Filters
+default =
+    Filters
+        [ Common, Uncommon, Rare, XRare, URare ]
+        [ AT, GL, JL ]
+        []
 
 
 fromList : List Filter -> Filters
@@ -110,11 +118,7 @@ foldr fn result filters =
 
 union : Filters -> Filters -> Filters
 union f1 f2 =
-    let
-        _ =
-            Debug.log "union" ( f1, f2 )
-    in
-        foldr add f2 f1
+    foldr add f2 f1
 
 
 toString : Filters -> String
@@ -155,9 +159,6 @@ toQueryString filters =
 
         withSets =
             List.foldr (QueryString.add "set") withRarities sets
-
-        _ =
-            Debug.log "huh" rarities
     in
         withSets
 
@@ -177,7 +178,10 @@ fromQueryString qs =
         sets =
             List.filterMap CardSet.fromString setStrings
     in
-        Filters rarities sets []
+        if List.isEmpty rarities && List.isEmpty sets then
+            default
+        else
+            Filters rarities sets []
 
 
 applyFilters : Filters -> Value Query -> Value Query
