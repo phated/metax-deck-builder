@@ -28,6 +28,7 @@ import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
+import QueryString
 
 
 main : RouteUrlProgram Never Model Msg
@@ -70,17 +71,32 @@ type Msg
     | ToggleOpenSet
     | AddFilter Filter
     | RemoveFilter Filter
+    | UpdateFilters Filters
     | Search
 
 
 delta2url : Model -> Model -> Maybe UrlChange
 delta2url prevModel nextModel =
     let
+        _ =
+            Debug.log "delta2url" True
+
         hash =
             Deck.hash nextModel.deck
 
+        qs =
+            Filters.toQueryString nextModel.filters
+
+        qsWithHash =
+            case hash of
+                Just hash ->
+                    qs |> QueryString.add "deck" hash
+
+                Nothing ->
+                    qs
+
         querystring =
-            hashQuery hash
+            QueryString.render qsWithHash
     in
         case nextModel.locationTo of
             Just route ->
@@ -99,20 +115,30 @@ delta2url prevModel nextModel =
 location2messages : Location -> List Msg
 location2messages location =
     let
+        _ =
+            Debug.log "location2messages" True
+
+        qs =
+            QueryString.parse location.search
+
+        filters =
+            Filters.fromQueryString qs
+
         route =
             fromLocation location
     in
         case route of
             Just route ->
-                [ SetRoute route ]
+                [ SetRoute route, UpdateFilters filters ]
 
             Nothing ->
                 []
 
 
-hashQuery : Maybe String -> String
-hashQuery maybeHash =
-    Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
+
+-- hashQuery : Maybe String -> String
+-- hashQuery maybeHash =
+--     Maybe.withDefault "?" <| Maybe.map (\h -> "?deck=" ++ h) maybeHash
 
 
 importedToDeckItem : CardList -> ( String, Int ) -> Maybe ( Card, Int )
@@ -210,6 +236,13 @@ update msg model =
                     Filters.remove filter model.filters
             in
                 ( { model | filters = filters }, Cmd.none )
+
+        UpdateFilters filters ->
+            let
+                nextFilters =
+                    Filters.union filters model.filters
+            in
+                ( { model | filters = nextFilters }, Cmd.none )
 
         Search ->
             ( model, buildQuery model.filters |> Gql.send Filtered )
