@@ -27,8 +27,8 @@ decoder =
 
 
 fromString : String -> Maybe CardRarity
-fromString str =
-    case str of
+fromString value =
+    case value of
         "C" ->
             Just Common
 

@@ -217,7 +217,7 @@ toGql ( key, filters ) =
         Nothing
     else
         let
-            str =
+            filterString =
                 String.join "," filters
         in
-            Just <| ( key, Gql.type_ <| "[" ++ str ++ "]" )
+            Just <| ( key, Gql.type_ <| "[" ++ filterString ++ "]" )
