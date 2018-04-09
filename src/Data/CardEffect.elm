@@ -1,4 +1,9 @@
-module Data.CardEffect exposing (CardEffect, decoder, toHtml)
+module Data.CardEffect
+    exposing
+        ( CardEffect
+        , decoder
+        , toHtml
+        )
 
 import Html exposing (text, span, Html)
 import Html.Attributes exposing (class)

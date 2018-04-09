@@ -1,4 +1,8 @@
-module Data.CardStatList exposing (CardStatList, decoder)
+module Data.CardStatList
+    exposing
+        ( CardStatList
+        , decoder
+        )
 
 import Json.Decode exposing (Decoder, list)
 import Data.CardStat as CardStat exposing (CardStat)

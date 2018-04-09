@@ -1,4 +1,11 @@
-module Data.CardUID exposing (CardUID, toString, fromString, decoder, toGql)
+module Data.CardUID
+    exposing
+        ( CardUID
+        , toString
+        , fromString
+        , decoder
+        , toGql
+        )
 
 import Json.Decode exposing (Decoder, map, string)
 

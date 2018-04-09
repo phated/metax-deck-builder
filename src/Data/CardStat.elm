@@ -1,4 +1,8 @@
-module Data.CardStat exposing (CardStat(..), decoder)
+module Data.CardStat
+    exposing
+        ( CardStat(..)
+        , decoder
+        )
 
 import Json.Decode exposing (int, string, succeed, fail, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, resolve)

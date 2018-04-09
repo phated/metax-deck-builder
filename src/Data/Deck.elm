@@ -1,4 +1,17 @@
-module Data.Deck exposing (Deck, decoder, encoder, increment, decrement, empty, toList, fromList, count, sum, hash)
+module Data.Deck
+    exposing
+        ( Deck
+        , decoder
+        , encoder
+        , increment
+        , decrement
+        , empty
+        , toList
+        , fromList
+        , count
+        , sum
+        , hash
+        )
 
 import AllDict exposing (AllDict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)

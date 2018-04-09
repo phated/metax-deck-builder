@@ -1,4 +1,8 @@
-module Data.CardPreview exposing (CardPreview, decoder)
+module Data.CardPreview
+    exposing
+        ( CardPreview
+        , decoder
+        )
 
 import Json.Decode exposing (Decoder, string)
 import Json.Decode.Pipeline exposing (decode, required)
