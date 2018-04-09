@@ -1,6 +1,21 @@
-module Data.Filters exposing (Filters, Filter(..), applyFilters, empty, fromList, toString, add, remove, member)
+module Data.Filters
+    exposing
+        ( Filters
+        , Filter(..)
+        , fromList
+        , empty
+        , add
+        , remove
+        , member
+        , union
+        , toString
+        , toQueryString
+        , fromQueryString
+        , applyFilters
+        )
 
 import GraphQl as Gql exposing (Value, Query, Argument)
+import QueryString exposing (QueryString)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardSet as CardSet exposing (CardSet)
 import Data.CardUID as CardUID exposing (CardUID)
@@ -14,6 +29,7 @@ type Filter {- Used as the union type over the different filters -}
 
 type alias Filters =
     {- Only store the actual type instead of the filter type. Unsure if this is better/worse -}
+    {- TODO: Unique lists -}
     { rarity : List CardRarity
     , set : List CardSet
     , uid : List CardUID
@@ -30,17 +46,35 @@ fromList filters =
     List.foldr add empty filters
 
 
+toList : Filters -> List Filter
+toList filters =
+    List.concat
+        [ List.map FilterRarity filters.rarity
+        , List.map FilterSet filters.set
+        , List.map FilterUID filters.uid
+        ]
+
+
 add : Filter -> Filters -> Filters
 add filter filters =
     case filter of
         FilterRarity rarity ->
-            { filters | rarity = rarity :: filters.rarity }
+            if List.member rarity filters.rarity then
+                filters
+            else
+                { filters | rarity = rarity :: filters.rarity }
 
         FilterSet set ->
-            { filters | set = set :: filters.set }
+            if List.member set filters.set then
+                filters
+            else
+                { filters | set = set :: filters.set }
 
         FilterUID uid ->
-            { filters | uid = uid :: filters.uid }
+            if List.member uid filters.uid then
+                filters
+            else
+                { filters | uid = uid :: filters.uid }
 
 
 remove : Filter -> Filters -> Filters
@@ -69,6 +103,20 @@ member filter filters =
             List.member uid filters.uid
 
 
+foldr : (Filter -> b -> b) -> b -> Filters -> b
+foldr fn result filters =
+    List.foldr fn result (toList filters)
+
+
+union : Filters -> Filters -> Filters
+union f1 f2 =
+    let
+        _ =
+            Debug.log "union" ( f1, f2 )
+    in
+        foldr add f2 f1
+
+
 toString : Filters -> String
 toString filters =
     let
@@ -90,9 +138,46 @@ toString filters =
         rarityQuery ++ " " ++ setQuery
 
 
+toQueryString : Filters -> QueryString
+toQueryString filters =
+    let
+        qs =
+            QueryString.empty
 
--- TODO: Need to add a toUrlSearch function
--- toUrlSearch :
+        rarities =
+            List.map CardRarity.toString filters.rarity
+
+        sets =
+            List.map CardSet.toString filters.set
+
+        withRarities =
+            List.foldr (QueryString.add "rarity") qs rarities
+
+        withSets =
+            List.foldr (QueryString.add "set") withRarities sets
+
+        _ =
+            Debug.log "huh" rarities
+    in
+        withSets
+
+
+fromQueryString : QueryString -> Filters
+fromQueryString qs =
+    let
+        rarityStrings =
+            qs |> QueryString.all "rarity"
+
+        rarities =
+            List.filterMap CardRarity.fromString rarityStrings
+
+        setStrings =
+            qs |> QueryString.all "set"
+
+        sets =
+            List.filterMap CardSet.fromString setStrings
+    in
+        Filters rarities sets []
 
 
 applyFilters : Filters -> Value Query -> Value Query
