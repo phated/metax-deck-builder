@@ -1,4 +1,8 @@
-module Data.Card exposing (Card, decoder)
+module Data.Card
+    exposing
+        ( Card
+        , decoder
+        )
 
 import Json.Decode exposing (int, string, nullable, field, maybe, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)

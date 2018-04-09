@@ -1,4 +1,8 @@
-module Data.Attribution exposing (Attribution, toHtml)
+module Data.Attribution
+    exposing
+        ( Attribution
+        , toHtml
+        )
 
 import Html exposing (Html, li, a, text)
 import Html.Attributes exposing (href)

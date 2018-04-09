@@ -1,4 +1,9 @@
-module Data.BattleType exposing (BattleType(..), toInt, toBattleType)
+module Data.BattleType
+    exposing
+        ( BattleType(..)
+        , toInt
+        , toBattleType
+        )
 
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat)

@@ -1,4 +1,9 @@
-module Data.CardList exposing (CardList, decoder, sort)
+module Data.CardList
+    exposing
+        ( CardList
+        , decoder
+        , sort
+        )
 
 import Json.Decode exposing (Decoder, list)
 import Compare exposing (concat, by, Comparator)
