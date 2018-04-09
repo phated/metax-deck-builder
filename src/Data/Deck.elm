@@ -5,6 +5,9 @@ import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value
 import Json.Encode as Encode exposing (encode)
 import Data.Card exposing (Card)
 import Encode
+import Compare exposing (concat, by, Comparator)
+import Data.CardType as CardType exposing (CardType(Character, Event, Battle))
+import Data.BattleType as BattleType
 
 
 type alias Deck =
@@ -41,6 +44,7 @@ sum deck =
 hash : Deck -> Maybe String
 hash deck =
     toList deck
+        |> sort
         |> Encode.hash
 
 
@@ -128,3 +132,36 @@ maybeDecrement value =
 
         Nothing ->
             Just 0
+
+
+
+-- TODO: Dedupe the sorting
+
+
+sort : List ( Card, Int ) -> List ( Card, Int )
+sort cards =
+    (List.sortWith order cards)
+
+
+battleTypeOrder : Card -> Int
+battleTypeOrder { card_type, stats } =
+    case card_type of
+        Battle ->
+            BattleType.toInt stats
+
+        Character ->
+            0
+
+        Event ->
+            0
+
+
+order : Comparator ( Card, Int )
+order =
+    concat
+        [ by (CardType.toInt << .card_type << Tuple.first)
+        , by (battleTypeOrder << Tuple.first)
+        , by (Tuple.second)
+        , by (.title << Tuple.first)
+        , by (.text << .effect << Tuple.first)
+        ]
