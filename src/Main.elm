@@ -124,7 +124,7 @@ location2messages location =
             Just route ->
                 -- TODO: Are these executed in order?
                 [ SetRoute route
-                , UpdateFilters filters
+                , {- TODO: If init had the location, I could avoid this on initialization -} UpdateFilters filters
                 , Search
                 ]
 
