@@ -3,7 +3,7 @@ module Main exposing (Model, Msg, update, view, subscriptions, init)
 import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
-import Html.Events exposing (onClick, onCheck)
+import Html.Events exposing (onClick, onCheck, onInput)
 import Html.Helpers
 import Navigation exposing (Location)
 import Dict exposing (Dict)
@@ -71,6 +71,7 @@ type Msg
     | AddFilter Filter
     | RemoveFilter Filter
     | UpdateFilters Filters
+    | InputFilters String
     | Search
 
 
@@ -221,6 +222,13 @@ update msg model =
             let
                 nextFilters =
                     Filters.union filters model.filters
+            in
+                ( { model | filters = nextFilters }, Cmd.none )
+
+        InputFilters str ->
+            let
+                nextFilters =
+                    Filters.union (Filters.fromString str) model.filters
             in
                 ( { model | filters = nextFilters }, Cmd.none )
 
@@ -869,7 +877,7 @@ searchPane model =
         [ id "search-pane"
         , class "pane"
         ]
-        [ input [ type_ "search", placeholder "Search", class "search-box", value (Filters.toString model.filters) ] []
+        [ input [ type_ "search", placeholder "Search", class "search-box", onInput InputFilters ] []
         , div [ class "help-text" ] [ text "Need help?" ]
         , div [ classList [ ( "option-container", True ), ( "is-open", model.rarityOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenRarity ] [ text "Rarity" ]

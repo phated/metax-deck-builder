@@ -9,6 +9,7 @@ module Data.Filters
         , member
         , union
         , toString
+        , fromString
         , toQueryString
         , fromQueryString
         , applyFilters
@@ -140,6 +141,47 @@ toString filters =
     in
         -- TODO: this adds the space before if no rarities selected
         rarityQuery ++ " " ++ setQuery
+
+
+setGroups : String -> Filters -> Filters
+setGroups group result =
+    let
+        g =
+            String.split ":" group
+
+        classifier =
+            List.head g
+
+        items =
+            List.head (List.drop 1 g)
+    in
+        case ( classifier, items ) of
+            ( Just c, Just i ) ->
+                let
+                    filterStrings =
+                        String.split "," i
+                in
+                    case c of
+                        "rarity" ->
+                            { result | rarity = List.filterMap CardRarity.fromString filterStrings }
+
+                        "set" ->
+                            { result | set = List.filterMap CardSet.fromString filterStrings }
+
+                        _ ->
+                            result
+
+            ( _, _ ) ->
+                result
+
+
+fromString : String -> Filters
+fromString str =
+    let
+        filterGroups =
+            String.split " " str
+    in
+        List.foldr setGroups empty filterGroups
 
 
 toQueryString : Filters -> QueryString
