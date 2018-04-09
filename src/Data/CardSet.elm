@@ -23,8 +23,8 @@ decoder =
 
 
 fromString : String -> Maybe CardSet
-fromString str =
-    case str of
+fromString value =
+    case value of
         "JL" ->
             Just JL
 
