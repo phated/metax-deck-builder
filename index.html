@@ -19,6 +19,8 @@
 
 <meta name="fragment" content="!">
 
+<meta property="og:image" content="" />
+
 <body>
 <script src="/elm.js"></script>
 <script>
@@ -41,6 +43,12 @@
 	}
 
 	var app = Elm.Main.fullscreen();
+
+	app.ports.ogImage.subscribe(function (imageUrl) {
+		var el = document.querySelector('[property="og:image"]');
+
+		el.content = imageUrl;
+	});
 
 	app.ports.storeSession.subscribe(function(session) {
 		localStorage.session = session;
