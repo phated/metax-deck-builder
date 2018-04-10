@@ -25,12 +25,10 @@ fromString uid =
 
 
 toString : CardUID -> String
-toString uid =
-    case uid of
-        CardUID uid ->
-            uid
+toString (CardUID uid) =
+    uid
 
 
 toGql : CardUID -> String
-toGql uid =
-    "\"" ++ toString uid ++ "\""
+toGql (CardUID uid) =
+    "\"" ++ uid ++ "\""
