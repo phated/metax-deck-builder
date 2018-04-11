@@ -130,7 +130,7 @@ toString filters =
             else
                 mapRarityStrings filters.rarity
                     |> String.join ","
-                    |> (++) "rarity:"
+                    |> (++) "r:"
 
         setQuery =
             if List.length filters.set == 0 then
@@ -138,7 +138,7 @@ toString filters =
             else
                 mapSetStrings filters.set
                     |> String.join ","
-                    |> (++) "set:"
+                    |> (++) "s:"
 
         -- TODO: Add UID to the filter string
     in
