@@ -28,7 +28,7 @@ import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
-import QueryString
+import Fork.QueryString as QueryString
 
 
 main : RouteUrlProgram Never Model Msg
