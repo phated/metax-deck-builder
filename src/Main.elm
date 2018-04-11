@@ -77,12 +77,9 @@ type Msg
 delta2url : Model -> Model -> Maybe UrlChange
 delta2url prevModel nextModel =
     let
-        hash =
-            Deck.hash nextModel.deck
-
         querystring =
             Filters.toQueryString nextModel.filters
-                |> QueryString.addBy identity "deck" hash
+                |> QueryString.addBy Deck.hash "deck" nextModel.deck
                 |> QueryString.render
     in
         case nextModel.locationTo of
