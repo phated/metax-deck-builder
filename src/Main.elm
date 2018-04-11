@@ -80,19 +80,10 @@ delta2url prevModel nextModel =
         hash =
             Deck.hash nextModel.deck
 
-        qs =
-            Filters.toQueryString nextModel.filters
-
-        qsWithHash =
-            case hash of
-                Just hash ->
-                    qs |> QueryString.add "deck" hash
-
-                Nothing ->
-                    qs
-
         querystring =
-            QueryString.render qsWithHash
+            Filters.toQueryString nextModel.filters
+                |> QueryString.addBy identity "deck" hash
+                |> QueryString.render
     in
         case nextModel.locationTo of
             Just route ->
