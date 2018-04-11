@@ -15,7 +15,7 @@ module Data.Filters
         )
 
 import GraphQl as Gql exposing (Value, Query, Argument)
-import QueryString exposing (QueryString)
+import Fork.QueryString as QueryString exposing (QueryString)
 import Data.CardRarity as CardRarity exposing (CardRarity(..))
 import Data.CardSet as CardSet exposing (CardSet(..))
 import Data.CardUID as CardUID exposing (CardUID)
