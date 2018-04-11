@@ -8,9 +8,11 @@ module Fork.QueryString
         , empty
         , render
         , add
+        , addBy
         , remove
         , filter
         , all
+        , allBy
         , one
         , many
         , string
@@ -124,6 +126,11 @@ all k (QueryString qs) =
         |> Maybe.withDefault []
 
 
+allBy : (String -> List a) -> String -> QueryString -> List a
+allBy mapper key qs =
+    List.concatMap mapper (all key qs)
+
+
 {-| Retrieve a single value for a given key. Values are funneled through
 the given parser before being returned.
 
@@ -182,7 +189,7 @@ render : QueryString -> String
 render (QueryString qs) =
     let
         flatten ( k, xs ) =
-            List.map (\x -> k ++ "=" ++ encodeUri x) xs
+            List.map (\x -> k ++ "=" ++ x) xs
     in
         Dict.toList qs
             |> List.concatMap flatten
@@ -216,6 +223,16 @@ add k v (QueryString qs) =
     in
         Dict.update k prepend qs
             |> QueryString
+
+
+addBy : (List a -> Maybe String) -> String -> List a -> QueryString -> QueryString
+addBy mapper key values qs =
+    case mapper values of
+        Just val ->
+            add key val qs
+
+        Nothing ->
+            qs
 
 
 {-| Remove a key.

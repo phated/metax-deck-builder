@@ -128,13 +128,17 @@ toString filters =
             if List.length filters.rarity == 0 then
                 ""
             else
-                (++) "rarity:" (String.join "," <| List.map CardRarity.toString filters.rarity)
+                mapRarityStrings filters.rarity
+                    |> String.join ","
+                    |> (++) "rarity:"
 
         setQuery =
             if List.length filters.set == 0 then
                 ""
             else
-                (++) "set:" (String.join "," <| List.map CardSet.toString filters.set)
+                mapSetStrings filters.set
+                    |> String.join ","
+                    |> (++) "set:"
 
         -- TODO: Add UID to the filter string
     in
@@ -144,39 +148,19 @@ toString filters =
 
 toQueryString : Filters -> QueryString
 toQueryString filters =
-    let
-        qs =
-            QueryString.empty
-
-        rarities =
-            List.map CardRarity.toString filters.rarity
-
-        sets =
-            List.map CardSet.toString filters.set
-
-        withRarities =
-            List.foldr (QueryString.add "rarity") qs rarities
-
-        withSets =
-            List.foldr (QueryString.add "set") withRarities sets
-    in
-        withSets
+    QueryString.empty
+        |> QueryString.addBy (mapRarityStrings >> joiner) "r" filters.rarity
+        |> QueryString.addBy (mapSetStrings >> joiner) "s" filters.set
 
 
 fromQueryString : QueryString -> Filters
 fromQueryString qs =
     let
-        rarityStrings =
-            qs |> QueryString.all "rarity"
-
         rarities =
-            List.filterMap CardRarity.fromString rarityStrings
-
-        setStrings =
-            qs |> QueryString.all "set"
+            qs |> QueryString.allBy (splitter >> List.filterMap CardRarity.fromString) "r"
 
         sets =
-            List.filterMap CardSet.fromString setStrings
+            qs |> QueryString.allBy (splitter >> List.filterMap CardSet.fromString) "s"
     in
         if List.isEmpty rarities && List.isEmpty sets then
             default
@@ -188,10 +172,10 @@ applyFilters : Filters -> Value Query -> Value Query
 applyFilters filters =
     let
         rarityFilters =
-            List.map CardRarity.toString filters.rarity
+            mapRarityStrings filters.rarity
 
         setFilters =
-            List.map CardSet.toString filters.set
+            mapSetStrings filters.set
 
         uidFilters =
             List.map CardUID.toGql filters.uid
@@ -221,3 +205,26 @@ toGql ( key, filters ) =
                 String.join "," filters
         in
             Just <| ( key, Gql.type_ <| "[" ++ filterString ++ "]" )
+
+
+joiner : List String -> Maybe String
+joiner values =
+    if List.length values == 0 then
+        Nothing
+    else
+        Just (String.join "," values)
+
+
+splitter : String -> List String
+splitter =
+    String.split ","
+
+
+mapRarityStrings : List CardRarity -> List String
+mapRarityStrings =
+    List.map CardRarity.toString
+
+
+mapSetStrings : List CardSet -> List String
+mapSetStrings =
+    List.map CardSet.toString
