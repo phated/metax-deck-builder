@@ -225,7 +225,7 @@ add k v (QueryString qs) =
             |> QueryString
 
 
-addBy : (List a -> Maybe String) -> String -> List a -> QueryString -> QueryString
+addBy : (a -> Maybe String) -> String -> a -> QueryString -> QueryString
 addBy mapper key values qs =
     case mapper values of
         Just val ->
