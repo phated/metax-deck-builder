@@ -1,7 +1,7 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, Html)
+import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, br, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Html.Helpers
@@ -191,14 +191,14 @@ update msg model =
                 deck =
                     Deck.increment card model.deck
             in
-                ( { model | deck = deck }, Request.Deck.save deck )
+                ( { model | deck = deck }, Cmd.none )
 
         Decrement card ->
             let
                 deck =
                     Deck.decrement card model.deck
             in
-                ( { model | deck = deck }, Request.Deck.save deck )
+                ( { model | deck = deck }, Cmd.none )
 
         ExportDeck ->
             ( model, Request.Deck.export model.deck )
@@ -956,10 +956,20 @@ paneContainer model =
             ]
 
 
+noSaveWarning : Html Msg
+noSaveWarning =
+    div [ class "save-warning" ]
+        [ text "We have disabled auto-saving of decklists."
+        , br [] []
+        , text "Be sure to save/bookmark your deck hash."
+        ]
+
+
 applicationShell : Model -> Html Msg
 applicationShell model =
     div [ class "pane-root" ]
         [ navbarTop model
+        , noSaveWarning
         , paneContainer model
         , navbarBottom model
         ]

@@ -666,3 +666,22 @@ body {
 .attributions a {
   color: #303030;
 }
+
+/* Temporary */
+.save-warning {
+  padding: 4px 8px;
+  background: #f4adad;
+  border-bottom: 1px solid #c61827;
+  color: #852725;
+  font-weight: 600;
+  text-align: center;
+
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+}
+
+.pane-container {
+  margin-top: 40px;
+}
