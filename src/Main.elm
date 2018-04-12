@@ -72,6 +72,8 @@ type Msg
     | RemoveFilter Filter
     | UpdateFilters Filters
     | Search
+    | PreloadCards
+    | CardsPreloaded (Result Http.Error CardList)
 
 
 delta2url : Model -> Model -> Maybe UrlChange
@@ -113,7 +115,7 @@ location2messages location =
                 -- TODO: Are these executed in order?
                 [ SetRoute route
                 , {- TODO: If init had the location, I could avoid this on initialization -} UpdateFilters filters
-                , Search
+                , PreloadCards
                 ]
 
             Nothing ->
@@ -174,6 +176,16 @@ update msg model =
             in
                 ( { model | isLoading = False }, Cmd.none )
 
+        CardsPreloaded (Ok cards) ->
+            ( { model | isLoading = False, cards = (CardList.sort cards) }, Cmd.none )
+
+        CardsPreloaded (Err err) ->
+            let
+                test =
+                    Debug.log "err" err
+            in
+                ( { model | isLoading = False }, Cmd.none )
+
         Increment card ->
             let
                 deck =
@@ -214,6 +226,9 @@ update msg model =
 
         Search ->
             ( { model | isLoading = True }, buildQuery model.filters |> Gql.send CardsLoaded )
+
+        PreloadCards ->
+            ( { model | isLoading = True }, buildQuery model.filters |> Gql.send CardsPreloaded )
 
         ToggleOpenRarity ->
             ( { model | rarityOpen = not model.rarityOpen }, Cmd.none )
