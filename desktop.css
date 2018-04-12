@@ -58,4 +58,10 @@
   .patreon-link {
     text-align: start;
   }
+
+  /* Temporary */
+  .save-warning {
+    top: 0;
+    left: 50px;
+  }
 }
