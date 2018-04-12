@@ -5,7 +5,7 @@ module Data.Attribution
         )
 
 import Html exposing (Html, li, a, text)
-import Html.Attributes exposing (href)
+import Html.Attributes exposing (href, rel)
 
 
 type alias Attribution =
@@ -18,7 +18,7 @@ type alias Attribution =
 toHtml : Attribution -> Html msg
 toHtml attribution =
     li []
-        [ a [ href attribution.link ]
+        [ a [ rel "nofollow", href attribution.link ]
             [ text attribution.name
             , text " by "
             , text attribution.author
