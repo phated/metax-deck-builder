@@ -55,6 +55,10 @@ type alias Model =
     , patrons : List String
     , attributions : List Attribution
     , isLoading : Bool
+
+    -- TODO: This is storing the card for individual preview until I find a better place to store it
+    , card : Maybe Card
+    , cardLoading : Bool
     }
 
 
@@ -74,6 +78,7 @@ type Msg
     | Search
     | PreloadCards
     | CardsPreloaded (Result Http.Error CardList)
+    | LoadCard (Result Http.Error Card)
 
 
 delta2url : Model -> Model -> Maybe UrlChange
@@ -140,7 +145,38 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         SetRoute route ->
-            ( { model | locationFrom = model.locationTo, locationTo = Just route }, Cmd.none )
+            let
+                ( loading, cmd ) =
+                    case route of
+                        Route.Card uid ->
+                            ( True
+                            , CardUID.fromString uid
+                                |> Card.query
+                                |> Card.load
+                                |> Gql.send LoadCard
+                            )
+
+                        _ ->
+                            ( False, Cmd.none )
+            in
+                ( { model
+                    | locationFrom = model.locationTo
+                    , locationTo = Just route
+                    , card = Nothing
+                    , cardLoading = loading
+                  }
+                , cmd
+                )
+
+        LoadCard (Ok card) ->
+            ( { model | card = Just card, cardLoading = False }, Cmd.none )
+
+        LoadCard (Err err) ->
+            let
+                test =
+                    Debug.log "err" err
+            in
+                ( { model | cardLoading = False }, Cmd.none )
 
         LoadDeckCards (Ok cards) ->
             -- TODO: It feels really bad to to this mapping from UID to actual Card. Maybe this should be stored?
@@ -791,34 +827,35 @@ largeImg card =
 cardPane : Model -> Html Msg
 cardPane model =
     case .locationTo model of
-        Just (Route.Card cardId) ->
-            let
-                card =
-                    lookup model.cards cardId
-            in
-                case card of
-                    Just card ->
-                        div
-                            [ id "card-pane"
-                            , class "pane"
-                            ]
-                            [ div [ class "card-full-container" ]
-                                [ largeImg card
-                                , div [ class "card-details" ]
-                                    [ cardText card
-                                    , cardStats card
-                                    ]
-                                , stepper ( card, Deck.count card model.deck )
+        Just (Route.Card _) ->
+            case .card model of
+                Just card ->
+                    div
+                        [ id "card-pane"
+                        , class "pane"
+                        ]
+                        [ div [ class "card-full-container" ]
+                            [ largeImg card
+                            , div [ class "card-details" ]
+                                [ cardText card
+                                , cardStats card
                                 ]
+                            , stepper ( card, Deck.count card model.deck )
                             ]
+                        ]
 
-                    Nothing ->
-                        div
-                            [ id "card-pane"
-                            , class "pane align-center"
-                            ]
-                            [ text "Card not found"
-                            ]
+                Nothing ->
+                    div
+                        [ id "card-pane"
+                        , class "pane align-center"
+                        ]
+                        [ text
+                            (if model.cardLoading then
+                                "Loading..."
+                             else
+                                "Card not found"
+                            )
+                        ]
 
         _ ->
             div
@@ -1000,6 +1037,8 @@ init =
                 , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
                 ]
             , isLoading = False
+            , card = Nothing
+            , cardLoading = False
             }
     in
         ( model, loadSession "" )
