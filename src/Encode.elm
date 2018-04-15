@@ -7,6 +7,12 @@ import Array exposing (Array)
 import Encoding.Integral exposing (decodeDec, encodeBin)
 
 
+type alias EncodeResult =
+    { cardHashes : List String
+    , checksum : Int
+    }
+
+
 sixtyfour : Array String
 sixtyfour =
     Array.fromList
@@ -119,8 +125,45 @@ toBase64 hashIdx =
                 ""
 
 
-encodeCard : ( Card, Int ) -> String
-encodeCard ( card, qty ) =
+encodeChecksum : String -> Int
+encodeChecksum val =
+    case val of
+        "0" ->
+            0
+
+        "1" ->
+            1
+
+        "2" ->
+            2
+
+        "3" ->
+            3
+
+        "4" ->
+            4
+
+        "5" ->
+            5
+
+        "6" ->
+            6
+
+        "7" ->
+            7
+
+        "8" ->
+            8
+
+        "9" ->
+            9
+
+        _ ->
+            0
+
+
+encodeCard : ( Card, Int ) -> EncodeResult -> EncodeResult
+encodeCard ( card, qty ) result =
     let
         encodedQty =
             encodeQty qty
@@ -137,8 +180,9 @@ encodeCard ( card, qty ) =
         hash =
             encodedQty + rarity + number + set
 
+        {- Checkbit is no longer checked -}
         checkbit =
-            (List.length <| String.indexes "1" <| encodeBin hash) % 2
+            0
 
         hashWithCheckbit =
             hash + checkbit
@@ -152,38 +196,52 @@ encodeCard ( card, qty ) =
         sextet1 =
             (floor ((toFloat <| hashWithCheckbit - sextet2 - sextet3) / 4096)) % 64
 
-        base64 =
-            (toBase64 sextet1) ++ (toBase64 sextet2) ++ (toBase64 sextet3)
+        encodedSextet1 =
+            toBase64 sextet1
 
-        out =
-            base64
+        encodedSextet2 =
+            toBase64 sextet2
+
+        encodedSextet3 =
+            toBase64 sextet3
+
+        checksum =
+            (encodeChecksum encodedSextet1) + (encodeChecksum encodedSextet2) + (encodeChecksum encodedSextet3)
+
+        cardHash =
+            encodedSextet1 ++ encodedSextet2 ++ encodedSextet3
     in
-        out
+        { cardHashes = cardHash :: result.cardHashes, checksum = (result.checksum + checksum) }
 
 
 hash : List ( Card, Int ) -> Maybe String
 hash deck =
     let
-        encodedVersion =
-            toBase64 0
+        version =
+            0
 
-        encodedCards =
-            List.map encodeCard deck
+        encodedVersion =
+            toBase64 version
+
+        result =
+            { cardHashes = []
+            , checksum = encodeChecksum encodedVersion
+            }
+
+        encodeResult =
+            List.foldr encodeCard result deck
 
         encodedDeck =
-            encodedVersion ++ String.join "" encodedCards
-
-        checksum =
-            List.sum (List.map (\v -> Maybe.withDefault 0 (decodeDec v)) (String.split "" encodedDeck))
+            encodedVersion ++ String.join "" encodeResult.cardHashes
 
         base64Checksum =
-            toBase64 <| checksum % 64
+            toBase64 <| encodeResult.checksum % 64
 
         encoded =
             encodedDeck ++ base64Checksum
     in
         -- AiAASAhA
-        if List.length encodedCards > 0 then
+        if List.length encodeResult.cardHashes > 0 then
             Just encoded
         else
             Nothing
