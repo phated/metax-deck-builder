@@ -2,6 +2,7 @@ module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, br, Html)
+import Html.Keyed as Keyed
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Html.Helpers
@@ -421,7 +422,8 @@ navbarBottom model =
 
 cardListPane : Model -> Html Msg
 cardListPane model =
-    div
+    Keyed.node
+        "div"
         [ id "card-list-pane"
         , class "pane"
         ]
@@ -541,19 +543,25 @@ cardDetails card =
         ]
 
 
-cardView : Model -> Card -> Html Msg
+cardView : Model -> Card -> ( String, Html Msg )
 cardView model card =
     let
         count =
             Deck.count card model.deck
+
+        uid =
+            CardUID.toString card.uid
+
+        html =
+            div
+                [ id uid
+                , class "list-item"
+                ]
+                [ cardDetails card
+                , stepper ( card, count )
+                ]
     in
-        div
-            [ id (CardUID.toString card.uid)
-            , class "list-item"
-            ]
-            [ cardDetails card
-            , stepper ( card, count )
-            ]
+        ( uid, html )
 
 
 idMatches : String -> Card -> Bool
@@ -567,14 +575,15 @@ lookup cards cardId =
         |> List.head
 
 
-sectionHeader : String -> Int -> List (Html Msg)
+sectionHeader : String -> Int -> List ( String, Html Msg )
 sectionHeader title count =
-    List.singleton (div [ class "list-item-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
+    List.singleton ( title, div [ class "list-item-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ] )
 
 
-sectionSubHeader : Html Msg -> List (Html Msg)
-sectionSubHeader content =
-    List.singleton (div [ class "list-item-sub-header" ] [ content ])
+
+-- sectionSubHeader : Html Msg -> List ( String, Html Msg )
+-- sectionSubHeader content =
+--     List.singleton (div [ class "list-item-sub-header" ] [ content ])
 
 
 sum : List ( Card, Int ) -> Int
@@ -582,7 +591,7 @@ sum cards =
     (List.sum (List.map Tuple.second cards))
 
 
-charactersView : List ( Card, Int ) -> List (Html Msg)
+charactersView : List ( Card, Int ) -> List ( String, Html Msg )
 charactersView characters =
     if List.length characters > 0 then
         List.concat
@@ -593,7 +602,7 @@ charactersView characters =
         []
 
 
-eventsView : List ( Card, Int ) -> List (Html Msg)
+eventsView : List ( Card, Int ) -> List ( String, Html Msg )
 eventsView events =
     if List.length events > 0 then
         List.concat
@@ -612,7 +621,7 @@ bcWarningView count =
         Nothing
 
 
-battleCardSubSection : String -> List ( Card, Int ) -> List (Html Msg)
+battleCardSubSection : String -> List ( Card, Int ) -> List ( String, Html Msg )
 battleCardSubSection title cards =
     if List.length cards > 0 then
         let
@@ -631,13 +640,13 @@ battleCardSubSection title cards =
             case warning of
                 Just warning ->
                     List.concat
-                        [ List.singleton <| div [ class "list-item-sub-header with-warning" ] [ titleText, warning ]
+                        [ List.singleton <| ( title, div [ class "list-item-sub-header with-warning" ] [ titleText, warning ] )
                         , (List.map deckCardView cards)
                         ]
 
                 Nothing ->
                     List.concat
-                        [ List.singleton <| div [ class "list-item-sub-header" ] [ titleText ]
+                        [ List.singleton <| ( title, div [ class "list-item-sub-header" ] [ titleText ] )
                         , (List.map deckCardView cards)
                         ]
     else
@@ -689,12 +698,12 @@ groupBattleCards ( card, count ) result =
             result
 
 
-toRows : String -> Int -> List ( Card, Int ) -> List (Html Msg) -> List (Html Msg)
+toRows : String -> Int -> List ( Card, Int ) -> List ( String, Html Msg ) -> List ( String, Html Msg )
 toRows title rank cards result =
     List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) cards)
 
 
-battleCardView : List ( Card, Int ) -> List (Html Msg)
+battleCardView : List ( Card, Int ) -> List ( String, Html Msg )
 battleCardView battle =
     if List.length battle > 0 then
         let
@@ -742,7 +751,7 @@ groupTypes ( card, count ) result =
             { result | battle = ( card, count ) :: result.battle }
 
 
-deckSectionView : List ( Card, Int ) -> List (Html Msg)
+deckSectionView : List ( Card, Int ) -> List ( String, Html Msg )
 deckSectionView cards =
     let
         rows =
@@ -786,20 +795,28 @@ toBattleCardRank card =
                 ""
 
 
-deckCardView : ( Card, Int ) -> Html Msg
+deckCardView : ( Card, Int ) -> ( String, Html Msg )
 deckCardView ( card, count ) =
-    div
-        [ id ("deck_" ++ (CardUID.toString card.uid))
-        , class "list-item"
-        ]
-        [ cardDetails card
-        , stepper ( card, count )
-        ]
+    let
+        uid =
+            "deck_" ++ (CardUID.toString card.uid)
+
+        html =
+            div
+                [ id uid
+                , class "list-item"
+                ]
+                [ cardDetails card
+                , stepper ( card, count )
+                ]
+    in
+        ( uid, html )
 
 
 deckListPane : Model -> Html Msg
 deckListPane model =
-    div
+    Keyed.node
+        "div"
         [ id "deck-list-pane"
         , class "pane"
         ]
