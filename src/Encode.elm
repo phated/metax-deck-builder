@@ -4,7 +4,6 @@ import Data.Card exposing (Card)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardSet as CardSet exposing (CardSet)
 import Array exposing (Array)
-import Encoding.Integral exposing (decodeDec, encodeBin)
 
 
 type alias EncodeResult =
