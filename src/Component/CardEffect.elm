@@ -3,6 +3,7 @@ module Component.CardEffect
         ( CardEffect
         , decoder
         , toHtml
+        , toHtmlLazy
         )
 
 {-| Component.CardEffect represents the effect of an individual card.
@@ -20,15 +21,16 @@ module Component.CardEffect
 
 # Views
 
-@docs toHtml
+@docs toHtml, toHtmlLazy
 
 -}
 
 import Html exposing (div, text, span, Html)
+import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (string, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, optional)
-import Data.CardSymbol as CardSymbol exposing (CardSymbol(..))
+import Component.CardSymbol as CardSymbol exposing (CardSymbol)
 
 
 {-| A record containing the text and [Symbol](CardSymbol#CardSymbol) of a card.
@@ -58,14 +60,14 @@ decoder =
 -}
 toHtml : CardEffect -> Html msg
 toHtml effect =
-    let
-        image =
-            CardSymbol.toHtml effect.symbol
+    div [ class "card-effect" ]
+        [ CardSymbol.toHtmlLazy effect.symbol
+        , span [ class "effect-text" ] [ text effect.text ]
+        ]
 
-        content =
-            .text effect
-    in
-        div [ class "card-effect" ]
-            [ image
-            , span [ class "effect-text" ] [ text content ]
-            ]
+
+{-| Render the CardEffect as a Lazy Html view to avoid re-rendering.
+-}
+toHtmlLazy : CardEffect -> Html msg
+toHtmlLazy =
+    lazy toHtml
