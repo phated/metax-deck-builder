@@ -17,7 +17,6 @@ import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
-import Data.Attribution as Attribution exposing (Attribution)
 import Data.BattleType as BattleType exposing (BattleType)
 import Data.CardUID as CardUID exposing (CardUID)
 import Request.Deck
@@ -30,6 +29,7 @@ import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, Mod
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
 import Component.CardEffect as CardEffect exposing (CardEffect)
+import Component.Attribution as Attribution exposing (Attribution)
 
 
 main : RouteUrlProgram Never Model Msg

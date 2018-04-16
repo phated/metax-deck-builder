@@ -5,7 +5,7 @@ module Component.CardEffect
         , toHtml
         )
 
-{-| This Component represents the effect of an individual card.
+{-| Component.CardEffect represents the effect of an individual card.
 
 
 # Types
@@ -32,6 +32,9 @@ import Data.CardSymbol as CardSymbol exposing (CardSymbol(..))
 
 
 {-| A record containing the text and [Symbol](CardSymbol#CardSymbol) of a card.
+
+    CardEffect Play "Draw a card."
+
 -}
 type alias CardEffect =
     { symbol : CardSymbol
