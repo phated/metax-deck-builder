@@ -956,8 +956,8 @@ searchPane model =
         ]
 
 
-infoPane : Model -> Html Msg
-infoPane model =
+infoPane : Html Msg
+infoPane =
     div [ id "info-pane", class "pane" ]
         [ Patrons.toHtmlLazy Patrons.defaults
         , IconAttributions.toHtmlLazy IconAttributions.defaults
@@ -974,7 +974,7 @@ paneContainer model =
             [ searchPane model
             , cardListPane model
             , deckListPane model
-            , infoPane model
+            , infoPane
             , cardPane model
             ]
 
