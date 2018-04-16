@@ -5,7 +5,7 @@ module Data.CardEffect
         , toHtml
         )
 
-import Html exposing (text, span, Html)
+import Html exposing (div, text, span, Html)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (string, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, optional)
@@ -25,7 +25,7 @@ decoder =
         |> optional "text" string ""
 
 
-toHtml : CardEffect -> List (Html msg)
+toHtml : CardEffect -> Html msg
 toHtml effect =
     let
         image =
@@ -34,6 +34,7 @@ toHtml effect =
         content =
             .text effect
     in
-        [ image
-        , span [ class "effect-text" ] [ text content ]
-        ]
+        div [ class "card-effect" ]
+            [ image
+            , span [ class "effect-text" ] [ text content ]
+            ]

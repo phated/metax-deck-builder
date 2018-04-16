@@ -483,11 +483,6 @@ statView stat =
                 ]
 
 
-cardEffect : CardEffect -> Html Msg
-cardEffect effect =
-    div [ class "card-effect" ] (CardEffect.toHtml effect)
-
-
 cardTrait : String -> String
 cardTrait trait =
     if trait == "" then
@@ -505,7 +500,7 @@ cardText card =
             , text <| toBattleCardRank card
             ]
         , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
-        , cardEffect card.effect
+        , CardEffect.toHtml card.effect
         ]
 
 
