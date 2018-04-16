@@ -13,7 +13,6 @@ import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType as CardType exposing (CardType(..))
 import Data.CardSet as CardSet exposing (CardSet(JL, GL, AT))
-import Data.CardRarity as CardRarity exposing (CardRarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
@@ -30,6 +29,7 @@ import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet
 import Fork.QueryString as QueryString
 import Component.Card.Effect as CardEffect
 import Component.Card.Preview as CardPreview
+import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 

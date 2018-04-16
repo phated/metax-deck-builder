@@ -16,13 +16,13 @@ module Data.Filters
 
 import GraphQl as Gql exposing (Value, Query, Argument)
 import Fork.QueryString as QueryString exposing (QueryString)
-import Data.CardRarity as CardRarity exposing (CardRarity(..))
 import Data.CardSet as CardSet exposing (CardSet(..))
 import Data.CardUID as CardUID exposing (CardUID)
+import Component.Card.Rarity as CardRarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 
 
 type Filter {- Used as the union type over the different filters -}
-    = FilterRarity CardRarity
+    = FilterRarity Rarity
     | FilterSet CardSet
     | FilterUID CardUID
 
@@ -30,7 +30,7 @@ type Filter {- Used as the union type over the different filters -}
 type alias Filters =
     {- Only store the actual type instead of the filter type. Unsure if this is better/worse -}
     {- TODO: Unique lists -}
-    { rarity : List CardRarity
+    { rarity : List Rarity
     , set : List CardSet
     , uid : List CardUID
     }
@@ -220,7 +220,7 @@ splitter =
     String.split ","
 
 
-mapRarityStrings : List CardRarity -> List String
+mapRarityStrings : List Rarity -> List String
 mapRarityStrings =
     List.map CardRarity.toString
 
