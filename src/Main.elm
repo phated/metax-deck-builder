@@ -29,7 +29,7 @@ import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, Mod
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
 import Component.CardEffect as CardEffect exposing (CardEffect)
-import Component.Attribution as Attribution exposing (Attribution)
+import Component.IconAttributions as IconAttributions
 
 
 main : RouteUrlProgram Never Model Msg
@@ -54,7 +54,6 @@ type alias Model =
     , rarityOpen : Bool
     , setOpen : Bool
     , patrons : List String
-    , attributions : List Attribution
     , isLoading : Bool
 
     -- TODO: This is storing the card for individual preview until I find a better place to store it
@@ -980,20 +979,11 @@ patreonView model =
         ]
 
 
-iconThanksView : Model -> Html Msg
-iconThanksView model =
-    div [ class "attributions" ]
-        [ text "Icons provided by The Noun Project:"
-        , ul []
-            (List.map Attribution.toHtml model.attributions)
-        ]
-
-
 infoPane : Model -> Html Msg
 infoPane model =
     div [ id "info-pane", class "pane" ]
         [ patreonView model
-        , iconThanksView model
+        , IconAttributions.toHtmlLazy IconAttributions.defaults
         ]
 
 
@@ -1056,12 +1046,6 @@ init =
             , rarityOpen = False
             , setOpen = False
             , patrons = [ "Matt Smith" ]
-            , attributions =
-                [ Attribution "Search Icon" "Icon Depot" "https://thenounproject.com/icon/1165408/"
-                , Attribution "Cards Icon" "Daniel Solis" "https://thenounproject.com/icon/219514/"
-                , Attribution "Deck Icon" "Michael G Brown" "https://thenounproject.com/icon/1156459/"
-                , Attribution "Info Icon" "icongeek" "https://thenounproject.com/icon/808461/"
-                ]
             , isLoading = False
             , card = Nothing
             , cardLoading = False
