@@ -28,8 +28,8 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
-import Component.CardEffect as CardEffect
-import Component.CardPreview as CardPreview
+import Component.Card.Effect as CardEffect
+import Component.Card.Preview as CardPreview
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 

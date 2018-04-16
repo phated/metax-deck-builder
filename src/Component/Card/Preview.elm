@@ -1,17 +1,17 @@
-module Component.CardPreview
+module Component.Card.Preview
     exposing
-        ( CardPreview
+        ( Preview
         , decoder
         , toHtml
         , toHtmlLazy
         )
 
-{-| Component.CardPreview represents preview metadata for spoiled cards.
+{-| Component.Card.Preview represents preview metadata for spoiled cards.
 
 
 # Types
 
-@docs CardPreview
+@docs Preview
 
 
 # Build
@@ -38,24 +38,24 @@ import Html.Helpers
 
 {-| Details about the preview of a card, including the previewer and original URL.
 -}
-type alias CardPreview =
+type alias Preview =
     { previewer : String
     , previewUrl : String
     }
 
 
-{-| Decode a string into a CardPreview.
+{-| Decode a string into a Preview.
 -}
-decoder : Decoder CardPreview
+decoder : Decoder Preview
 decoder =
-    decode CardPreview
+    decode Preview
         |> required "previewer" string
         |> required "previewUrl" string
 
 
-{-| Renders the Maybe CardPreview as an Html view. Produces an empty element if Nothing
+{-| Renders the Maybe Preview as an Html view. Produces an empty element if Nothing
 -}
-toHtml : Maybe CardPreview -> Html msg
+toHtml : Maybe Preview -> Html msg
 toHtml preview =
     case preview of
         Just preview ->
@@ -69,8 +69,8 @@ toHtml preview =
             Html.Helpers.nothing
 
 
-{-| Render the Maybe CardPreview as a Lazy Html view to avoid re-rendering.
+{-| Render the Maybe Preview as a Lazy Html view to avoid re-rendering.
 -}
-toHtmlLazy : Maybe CardPreview -> Html msg
+toHtmlLazy : Maybe Preview -> Html msg
 toHtmlLazy =
     lazy toHtml
