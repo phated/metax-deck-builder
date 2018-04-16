@@ -2,7 +2,7 @@ module Encode exposing (encodeCard, toBase64, encodeChecksum)
 
 import Array exposing (Array)
 import Data.Card exposing (Card)
-import Data.CardSet as CardSet exposing (CardSet)
+import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 
 
@@ -102,8 +102,9 @@ encodeNumber number =
     (number - 1) * 32
 
 
-encodeSet : CardSet -> Int
+encodeSet : Set -> Int
 encodeSet set =
+    -- TODO: Should this be a View in Set Component?
     let
         val =
             CardSet.toInt set
