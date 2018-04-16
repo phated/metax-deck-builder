@@ -14,8 +14,8 @@ import Data.CardType as CardType exposing (CardType)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardStatList as CardStatList exposing (CardStatList)
 import Data.CardUID as CardUID exposing (CardUID)
-import Component.CardEffect as CardEffect exposing (CardEffect)
-import Component.CardPreview as CardPreview exposing (CardPreview)
+import Component.Card.Effect as CardEffect exposing (Effect)
+import Component.Card.Preview as CardPreview exposing (Preview)
 
 
 type alias Card =
@@ -28,10 +28,10 @@ type alias Card =
     , card_type : CardType
     , trait : String
     , mp : Int
-    , effect : CardEffect
+    , effect : Effect
     , stats : CardStatList
     , image_url : String
-    , preview : Maybe CardPreview
+    , preview : Maybe Preview
     }
 
 
