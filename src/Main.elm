@@ -29,6 +29,7 @@ import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, Mod
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
 import Component.CardEffect as CardEffect
+import Component.CardPreview as CardPreview
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 
@@ -535,6 +536,7 @@ cardStats card =
 
 previewBanner : Card -> Html Msg
 previewBanner card =
+    -- TODO: How can we embed this into Component.CardPreview
     case card.preview of
         Just preview ->
             div [ class "preview-banner" ] [ text "Preview" ]
@@ -824,21 +826,11 @@ deckListPane model =
         (deckSectionView model.deck)
 
 
-previewedBy : Card -> Html Msg
-previewedBy card =
-    case card.preview of
-        Just preview ->
-            div [ class "preview-banner previewed-by" ] [ text "Previewed By: ", a [ href preview.previewUrl ] [ text preview.previewer ] ]
-
-        Nothing ->
-            Html.Helpers.nothing
-
-
 largeImg : Card -> Html Msg
 largeImg card =
     div [ class "card-full-wrapper" ]
         [ img [ class "card-full", src card.image_url ] []
-        , previewedBy card
+        , CardPreview.toHtmlLazy card.preview
         ]
 
 
