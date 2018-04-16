@@ -12,7 +12,6 @@ import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardStatList exposing (CardStatList)
-import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
 import Data.CardUID as CardUID exposing (CardUID)
@@ -26,6 +25,7 @@ import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, Mod
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
 import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
+import Component.Card.Stat as CardStat exposing (Stat)
 import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
 import Component.Card.Effect as CardEffect
 import Component.Card.Preview as CardPreview
@@ -482,29 +482,7 @@ mpView stat =
 
 statsView : CardStatList -> List (Html Msg)
 statsView stats =
-    List.map statView stats
-
-
-statView : CardStat -> Html Msg
-statView stat =
-    case stat of
-        CardStat.Strength rank ->
-            div [ class "card-stat" ]
-                [ img [ class "card-stat-icon", src ("/icons/strength.png") ] []
-                , span [ class "card-stat-text" ] [ text (toString rank) ]
-                ]
-
-        CardStat.Intelligence rank ->
-            div [ class "card-stat" ]
-                [ img [ class "card-stat-icon", src ("/icons/intelligence.png") ] []
-                , span [ class "card-stat-text" ] [ text (toString rank) ]
-                ]
-
-        CardStat.Special rank ->
-            div [ class "card-stat" ]
-                [ img [ class "card-stat-icon", src ("/icons/special.png") ] []
-                , span [ class "card-stat-text" ] [ text (toString rank) ]
-                ]
+    List.map CardStat.toHtmlLazy stats
 
 
 cardTrait : String -> String
@@ -776,7 +754,7 @@ deckSectionView deck =
         )
 
 
-toRank : CardStat -> Maybe Int -> Maybe Int
+toRank : Stat -> Maybe Int -> Maybe Int
 toRank stat rank =
     case stat of
         CardStat.Strength rank ->
