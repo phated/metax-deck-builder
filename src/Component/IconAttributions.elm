@@ -6,7 +6,7 @@ module Component.IconAttributions
         , toHtmlLazy
         )
 
-{-| Component.IconAttributions
+{-| Component.IconAttributions represents all Attributions for icons we use in the application.
 
 
 # Types
