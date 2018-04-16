@@ -34,7 +34,7 @@ import Html.Attributes exposing (class)
 import Component.Attribution as Attribution exposing (Attribution)
 
 
-{-| A list containing many attributions for Icons used in the application.
+{-| A list containing many attributions for icons used in the application.
 
 TODO: Make this an opaque type?
 
@@ -43,7 +43,7 @@ type alias IconAttributions =
     List Attribution
 
 
-{-| A default list of Icons used in the system.
+{-| A default list of icons used in the system.
 -}
 defaults : IconAttributions
 defaults =
