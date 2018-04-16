@@ -2,6 +2,7 @@ module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, br, Html)
+import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Html.Helpers
@@ -428,6 +429,11 @@ cardListPane model =
         (List.map (cardView model) model.cards)
 
 
+lazyStepper : ( Card, Int ) -> Html Msg
+lazyStepper =
+    lazy stepper
+
+
 stepper : ( Card, Int ) -> Html Msg
 stepper ( card, count ) =
     let
@@ -525,6 +531,11 @@ previewBanner card =
             Html.Helpers.nothing
 
 
+lazyCardDetails : Card -> Html Msg
+lazyCardDetails =
+    lazy cardDetails
+
+
 cardDetails : Card -> Html Msg
 cardDetails card =
     div [ class "card-details" ]
@@ -551,8 +562,8 @@ cardView model card =
             [ id (CardUID.toString card.uid)
             , class "list-item"
             ]
-            [ cardDetails card
-            , stepper ( card, count )
+            [ lazyCardDetails card
+            , lazyStepper ( card, count )
             ]
 
 
@@ -792,8 +803,8 @@ deckCardView ( card, count ) =
         [ id ("deck_" ++ (CardUID.toString card.uid))
         , class "list-item"
         ]
-        [ cardDetails card
-        , stepper ( card, count )
+        [ lazyCardDetails card
+        , lazyStepper ( card, count )
         ]
 
 
@@ -840,7 +851,7 @@ cardPane model =
                                 [ cardText card
                                 , cardStats card
                                 ]
-                            , stepper ( card, Deck.count card model.deck )
+                            , lazyStepper ( card, Deck.count card model.deck )
                             ]
                         ]
 
