@@ -6,7 +6,7 @@ module Data.BattleType
         )
 
 import Data.CardStatList exposing (CardStatList)
-import Data.CardStat as CardStat exposing (CardStat)
+import Component.Card.Stat as CardStat exposing (Stat)
 
 
 -- TODO: Maybe this should be part of CardStatList?
@@ -42,7 +42,7 @@ toInt stats =
             28
 
 
-battleTypeFoldr : CardStat -> Maybe BattleType -> Maybe BattleType
+battleTypeFoldr : Stat -> Maybe BattleType -> Maybe BattleType
 battleTypeFoldr stat battleType =
     case ( battleType, stat ) of
         ( Nothing, CardStat.Strength rank ) ->

@@ -5,11 +5,11 @@ module Data.CardStatList
         )
 
 import Json.Decode exposing (Decoder, list)
-import Data.CardStat as CardStat exposing (CardStat)
+import Component.Card.Stat as CardStat exposing (Stat)
 
 
 type alias CardStatList =
-    List CardStat
+    List Stat
 
 
 decoder : Decoder CardStatList
