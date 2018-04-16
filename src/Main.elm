@@ -523,7 +523,7 @@ cardText card =
             , text <| toBattleCardRank card
             ]
         , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
-        , CardEffect.toHtml card.effect
+        , CardEffect.toHtmlLazy card.effect
         ]
 
 
