@@ -11,7 +11,7 @@
     "elm-make": "elm-make ./src/Main.elm --output=elm.js --yes",
     "format": "elm-format src/",
     "v2": "node graphql/export.js",
-    "docs": "elm-docs --output=docs/README.md"
+    "docs": "elm-docs-preview 2> /dev/null"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "csvtojson": "^1.1.7",
     "elm": "^0.18.0",
-    "elm-docs": "^0.2.2",
+    "elm-docs-preview": "phated/elm-docs-preview#patch-1",
     "elm-format": "^0.6.1-alpha",
     "elm-live": "^2.7.4"
   },
