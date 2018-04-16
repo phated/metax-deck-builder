@@ -1,17 +1,45 @@
-module Data.CardSymbol
+module Component.CardSymbol
     exposing
         ( CardSymbol(..)
-        , decoder
         , fromString
+        , decoder
         , toHtml
+        , toHtmlLazy
         )
 
+{-| Component.CardSymbol represents a symbol on a card.
+
+
+# Types
+
+@docs CardSymbol
+
+
+# Build
+
+@docs fromString
+
+
+# Encoders/Decoders
+
+@docs decoder
+
+
+# Views
+
+@docs toHtml, toHtmlLazy
+
+-}
+
 import Html exposing (Html, img, text)
+import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (src, class)
 import Json.Decode exposing (Decoder, string, andThen, succeed, fail)
 import Util exposing (decoderFromMaybe)
 
 
+{-| The symbol on a card.
+-}
 type CardSymbol
     = Play
     | Push
@@ -21,11 +49,8 @@ type CardSymbol
     | None
 
 
-decoder : Decoder CardSymbol
-decoder =
-    string |> andThen (fromString >> decoderFromMaybe "Invalid card symbol.")
-
-
+{-| Create a CardSymbol from a String. Will be Nothing if the string is an invalid value.
+-}
 fromString : String -> Maybe CardSymbol
 fromString value =
     case value of
@@ -51,6 +76,15 @@ fromString value =
             Nothing
 
 
+{-| Decode a string into a CardSymbol.
+-}
+decoder : Decoder CardSymbol
+decoder =
+    string |> andThen (fromString >> decoderFromMaybe "Invalid card symbol.")
+
+
+{-| Renders the CardSymbol as an Html view.
+-}
 toHtml : CardSymbol -> Html msg
 toHtml symbol =
     case symbol of
@@ -71,3 +105,13 @@ toHtml symbol =
 
         None ->
             text ""
+
+
+{-| Render the CardSymbol as a Lazy Html view to avoid re-rendering.
+
+TODO: Does this work for each value in our union type?
+
+-}
+toHtmlLazy : CardSymbol -> Html msg
+toHtmlLazy =
+    lazy toHtml
