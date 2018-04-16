@@ -11,11 +11,11 @@ import Json.Decode.Pipeline exposing (decode, required, custom, optional, option
 import GraphQl as Gql exposing (Value, Query, Anonymous, object)
 import Data.CardSet as CardSet exposing (CardSet)
 import Data.CardType as CardType exposing (CardType)
-import Component.CardEffect as CardEffect exposing (CardEffect)
 import Data.CardRarity as CardRarity exposing (CardRarity)
 import Data.CardStatList as CardStatList exposing (CardStatList)
-import Data.CardPreview as CardPreview exposing (CardPreview)
 import Data.CardUID as CardUID exposing (CardUID)
+import Component.CardEffect as CardEffect exposing (CardEffect)
+import Component.CardPreview as CardPreview exposing (CardPreview)
 
 
 type alias Card =
