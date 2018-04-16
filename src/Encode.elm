@@ -1,9 +1,9 @@
 module Encode exposing (encodeCard, toBase64, encodeChecksum)
 
-import Data.Card exposing (Card)
-import Data.CardRarity as CardRarity exposing (CardRarity)
-import Data.CardSet as CardSet exposing (CardSet)
 import Array exposing (Array)
+import Data.Card exposing (Card)
+import Data.CardSet as CardSet exposing (CardSet)
+import Component.Card.Rarity as CardRarity exposing (Rarity)
 
 
 type alias EncodeResult =
@@ -87,8 +87,9 @@ encodeQty qty =
     (qty - 1) * 65536
 
 
-encodeRarity : CardRarity -> Int
+encodeRarity : Rarity -> Int
 encodeRarity rarity =
+    -- TODO: Should this be a View in Rarity Component?
     let
         val =
             CardRarity.toInt rarity
