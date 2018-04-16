@@ -9,10 +9,10 @@ module Data.Card
 import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
 import GraphQl as Gql exposing (Value, Query, Anonymous, object)
-import Data.CardSet as CardSet exposing (CardSet)
 import Data.CardType as CardType exposing (CardType)
 import Data.CardStatList as CardStatList exposing (CardStatList)
 import Data.CardUID as CardUID exposing (CardUID)
+import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
@@ -20,7 +20,7 @@ import Component.Card.Preview as CardPreview exposing (Preview)
 
 type alias Card =
     { uid : CardUID
-    , set : CardSet
+    , set : Set
     , number : Int
     , rarity : Rarity
     , title : String

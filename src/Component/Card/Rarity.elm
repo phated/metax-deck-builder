@@ -47,7 +47,7 @@ type Rarity
     | Starter
 
 
-{-| Create a rarity from a String. Will be Nothing if the string is an invalid value.
+{-| Create a Rarity from a String. Will be Nothing if the string is an invalid value.
 -}
 fromString : String -> Maybe Rarity
 fromString value =
