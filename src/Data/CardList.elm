@@ -8,8 +8,8 @@ module Data.CardList
 import Json.Decode exposing (Decoder, list)
 import Compare exposing (concat, by, Comparator)
 import Data.Card as Card exposing (Card)
-import Data.CardType as CardType exposing (CardType(Battle, Character, Event))
 import Data.BattleType as BattleType
+import Component.Card.Type as CardType exposing (Type(Battle, Character, Event))
 
 
 type alias CardList =
