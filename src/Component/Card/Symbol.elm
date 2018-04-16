@@ -1,18 +1,18 @@
-module Component.CardSymbol
+module Component.Card.Symbol
     exposing
-        ( CardSymbol(..)
+        ( Symbol(..)
         , fromString
         , decoder
         , toHtml
         , toHtmlLazy
         )
 
-{-| Component.CardSymbol represents a symbol on a card.
+{-| Component.Card.Symbol represents a symbol on a card.
 
 
 # Types
 
-@docs CardSymbol
+@docs Symbol
 
 
 # Build
@@ -40,7 +40,7 @@ import Util exposing (decoderFromMaybe)
 
 {-| The symbol on a card.
 -}
-type CardSymbol
+type Symbol
     = Play
     | Push
     | Constant
@@ -49,9 +49,9 @@ type CardSymbol
     | None
 
 
-{-| Create a CardSymbol from a String. Will be Nothing if the string is an invalid value.
+{-| Create a Symbol from a String. Will be Nothing if the string is an invalid value.
 -}
-fromString : String -> Maybe CardSymbol
+fromString : String -> Maybe Symbol
 fromString value =
     case value of
         "CONSTANT" ->
@@ -76,16 +76,16 @@ fromString value =
             Nothing
 
 
-{-| Decode a string into a CardSymbol.
+{-| Decode a string into a Symbol.
 -}
-decoder : Decoder CardSymbol
+decoder : Decoder Symbol
 decoder =
     string |> andThen (fromString >> decoderFromMaybe "Invalid card symbol.")
 
 
-{-| Renders the CardSymbol as an Html view.
+{-| Renders the Symbol as an Html view.
 -}
-toHtml : CardSymbol -> Html msg
+toHtml : Symbol -> Html msg
 toHtml symbol =
     case symbol of
         Play ->
@@ -107,11 +107,11 @@ toHtml symbol =
             text ""
 
 
-{-| Render the CardSymbol as a Lazy Html view to avoid re-rendering.
+{-| Render the Symbol as a Lazy Html view to avoid re-rendering.
 
 TODO: Does this work for each value in our union type?
 
 -}
-toHtmlLazy : CardSymbol -> Html msg
+toHtmlLazy : Symbol -> Html msg
 toHtmlLazy =
     lazy toHtml

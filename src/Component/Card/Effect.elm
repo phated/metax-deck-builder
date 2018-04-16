@@ -1,17 +1,17 @@
-module Component.CardEffect
+module Component.Card.Effect
     exposing
-        ( CardEffect
+        ( Effect
         , decoder
         , toHtml
         , toHtmlLazy
         )
 
-{-| Component.CardEffect represents the effect of an individual card.
+{-| Component.Card.Effect represents the effect of an individual card.
 
 
 # Types
 
-@docs CardEffect
+@docs Effect
 
 
 # Encoders/Decoders
@@ -30,35 +30,35 @@ import Html.Lazy exposing (lazy)
 import Html.Attributes exposing (class)
 import Json.Decode exposing (string, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, optional)
-import Component.CardSymbol as CardSymbol exposing (CardSymbol)
+import Component.Card.Symbol as CardSymbol exposing (Symbol)
 
 
-{-| A record containing the text and [Symbol](CardSymbol#CardSymbol) of a card.
+{-| A record containing the text and Symbol of a card.
 
-    CardEffect Play "Draw a card."
+    Component.Card.Effect Play "Draw a card."
 
 -}
-type alias CardEffect =
-    { symbol : CardSymbol
+type alias Effect =
+    { symbol : Symbol
     , text : String
     }
 
 
-{-| Decode a string into a CardEffect.
+{-| Decode a string into a Effect.
 -}
-decoder : Decoder CardEffect
+decoder : Decoder Effect
 decoder =
-    decode CardEffect
+    decode Effect
         |> required "symbol" CardSymbol.decoder
         |> optional "text" string ""
 
 
-{-| Render the CardEffect as an Html view.
+{-| Render the Effect as an Html view.
 
-    CardEffect.toHtml card.effect == div [ class "card-effect" ] [ ... ]
+    Component.Card.Effect.toHtml card.effect == div [ class "card-effect" ] [ ... ]
 
 -}
-toHtml : CardEffect -> Html msg
+toHtml : Effect -> Html msg
 toHtml effect =
     div [ class "card-effect" ]
         [ CardSymbol.toHtmlLazy effect.symbol
@@ -66,8 +66,8 @@ toHtml effect =
         ]
 
 
-{-| Render the CardEffect as a Lazy Html view to avoid re-rendering.
+{-| Render the Effect as a Lazy Html view to avoid re-rendering.
 -}
-toHtmlLazy : CardEffect -> Html msg
+toHtmlLazy : Effect -> Html msg
 toHtmlLazy =
     lazy toHtml
