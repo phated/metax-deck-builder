@@ -28,8 +28,9 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
-import Component.CardEffect as CardEffect exposing (CardEffect)
+import Component.CardEffect as CardEffect
 import Component.IconAttributions as IconAttributions
+import Component.Patrons as Patrons
 
 
 main : RouteUrlProgram Never Model Msg
@@ -53,7 +54,6 @@ type alias Model =
     , filters : Filters
     , rarityOpen : Bool
     , setOpen : Bool
-    , patrons : List String
     , isLoading : Bool
 
     -- TODO: This is storing the card for individual preview until I find a better place to store it
@@ -964,25 +964,10 @@ searchPane model =
         ]
 
 
-patreonView : Model -> Html Msg
-patreonView model =
-    div [ class "patreon" ]
-        [ div [] [ text "Our work is supported by our Patrons on Patreon." ]
-        , div []
-            [ text "Extra "
-            , img [ class "card-stat-icon", src "/icons/special.png" ] []
-            , text " thanks to our Rank 5+ Patrons: "
-            , span [ class "patreon-rank-5" ] (List.map text model.patrons)
-            ]
-        , div [ class "patreon" ] [ text "For development updates and extra features, subscribe to us on Patreon!" ]
-        , a [ class "patreon-link", href "https://www.patreon.com/metaxdb" ] [ img [ src "/icons/patron.png", alt "Become a Patron" ] [] ]
-        ]
-
-
 infoPane : Model -> Html Msg
 infoPane model =
     div [ id "info-pane", class "pane" ]
-        [ patreonView model
+        [ Patrons.toHtmlLazy Patrons.defaults
         , IconAttributions.toHtmlLazy IconAttributions.defaults
         ]
 
@@ -1045,7 +1030,6 @@ init =
             , filters = Filters.empty
             , rarityOpen = False
             , setOpen = False
-            , patrons = [ "Matt Smith" ]
             , isLoading = False
             , card = Nothing
             , cardLoading = False
