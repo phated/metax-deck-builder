@@ -16,14 +16,14 @@ module Data.Filters
 
 import GraphQl as Gql exposing (Value, Query, Argument)
 import Fork.QueryString as QueryString exposing (QueryString)
-import Data.CardSet as CardSet exposing (CardSet(..))
 import Data.CardUID as CardUID exposing (CardUID)
+import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
 import Component.Card.Rarity as CardRarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 
 
 type Filter {- Used as the union type over the different filters -}
     = FilterRarity Rarity
-    | FilterSet CardSet
+    | FilterSet Set
     | FilterUID CardUID
 
 
@@ -31,7 +31,7 @@ type alias Filters =
     {- Only store the actual type instead of the filter type. Unsure if this is better/worse -}
     {- TODO: Unique lists -}
     { rarity : List Rarity
-    , set : List CardSet
+    , set : List Set
     , uid : List CardUID
     }
 
@@ -225,6 +225,6 @@ mapRarityStrings =
     List.map CardRarity.toString
 
 
-mapSetStrings : List CardSet -> List String
+mapSetStrings : List Set -> List String
 mapSetStrings =
     List.map CardSet.toString

@@ -12,7 +12,6 @@ import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType as CardType exposing (CardType(..))
-import Data.CardSet as CardSet exposing (CardSet(JL, GL, AT))
 import Data.CardStatList exposing (CardStatList)
 import Data.CardStat as CardStat exposing (CardStat)
 import Data.Deck as Deck exposing (Deck)
@@ -27,6 +26,7 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
+import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
 import Component.Card.Effect as CardEffect
 import Component.Card.Preview as CardPreview
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
