@@ -3,9 +3,9 @@ module Request.Deck exposing (save, export)
 import Json.Encode exposing (encode, string, int, list, object, Value)
 import Data.Card exposing (Card)
 import Data.Deck as Deck exposing (Deck)
-import Data.CardType as CardType exposing (CardType)
 import Data.CardUID as CardUID
 import Ports
+import Component.Card.Type as CardType
 
 
 save : Deck -> Cmd msg
