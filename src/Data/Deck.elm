@@ -21,8 +21,8 @@ import Data.Card exposing (Card)
 import Data.CardUID as CardUID
 import Encode
 import Compare exposing (concat, by, Comparator)
-import Data.CardType as CardType exposing (CardType(Character, Event, Battle))
 import Data.BattleType as BattleType
+import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 
 
 type alias Deck =
