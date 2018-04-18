@@ -724,8 +724,8 @@ type alias DeckGroups =
     }
 
 
-groupTypes : ( Card, Int ) -> DeckGroups -> DeckGroups
-groupTypes ( card, count ) result =
+groupTypes : Card -> Int -> DeckGroups -> DeckGroups
+groupTypes card count result =
     case card.card_type of
         Character ->
             { result | characters = ( card, count ) :: result.characters }
@@ -737,11 +737,11 @@ groupTypes ( card, count ) result =
             { result | battle = ( card, count ) :: result.battle }
 
 
-deckSectionView : List ( Card, Int ) -> List (Html Msg)
-deckSectionView cards =
+deckSectionView : Deck -> List (Html Msg)
+deckSectionView deck =
     let
         rows =
-            List.foldl groupTypes (DeckGroups [] [] []) cards
+            Deck.foldl groupTypes (DeckGroups [] [] []) deck
     in
         (List.concat
             [ charactersView rows.characters
@@ -798,7 +798,7 @@ deckListPane model =
         [ id "deck-list-pane"
         , class "pane"
         ]
-        (deckSectionView <| Deck.toList model.deck)
+        (deckSectionView model.deck)
 
 
 previewedBy : Card -> Html Msg

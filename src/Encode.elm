@@ -1,4 +1,4 @@
-module Encode exposing (hash)
+module Encode exposing (encodeCard, toBase64, encodeChecksum)
 
 import Data.Card exposing (Card)
 import Data.CardRarity as CardRarity exposing (CardRarity)
@@ -161,8 +161,8 @@ encodeChecksum val =
             0
 
 
-encodeCard : ( Card, Int ) -> EncodeResult -> EncodeResult
-encodeCard ( card, qty ) result =
+encodeCard : Card -> Int -> EncodeResult -> EncodeResult
+encodeCard card qty result =
     let
         encodedQty =
             encodeQty qty
@@ -211,36 +211,3 @@ encodeCard ( card, qty ) result =
             encodedSextet1 ++ encodedSextet2 ++ encodedSextet3
     in
         { cardHashes = cardHash :: result.cardHashes, checksum = (result.checksum + checksum) }
-
-
-hash : List ( Card, Int ) -> Maybe String
-hash deck =
-    let
-        version =
-            0
-
-        encodedVersion =
-            toBase64 version
-
-        result =
-            { cardHashes = []
-            , checksum = encodeChecksum encodedVersion
-            }
-
-        encodeResult =
-            List.foldr encodeCard result deck
-
-        encodedDeck =
-            encodedVersion ++ String.join "" encodeResult.cardHashes
-
-        base64Checksum =
-            toBase64 <| encodeResult.checksum % 64
-
-        encoded =
-            encodedDeck ++ base64Checksum
-    in
-        -- AiAASAhA
-        if List.length encodeResult.cardHashes > 0 then
-            Just encoded
-        else
-            Nothing

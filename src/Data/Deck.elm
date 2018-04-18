@@ -11,9 +11,10 @@ module Data.Deck
         , count
         , sum
         , hash
+        , foldl
         )
 
-import AllDict exposing (AllDict)
+import Avl.Dict as Dict exposing (Dict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Data.Card exposing (Card)
@@ -25,55 +26,85 @@ import Data.BattleType as BattleType
 
 
 type alias Deck =
-    AllDict Card Int String
+    Dict Card Int
 
 
 empty : Deck
 empty =
-    AllDict.empty toComparable
+    Dict.empty
 
 
 toList : Deck -> List ( Card, Int )
 toList deck =
-    AllDict.toList deck
+    Dict.toList deck
 
 
 fromList : List ( Card, Int ) -> Deck
 fromList cards =
-    AllDict.fromList toComparable cards
+    Dict.fromList order cards
+
+
+foldl : (Card -> Int -> a -> a) -> a -> Deck -> a
+foldl =
+    Dict.foldl
 
 
 count : Card -> Deck -> Int
 count card deck =
-    AllDict.get card deck
+    Dict.get order card deck
         |> Maybe.withDefault 0
 
 
 sum : Deck -> Int
 sum deck =
-    AllDict.values deck
-        |> List.sum
+    Dict.foldl (\_ count result -> result + count) 0 deck
 
 
 hash : Deck -> Maybe String
 hash deck =
-    toList deck
-        |> sort
-        |> Encode.hash
+    let
+        version =
+            0
+
+        encodedVersion =
+            Encode.toBase64 version
+
+        result =
+            { cardHashes = []
+            , checksum = Encode.encodeChecksum encodedVersion
+            }
+
+        encodeResult =
+            Dict.foldr Encode.encodeCard result deck
+
+        encodedDeck =
+            encodedVersion ++ String.join "" encodeResult.cardHashes
+
+        base64Checksum =
+            Encode.toBase64 <| encodeResult.checksum % 64
+
+        encoded =
+            encodedDeck ++ base64Checksum
+    in
+        -- AiAASAhA
+        if List.length encodeResult.cardHashes > 0 then
+            Just encoded
+        else
+            Nothing
 
 
 increment : Card -> Deck -> Deck
 increment card deck =
-    AllDict.update card maybeIncrement deck
+    Dict.update order card maybeIncrement deck
 
 
 decrement : Card -> Deck -> Deck
 decrement card deck =
     let
         updatedDeck =
-            AllDict.update card maybeDecrement deck
+            Dict.update order card maybeDecrement deck
     in
-        AllDict.filter notZero updatedDeck
+        Dict.filter order notZero updatedDeck
 
 
 
@@ -152,11 +183,6 @@ maybeDecrement value =
 -- TODO: Dedupe the sorting
 
 
-sort : List ( Card, Int ) -> List ( Card, Int )
-sort cards =
-    (List.sortWith order cards)
-
-
 battleTypeOrder : Card -> Int
 battleTypeOrder { card_type, stats } =
     case card_type of
@@ -170,12 +196,11 @@ battleTypeOrder { card_type, stats } =
             0
 
 
-order : Comparator ( Card, Int )
+order : Comparator Card
 order =
     concat
-        [ by (CardType.toInt << .card_type << Tuple.first)
-        , by (battleTypeOrder << Tuple.first)
-        , by (Tuple.second)
-        , by (.title << Tuple.first)
-        , by (.text << .effect << Tuple.first)
+        [ by (CardType.toInt << .card_type)
+        , by (battleTypeOrder)
+        , by (.title)
+        , by (.text << .effect)
         ]
