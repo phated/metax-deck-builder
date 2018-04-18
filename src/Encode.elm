@@ -1,7 +1,7 @@
 module Encode exposing (encodeCard, toBase64, encodeChecksum)
 
 import Array exposing (Array)
-import Data.Card exposing (Card)
+import Component.Card exposing (Card)
 import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 
