@@ -9,7 +9,6 @@ import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
-import Data.CardList as CardList exposing (CardList)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
 import Request.Deck
@@ -27,6 +26,7 @@ import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
 import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Component.Card.Preview as CardPreview
+import Component.CardList as CardList exposing (CardList)
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 
@@ -215,7 +215,7 @@ update msg model =
                 ( { model | importedDeck = imported }, buildQuery uids |> Gql.send LoadDeckCards )
 
         CardsLoaded (Ok cards) ->
-            ( { model | isLoading = False, cards = (CardList.sort cards), locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
+            ( { model | isLoading = False, cards = cards, locationFrom = model.locationTo, locationTo = Just Route.Home }, Cmd.none )
 
         CardsLoaded (Err err) ->
             let
@@ -225,7 +225,7 @@ update msg model =
                 ( { model | isLoading = False }, Cmd.none )
 
         CardsPreloaded (Ok cards) ->
-            ( { model | isLoading = False, cards = (CardList.sort cards) }, Cmd.none )
+            ( { model | isLoading = False, cards = cards }, Cmd.none )
 
         CardsPreloaded (Err err) ->
             let
@@ -446,7 +446,7 @@ cardListPane model =
         [ id "card-list-pane"
         , class "pane"
         ]
-        (List.map (cardView model) model.cards)
+        (CardList.map (cardView model) model.cards)
 
 
 stepper : ( Card, Int ) -> Html Msg
@@ -506,7 +506,7 @@ idMatches cardId card =
 
 lookup : CardList -> String -> Maybe Card
 lookup cards cardId =
-    List.filter (idMatches cardId) cards
+    List.filter (idMatches cardId) (CardList.toList cards)
         |> List.head
 
 
@@ -914,7 +914,7 @@ init =
         model =
             { locationTo = Nothing
             , locationFrom = Nothing
-            , cards = []
+            , cards = CardList.empty
             , deck = Deck.empty
             , importedDeck = []
             , filters = Filters.empty
