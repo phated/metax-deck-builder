@@ -162,10 +162,13 @@ body {
 
 /* TODO: make these pane much better */
 #search-pane,
-#card-pane,
 #info-pane {
   display: flex;
   flex-direction: column;
+}
+
+#card-pane {
+  display: block;
 }
 
 /* All other styles are defined only in desktop mode */
@@ -224,9 +227,12 @@ body {
 }
 
 .list-item {
-  display: flex;
-  flex-direction: column;
-
+  display: grid;
+  grid-template-rows: 1fr 30px;
+  grid-template-columns: 72px 1fr;
+  grid-template-areas: "a b" "c c";
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
   padding: 4px;
 
   border: 1px solid #d3d3d3;
@@ -234,16 +240,12 @@ body {
 }
 
 .card-details {
+  grid-area: b;
   display: flex;
-  flex-grow: 1;
-  flex-shrink: 0;
-
-  padding-bottom: 8px;
 }
 
 .card-image-container {
-  flex: 0;
-  margin-right: 8px;
+  grid-area: a;
   text-align: center;
 
   display: flex;
@@ -274,6 +276,13 @@ body {
 }
 
 .card-full-container {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas: "a" "b" "c";
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
+
   max-width: 400px;
   margin: 0 auto;
   padding: 4px;
@@ -284,8 +293,6 @@ body {
 
 .card-full-wrapper {
   position: relative;
-  margin-bottom: 8px;
-
   min-height: 400px;
 }
 
@@ -354,8 +361,8 @@ body {
 }
 
 .stepper-container {
+  grid-area: c;
   display: flex;
-  width: 100%;
 }
 
 .count-container {

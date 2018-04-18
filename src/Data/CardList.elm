@@ -7,8 +7,8 @@ module Data.CardList
 
 import Json.Decode exposing (Decoder, list)
 import Compare exposing (concat, by, Comparator)
-import Data.Card as Card exposing (Card)
 import Data.BattleType as BattleType
+import Component.Card as Card exposing (Card)
 import Component.Card.Type as CardType exposing (Type(Battle, Character, Event))
 
 

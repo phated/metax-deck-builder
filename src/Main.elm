@@ -9,7 +9,6 @@ import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
-import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
@@ -22,14 +21,12 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
+import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
-import Component.Card.Stat as CardStat exposing (Stat)
 import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
-import Component.Card.Effect as CardEffect
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Component.Card.Preview as CardPreview
-import Component.Card.StatList as CardStatList
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 
@@ -468,45 +465,6 @@ stepper ( card, count ) =
             ]
 
 
-mpView : Int -> Html Msg
-mpView stat =
-    let
-        prefix =
-            if stat >= 0 then
-                "+"
-            else
-                ""
-    in
-        div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
-
-
-cardTrait : String -> String
-cardTrait trait =
-    if trait == "" then
-        ""
-    else
-        trait
-
-
-cardText : Card -> Html Msg
-cardText card =
-    div [ class "card-text" ]
-        [ div [ class "card-title" ]
-            [ text card.title
-            , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
-            , text <| toBattleCardRank card
-            ]
-        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
-        , CardEffect.toHtmlLazy card.effect
-        ]
-
-
-cardStats : Card -> Html Msg
-cardStats card =
-    div [ class "card-stats" ]
-        (mpView card.mp :: CardStatList.toHtml card.stats)
-
-
 previewBanner : Card -> Html Msg
 previewBanner card =
     -- TODO: How can we embed this into Component.CardPreview
@@ -516,22 +474,6 @@ previewBanner card =
 
         Nothing ->
             Html.Helpers.nothing
-
-
-cardDetails : Card -> Html Msg
-cardDetails card =
-    div [ class "card-details" ]
-        [ div [ class "card-image-container" ]
-            [ linkTo (Route.Card (CardUID.toString card.uid))
-                [ class "card-thumbnail" ]
-                [ img [ src (replace Regex.All (regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-                , previewBanner card
-                ]
-            , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
-            ]
-        , cardText card
-        , cardStats card
-        ]
 
 
 cardView : Model -> Card -> Html Msg
@@ -544,7 +486,15 @@ cardView model card =
             [ id (CardUID.toString card.uid)
             , class "list-item"
             ]
-            [ cardDetails card
+            [ div [ class "card-image-container" ]
+                [ linkTo (Route.Card (CardUID.toString card.uid))
+                    [ class "card-thumbnail" ]
+                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                    , previewBanner card
+                    ]
+                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+                ]
+            , Card.toHtml card
             , stepper ( card, count )
             ]
 
@@ -749,43 +699,21 @@ deckSectionView deck =
         )
 
 
-toRank : Stat -> Maybe Int -> Maybe Int
-toRank stat rank =
-    case stat of
-        CardStat.Strength rank ->
-            Just rank
-
-        CardStat.Intelligence rank ->
-            Just rank
-
-        CardStat.Special rank ->
-            Just rank
-
-
-toBattleCardRank : Card -> String
-toBattleCardRank card =
-    let
-        rank =
-            if card.card_type == Battle then
-                List.foldr toRank Nothing card.stats
-            else
-                Nothing
-    in
-        case rank of
-            Just rank ->
-                " - Rank " ++ (toString rank)
-
-            Nothing ->
-                ""
-
-
 deckCardView : ( Card, Int ) -> Html Msg
 deckCardView ( card, count ) =
     div
         [ id ("deck_" ++ (CardUID.toString card.uid))
         , class "list-item"
         ]
-        [ cardDetails card
+        [ div [ class "card-image-container" ]
+            [ linkTo (Route.Card (CardUID.toString card.uid))
+                [ class "card-thumbnail" ]
+                [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                , previewBanner card
+                ]
+            , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+            ]
+        , Card.toHtml card
         , stepper ( card, count )
         ]
 
@@ -819,10 +747,7 @@ cardPane model =
                         ]
                         [ div [ class "card-full-container" ]
                             [ largeImg card
-                            , div [ class "card-details" ]
-                                [ cardText card
-                                , cardStats card
-                                ]
+                            , Card.toHtml card
                             , stepper ( card, Deck.count card model.deck )
                             ]
                         ]
