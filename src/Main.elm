@@ -13,7 +13,6 @@ import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
-import Data.CardUID as CardUID exposing (CardUID)
 import Request.Deck
 import Request.CardList
 import Util exposing (onNavigate)
@@ -23,6 +22,7 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
+import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
 import Component.Card.Stat as CardStat exposing (Stat)
 import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
