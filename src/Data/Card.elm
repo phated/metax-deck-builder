@@ -9,13 +9,13 @@ module Data.Card
 import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
 import GraphQl as Gql exposing (Value, Query, Anonymous, object)
-import Data.CardStatList as CardStatList exposing (CardStatList)
 import Data.CardUID as CardUID exposing (CardUID)
 import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Type as CardType exposing (Type)
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
+import Component.Card.StatList as CardStatList exposing (StatList)
 
 
 type alias Card =
@@ -29,7 +29,7 @@ type alias Card =
     , trait : String
     , mp : Int
     , effect : Effect
-    , stats : CardStatList
+    , stats : StatList
     , image_url : String
     , preview : Maybe Preview
     }
