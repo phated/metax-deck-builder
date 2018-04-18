@@ -1,6 +1,6 @@
 module Request.CardList exposing (load, toNamedQuery, allCards)
 
-import Data.CardList as CardList exposing (CardList)
+import Component.CardList as CardList exposing (CardList)
 import GraphQl as Gql exposing (Operation, Query, Named, Value)
 import Json.Decode exposing (at)
 
