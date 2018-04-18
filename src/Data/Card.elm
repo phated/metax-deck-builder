@@ -9,7 +9,7 @@ module Data.Card
 import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
 import GraphQl as Gql exposing (Value, Query, Anonymous, object)
-import Data.CardUID as CardUID exposing (CardUID)
+import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Type as CardType exposing (Type)
 import Component.Card.Effect as CardEffect exposing (Effect)
@@ -19,7 +19,7 @@ import Component.Card.StatList as CardStatList exposing (StatList)
 
 
 type alias Card =
-    { uid : CardUID
+    { uid : UID
     , set : Set
     , number : Int
     , rarity : Rarity
@@ -53,7 +53,7 @@ decoder =
         |> optional "preview" (maybe CardPreview.decoder) Nothing
 
 
-query : CardUID -> Value Query
+query : UID -> Value Query
 query uid =
     Gql.field "Card"
         |> Gql.withArgument "uid" (CardUID.toString uid |> Gql.string)
