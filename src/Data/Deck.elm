@@ -18,10 +18,10 @@ import Avl.Dict as Dict exposing (Dict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Data.Card exposing (Card)
-import Data.CardUID as CardUID
 import Encode
 import Compare exposing (concat, by, Comparator)
 import Data.BattleType as BattleType
+import Component.Card.UID as CardUID
 import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 
 
