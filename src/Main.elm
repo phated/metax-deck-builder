@@ -11,7 +11,6 @@ import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
-import Data.CardStatList exposing (CardStatList)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
 import Data.CardUID as CardUID exposing (CardUID)
@@ -28,8 +27,9 @@ import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
 import Component.Card.Stat as CardStat exposing (Stat)
 import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
 import Component.Card.Effect as CardEffect
-import Component.Card.Preview as CardPreview
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
+import Component.Card.Preview as CardPreview
+import Component.Card.StatList as CardStatList
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
 
@@ -480,11 +480,6 @@ mpView stat =
         div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
 
 
-statsView : CardStatList -> List (Html Msg)
-statsView stats =
-    List.map CardStat.toHtmlLazy stats
-
-
 cardTrait : String -> String
 cardTrait trait =
     if trait == "" then
@@ -509,7 +504,7 @@ cardText card =
 cardStats : Card -> Html Msg
 cardStats card =
     div [ class "card-stats" ]
-        (mpView card.mp :: statsView card.stats)
+        (mpView card.mp :: CardStatList.toHtml card.stats)
 
 
 previewBanner : Card -> Html Msg
