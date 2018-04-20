@@ -1015,7 +1015,7 @@ paneContainer model =
 noSaveWarning : Html Msg
 noSaveWarning =
     div [ class "save-warning" ]
-        [ text "Decklists are now loaded by the deck hash in the URL (and *not* saved locally)."
+        [ text "Decklists are now loaded by the deck hash in the URL."
         , br [] []
         , text "Be sure to save/bookmark your deck hashes!"
         ]
