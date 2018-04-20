@@ -4,6 +4,7 @@ module Component.CardList
         , empty
         , fromList
         , map
+        , find
         , decoder
         , toList
         )
@@ -38,6 +39,7 @@ module Component.CardList
 import Avl.Set as Set exposing (Set)
 import Json.Decode exposing (Decoder, list, andThen, succeed)
 import Compare exposing (concat, by, Comparator)
+import Util exposing (finder)
 import Data.BattleType as BattleType
 import Component.Card as Card exposing (Card)
 import Component.Card.Type as CardType exposing (Type(Battle, Character, Event))
@@ -59,6 +61,11 @@ empty =
 fromList : List Card -> CardList
 fromList cards =
     Set.fromList order cards
+
+
+find : (Card -> Bool) -> CardList -> Maybe Card
+find predicate cards =
+    Set.foldr (finder predicate) Nothing cards
 
 
 map : (Card -> a) -> CardList -> List a
