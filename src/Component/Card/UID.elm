@@ -2,6 +2,7 @@ module Component.Card.UID
     exposing
         ( UID
         , fromString
+        , eq
         , decoder
         , toString
         , toGql
@@ -18,6 +19,11 @@ module Component.Card.UID
 # Build
 
 @docs fromString
+
+
+# Helpers
+
+@docs eq
 
 
 # Encoders/Decoders
@@ -45,6 +51,13 @@ type UID
 fromString : String -> UID
 fromString uid =
     UID uid
+
+
+{-| Check equality between a String and UID. Avoids an extra `fromString` call.
+-}
+eq : String -> UID -> Bool
+eq u1 (UID u2) =
+    u1 == u2
 
 
 {-| Decode a string into a UID.
