@@ -142,15 +142,13 @@ location2messages location =
 importedToDeckItem : CardList -> ( String, Int ) -> Maybe ( Card, Int )
 importedToDeckItem cards ( uid, count ) =
     let
-        card =
-            lookup cards uid
-    in
-        case card of
-            Just card ->
-                Just ( card, count )
+        byUID card =
+            CardUID.eq uid card.uid
 
-            Nothing ->
-                Nothing
+        card =
+            CardList.find byUID cards
+    in
+        Maybe.map2 (,) card (Just count)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -497,17 +495,6 @@ cardView model card =
             , Card.toHtml card
             , stepper ( card, count )
             ]
-
-
-idMatches : String -> Card -> Bool
-idMatches cardId card =
-    (CardUID.toString card.uid) == cardId
-
-
-lookup : CardList -> String -> Maybe Card
-lookup cards cardId =
-    List.filter (idMatches cardId) (CardList.toList cards)
-        |> List.head
 
 
 sectionHeader : String -> Int -> List (Html Msg)
