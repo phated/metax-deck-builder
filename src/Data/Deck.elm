@@ -111,13 +111,10 @@ decrement card deck =
 -- Encoder/Decoders
 
 
-decoder : Value -> List ( String, Int )
-decoder session =
+decoder : Decoder (List ( String, Int ))
+decoder =
     -- TODO: This is a frustrating data type to work with
-    session
-        |> decodeValue Decode.string
-        |> Result.andThen (decodeString (Decode.keyValuePairs Decode.int))
-        |> Result.withDefault []
+    Decode.keyValuePairs Decode.int
 
 
 encoder : Deck -> String

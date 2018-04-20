@@ -8,6 +8,7 @@ import Html.Helpers
 import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
+import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Card as Card exposing (Card)
 import Data.CardList as CardList exposing (CardList)
 import Data.CardType as CardType exposing (CardType(..))
@@ -79,6 +80,8 @@ type Msg
     | PreloadCards
     | CardsPreloaded (Result Http.Error CardList)
     | LoadCard (Result Http.Error Card)
+    | LoadDeckFromHash String
+    | LoadDeckFromStorage
 
 
 delta2url : Model -> Model -> Maybe UrlChange
@@ -112,6 +115,17 @@ location2messages location =
         filters =
             Filters.fromQueryString qs
 
+        hash =
+            QueryString.one QueryString.string "deck" qs
+
+        loadMsg =
+            case hash of
+                Just hash ->
+                    LoadDeckFromHash hash
+
+                Nothing ->
+                    LoadDeckFromStorage
+
         route =
             fromLocation location
     in
@@ -121,6 +135,7 @@ location2messages location =
                 [ SetRoute route
                 , {- TODO: If init had the location, I could avoid this on initialization -} UpdateFilters filters
                 , PreloadCards
+                , loadMsg
                 ]
 
             Nothing ->
@@ -271,6 +286,15 @@ update msg model =
 
         ToggleOpenSet ->
             ( { model | setOpen = not model.setOpen }, Cmd.none )
+
+        LoadDeckFromStorage ->
+            ( model, loadSession "" )
+
+        LoadDeckFromHash hash ->
+            ( model
+            , Http.get ("http://metax.toyboat.net/decodeDeck.php?output=metaxdb&hash=" ++ hash) Deck.decoder
+                |> Http.send (Result.withDefault [] >> ImportDeck)
+            )
 
 
 view : Model -> Html Msg
@@ -991,9 +1015,9 @@ paneContainer model =
 noSaveWarning : Html Msg
 noSaveWarning =
     div [ class "save-warning" ]
-        [ text "We have disabled auto-saving of decklists."
+        [ text "Decklists are now loaded by the deck hash in the URL (and *not* saved locally)."
         , br [] []
-        , text "Be sure to save/bookmark your deck hash."
+        , text "Be sure to save/bookmark your deck hashes!"
         ]
 
 
@@ -1009,7 +1033,14 @@ applicationShell model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map ImportDeck (onSessionLoaded Deck.decoder)
+    let
+        decoder session =
+            session
+                |> decodeValue Decode.string
+                |> Result.andThen (decodeString Deck.decoder)
+                |> Result.withDefault []
+    in
+        Sub.map ImportDeck (onSessionLoaded decoder)
 
 
 init : ( Model, Cmd Msg )
@@ -1036,4 +1067,4 @@ init =
             , cardLoading = False
             }
     in
-        ( model, loadSession "" )
+        ( model, Cmd.none )
