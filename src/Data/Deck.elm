@@ -18,11 +18,8 @@ import Avl.Dict as Dict exposing (Dict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Encode
-import Compare exposing (concat, by, Comparator)
-import Data.BattleType as BattleType
-import Component.Card exposing (Card)
+import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID
-import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 
 
 type alias Deck =
@@ -41,7 +38,7 @@ toList deck =
 
 fromList : List ( Card, Int ) -> Deck
 fromList cards =
-    Dict.fromList order cards
+    Dict.fromList Card.order cards
 
 
 foldl : (Card -> Int -> a -> a) -> a -> Deck -> a
@@ -51,7 +48,7 @@ foldl =
 
 count : Card -> Deck -> Int
 count card deck =
-    Dict.get order card deck
+    Dict.get Card.order card deck
         |> Maybe.withDefault 0
 
 
@@ -95,16 +92,16 @@ hash deck =
 
 increment : Card -> Deck -> Deck
 increment card deck =
-    Dict.update order card maybeIncrement deck
+    Dict.update Card.order card maybeIncrement deck
 
 
 decrement : Card -> Deck -> Deck
 decrement card deck =
     let
         updatedDeck =
-            Dict.update order card maybeDecrement deck
+            Dict.update Card.order card maybeDecrement deck
     in
-        Dict.filter order notZero updatedDeck
+        Dict.filter Card.order notZero updatedDeck
 
 
 
@@ -130,11 +127,6 @@ encoder deck =
 
 
 -- Utils
-
-
-toComparable : Card -> String
-toComparable card =
-    CardUID.toString card.uid
 
 
 notZero : Card -> Int -> Bool
@@ -174,30 +166,3 @@ maybeDecrement value =
 
         Nothing ->
             Just 0
-
-
-
--- TODO: Dedupe the sorting
-
-
-battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, stats } =
-    case card_type of
-        Battle ->
-            BattleType.toInt stats
-
-        Character ->
-            0
-
-        Event ->
-            0
-
-
-order : Comparator Card
-order =
-    concat
-        [ by (CardType.toInt << .card_type)
-        , by (battleTypeOrder)
-        , by (.title)
-        , by (.text << .effect)
-        ]

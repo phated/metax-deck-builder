@@ -5,6 +5,7 @@ module Component.Card
         , toHtml
         , query
         , load
+        , order
         )
 
 {-| Component.Card represents an individual card.
@@ -32,21 +33,32 @@ module Component.Card
 
 @docs query, load
 
+
+# Sorting
+
+@docs order
+
 -}
 
 import Html exposing (Html, div, img, text, a)
 import Html.Attributes exposing (class, src, href)
 import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
+import Compare exposing (Comparator)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set)
-import Component.Card.Type as CardType exposing (Type(Battle))
+import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
 import Component.Card.StatList as CardStatList exposing (StatList)
 import Component.Card.Stat exposing (Stat(Strength, Intelligence, Special))
+
+
+{- TODO: Combine this with Stats/StatList? -}
+
+import Data.BattleType as BattleType
 
 
 {-| A full card.
@@ -146,8 +158,33 @@ load query =
         (at [ "Card" ] decoder)
 
 
+{-| Defines the sort order for a Card.
+-}
+order : Comparator Card
+order =
+    Compare.concat
+        [ Compare.by (CardType.toInt << .card_type)
+        , Compare.by battleTypeOrder
+        , Compare.by .title
+        , Compare.by (.text << .effect)
+        ]
+
+
 
 -- Internals - these might be pulled out
+
+
+battleTypeOrder : Card -> Int
+battleTypeOrder { card_type, stats } =
+    case card_type of
+        Battle ->
+            BattleType.toInt stats
+
+        Character ->
+            0
+
+        Event ->
+            0
 
 
 cardText : Card -> Html msg
