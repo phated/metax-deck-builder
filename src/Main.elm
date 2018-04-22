@@ -5,6 +5,7 @@ import Html exposing (header, nav, div, img, text, button, a, span, label, input
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Html.Helpers
+import GraphQl.Helpers as GqlHelpers
 import Navigation exposing (Location)
 import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
@@ -12,7 +13,6 @@ import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
 import Data.BattleType as BattleType exposing (BattleType)
 import Request.Deck
-import Request.CardList
 import Util exposing (onNavigate)
 import Route exposing (fromLocation, toHref, Route)
 import Ports exposing (onSessionLoaded, loadSession)
@@ -297,10 +297,10 @@ view model =
     applicationShell model
 
 
-buildQuery : Filters -> Gql.Request Gql.Query Gql.Named CardList
+buildQuery : Filters -> Gql.Request Gql.Query Gql.Anonymous CardList
 buildQuery filters =
-    Filters.applyFilters filters Request.CardList.allCards
-        |> Request.CardList.load
+    GqlHelpers.join (Filters.query filters) CardList.query
+        |> CardList.load
 
 
 linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
