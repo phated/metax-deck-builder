@@ -48,11 +48,8 @@ module Component.CardList
 import Avl.Set as Set exposing (Set)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
 import Json.Decode exposing (Decoder, list, at, andThen, succeed)
-import Compare exposing (concat, by, Comparator)
 import Util exposing (finder)
-import Data.BattleType as BattleType
 import Component.Card as Card exposing (Card)
-import Component.Card.Type as CardType exposing (Type(Battle, Character, Event))
 
 
 {-| A unique list of cards.
@@ -72,7 +69,7 @@ empty =
 -}
 fromList : List Card -> CardList
 fromList cards =
-    Set.fromList order cards
+    Set.fromList Card.order cards
 
 
 {-| Find the first Card in CardList that matches a predicate.
@@ -148,31 +145,3 @@ load query =
         "https://api.graph.cool/simple/v1/metaxdb"
         (Gql.object [ query ])
         (at [ "allCards" ] decoder)
-
-
-
--- Utils
--- TODO: Dedupe sorting
-
-
-battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, stats } =
-    case card_type of
-        Battle ->
-            BattleType.toInt stats
-
-        Character ->
-            0
-
-        Event ->
-            0
-
-
-order : Comparator Card
-order =
-    concat
-        [ by (CardType.toInt << .card_type)
-        , by battleTypeOrder
-        , by .title
-        , by (.text << .effect)
-        ]
