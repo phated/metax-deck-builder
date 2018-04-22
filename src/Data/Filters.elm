@@ -11,7 +11,7 @@ module Data.Filters
         , toString
         , toQueryString
         , fromQueryString
-        , applyFilters
+        , query
         )
 
 import GraphQl as Gql exposing (Value, Query, Argument)
@@ -168,8 +168,8 @@ fromQueryString qs =
             Filters rarities sets []
 
 
-applyFilters : Filters -> Value Query -> Value Query
-applyFilters filters =
+query : Filters -> (Value Query -> Value Query)
+query filters =
     let
         rarityFilters =
             mapRarityStrings filters.rarity
