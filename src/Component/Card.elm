@@ -52,13 +52,15 @@ import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
-import Component.Card.StatList as CardStatList exposing (StatList)
-import Component.Card.Stat exposing (Stat(Strength, Intelligence, Special))
+import Component.Card.Stats as CardStats exposing (Stats)
+import Component.Card.Stat as CardStat exposing (Stat)
 
 
+-- import Component.Card.Stat exposing (Stat(Strength, Intelligence, Special))
 {- TODO: Combine this with Stats/StatList? -}
 
 import Data.BattleType as BattleType
+import Component.Card.StatType as StatType exposing (StatType)
 
 
 {-| A full card.
@@ -74,7 +76,7 @@ type alias Card =
     , trait : String
     , mp : Int
     , effect : Effect
-    , stats : StatList
+    , stats : Stats
     , image_url : String
     , preview : Maybe Preview
     }
@@ -95,7 +97,7 @@ decoder =
         |> optionalAt [ "trait", "name" ] string ""
         |> required "mp" int
         |> custom (field "effect" CardEffect.decoder)
-        |> custom (field "stats" CardStatList.decoder)
+        |> custom CardStats.decoder
         |> required "imageUrl" string
         |> optional "preview" (maybe CardPreview.decoder) Nothing
 
@@ -201,16 +203,19 @@ cardText card =
 
 
 toRank : Stat -> Maybe Int -> Maybe Int
-toRank stat rank =
-    case stat of
-        Strength rank ->
-            Just rank
+toRank stat acc =
+    case stat.stat_type of
+        StatType.Strength ->
+            Just stat.rank
 
-        Intelligence rank ->
-            Just rank
+        StatType.Intelligence ->
+            Just stat.rank
 
-        Special rank ->
-            Just rank
+        StatType.Special ->
+            Just stat.rank
+
+        StatType.Multi _ ->
+            Just stat.rank
 
 
 toBattleCardRank : Card -> String
@@ -218,7 +223,7 @@ toBattleCardRank card =
     let
         rank =
             if card.card_type == Battle then
-                List.foldr toRank Nothing card.stats
+                CardStats.foldr toRank Nothing card.stats
             else
                 Nothing
     in
@@ -241,7 +246,7 @@ cardTrait trait =
 cardStats : Card -> Html msg
 cardStats card =
     div [ class "card-stats" ]
-        (mpView card.mp :: CardStatList.toHtml card.stats)
+        (mpView card.mp :: CardStats.toHtml card.stats)
 
 
 mpView : Int -> Html msg

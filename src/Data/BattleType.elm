@@ -6,10 +6,11 @@ module Data.BattleType
         )
 
 import Component.Card.Stat as CardStat exposing (Stat)
-import Component.Card.StatList exposing (StatList)
+import Component.Card.Stats as Stats exposing (Stats)
+import Component.Card.StatType as StatType exposing (StatType(..))
 
 
--- TODO: Maybe this should be part of CardStatList?
+-- TODO: Maybe this should be part of CardStats?
 
 
 type BattleType
@@ -23,7 +24,7 @@ type BattleType
     | Multi Int
 
 
-toInt : StatList -> Int
+toInt : Stats -> Int
 toInt stats =
     case toBattleType stats of
         Just (Strength rank) ->
@@ -44,26 +45,32 @@ toInt stats =
 
 battleTypeFoldr : Stat -> Maybe BattleType -> Maybe BattleType
 battleTypeFoldr stat battleType =
-    case ( battleType, stat ) of
-        ( Nothing, CardStat.Strength rank ) ->
-            Just (Strength rank)
+    case ( battleType, stat.stat_type ) of
+        ( Nothing, StatType.Strength ) ->
+            Just (Strength stat.rank)
 
-        ( Nothing, CardStat.Intelligence rank ) ->
-            Just (Intelligence rank)
+        ( Nothing, StatType.Intelligence ) ->
+            Just (Intelligence stat.rank)
 
-        ( Nothing, CardStat.Special rank ) ->
-            Just (Special rank)
+        ( Nothing, StatType.Special ) ->
+            Just (Special stat.rank)
 
-        ( Just _, CardStat.Strength rank ) ->
-            Just (Multi rank)
+        ( Nothing, StatType.Multi _ ) ->
+            Just (Multi stat.rank)
 
-        ( Just _, CardStat.Intelligence rank ) ->
-            Just (Multi rank)
+        ( Just _, StatType.Strength ) ->
+            Just (Multi stat.rank)
 
-        ( Just _, CardStat.Special rank ) ->
-            Just (Multi rank)
+        ( Just _, StatType.Intelligence ) ->
+            Just (Multi stat.rank)
+
+        ( Just _, StatType.Special ) ->
+            Just (Multi stat.rank)
+
+        ( Just _, StatType.Multi _ ) ->
+            Just (Multi stat.rank)
 
 
-toBattleType : StatList -> Maybe BattleType
+toBattleType : Stats -> Maybe BattleType
 toBattleType stats =
-    List.foldr battleTypeFoldr Nothing stats
+    Stats.foldr battleTypeFoldr Nothing stats
