@@ -1,6 +1,6 @@
 module Component.Card
     exposing
-        ( Card
+        ( Card(..)
         , decoder
         , toHtml
         , query
@@ -40,74 +40,58 @@ module Component.Card
 
 -}
 
-import Html exposing (Html, div, img, text, a)
-import Html.Attributes exposing (class, src, href)
-import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
-import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
+import Html exposing (Html)
+import Json.Decode as Decode exposing (field, at, andThen, Decoder)
 import Compare exposing (Comparator)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
 import Component.Card.UID as CardUID exposing (UID)
-import Component.Card.Set as CardSet exposing (Set)
-import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
-import Component.Card.Effect as CardEffect exposing (Effect)
-import Component.Card.Rarity as CardRarity exposing (Rarity)
-import Component.Card.Preview as CardPreview exposing (Preview)
-import Component.Card.StatList as CardStatList exposing (StatList)
-import Component.Card.Stat exposing (Stat(Strength, Intelligence, Special))
-
-
-{- TODO: Combine this with Stats/StatList? -}
-
-import Data.BattleType as BattleType
+import Component.Card.Type as CardType exposing (Type)
+import Component.Character as Character exposing (Character)
+import Component.Event as Event exposing (Event)
+import Component.Battle as Battle exposing (Battle)
 
 
 {-| A full card.
 -}
-type alias Card =
-    { uid : UID
-    , set : Set
-    , number : Int
-    , rarity : Rarity
-    , title : String
-    , subtitle : Maybe String
-    , card_type : Type
-    , trait : String
-    , mp : Int
-    , effect : Effect
-    , stats : StatList
-    , image_url : String
-    , preview : Maybe Preview
-    }
+type Card
+    = CharacterCard Character
+    | EventCard Event
+    | BattleCard Battle
 
 
 {-| Decode a string into a Card.
 -}
 decoder : Decoder Card
 decoder =
-    decode Card
-        |> required "uid" CardUID.decoder
-        |> custom (field "set" CardSet.decoder)
-        |> required "number" int
-        |> required "rarity" CardRarity.decoder
-        |> required "title" string
-        |> optional "subtitle" (maybe string) Nothing
-        |> custom (field "type" CardType.decoder)
-        |> optionalAt [ "trait", "name" ] string ""
-        |> required "mp" int
-        |> custom (field "effect" CardEffect.decoder)
-        |> custom (field "stats" CardStatList.decoder)
-        |> required "imageUrl" string
-        |> optional "preview" (maybe CardPreview.decoder) Nothing
+    field "type" CardType.decoder |> andThen cardFromType
+
+
+map : (a -> b) -> a -> b
+map mapper card =
+    case card of
+        CharacterCard card ->
+            mapper card
+
+        EventCard card ->
+            mapper card
+
+        BattleCard card ->
+            mapper card
 
 
 {-| Render a Card as an Html view.
 -}
 toHtml : Card -> Html msg
 toHtml card =
-    div [ class "card-details" ]
-        [ cardText card
-        , cardStats card
-        ]
+    case card of
+        CharacterCard card ->
+            Character.toHtml card
+
+        EventCard card ->
+            Event.toHtml card
+
+        BattleCard card ->
+            Battle.toHtml card
 
 
 {-| Generate a GraphQL query for a card by UID.
@@ -160,97 +144,44 @@ load query =
 
 {-| Defines the sort order for a Card.
 -}
-order : Comparator Card
-order =
-    Compare.concat
-        [ Compare.by (CardType.toInt << .card_type)
-        , Compare.by battleTypeOrder
-        , Compare.by .title
-        , Compare.by (.text << .effect)
-        ]
+order : Card -> Card -> Order
+order wrappedCard1 wrappedCard2 =
+    case ( wrappedCard1, wrappedCard2 ) of
+        ( CharacterCard c1, CharacterCard c2 ) ->
+            Compare.concat
+                [ Compare.by .title
+                , Compare.by (.text << .effect)
+                ]
+                c1
+                c2
+
+        ( _, _ ) ->
+            LT
 
 
 
+--
 -- Internals - these might be pulled out
+-- battleTypeOrder : Card -> Int
+-- battleTypeOrder { card_type, stats } =
+--     case card_type of
+--         Battle ->
+--             BattleType.toInt stats
+--         Character ->
+--             0
+--         Event ->
+--             0
+{- Internals -}
 
 
-battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, stats } =
-    case card_type of
-        Battle ->
-            BattleType.toInt stats
+cardFromType : Type -> Decoder Card
+cardFromType cardType =
+    case cardType of
+        CardType.Character ->
+            Decode.map CharacterCard Character.decoder
 
-        Character ->
-            0
+        CardType.Event ->
+            Decode.map EventCard Event.decoder
 
-        Event ->
-            0
-
-
-cardText : Card -> Html msg
-cardText card =
-    div [ class "card-text" ]
-        [ div [ class "card-title" ]
-            [ text card.title
-            , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
-            , text <| toBattleCardRank card
-            ]
-        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
-        , CardEffect.toHtmlLazy card.effect
-        ]
-
-
-toRank : Stat -> Maybe Int -> Maybe Int
-toRank stat rank =
-    case stat of
-        Strength rank ->
-            Just rank
-
-        Intelligence rank ->
-            Just rank
-
-        Special rank ->
-            Just rank
-
-
-toBattleCardRank : Card -> String
-toBattleCardRank card =
-    let
-        rank =
-            if card.card_type == Battle then
-                List.foldr toRank Nothing card.stats
-            else
-                Nothing
-    in
-        case rank of
-            Just rank ->
-                " - Rank " ++ (toString rank)
-
-            Nothing ->
-                ""
-
-
-cardTrait : String -> String
-cardTrait trait =
-    if trait == "" then
-        ""
-    else
-        trait
-
-
-cardStats : Card -> Html msg
-cardStats card =
-    div [ class "card-stats" ]
-        (mpView card.mp :: CardStatList.toHtml card.stats)
-
-
-mpView : Int -> Html msg
-mpView stat =
-    let
-        prefix =
-            if stat >= 0 then
-                "+"
-            else
-                ""
-    in
-        div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
+        CardType.Battle ->
+            Decode.map BattleCard Battle.decoder

@@ -1,7 +1,7 @@
 module Encode exposing (encodeCard, toBase64, encodeChecksum)
 
 import Array exposing (Array)
-import Component.Card exposing (Card)
+import Component.Card exposing (Card(..))
 import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 
@@ -170,13 +170,37 @@ encodeCard card qty result =
             encodeQty qty
 
         rarity =
-            encodeRarity card.rarity
+            case card of
+                CharacterCard card ->
+                    encodeRarity card.rarity
+
+                EventCard card ->
+                    encodeRarity card.rarity
+
+                BattleCard card ->
+                    encodeRarity card.rarity
 
         number =
-            encodeNumber card.number
+            case card of
+                CharacterCard card ->
+                    encodeNumber card.number
+
+                EventCard card ->
+                    encodeNumber card.number
+
+                BattleCard card ->
+                    encodeNumber card.number
 
         set =
-            encodeSet card.set
+            case card of
+                CharacterCard card ->
+                    encodeSet card.set
+
+                EventCard card ->
+                    encodeSet card.set
+
+                BattleCard card ->
+                    encodeSet card.set
 
         hash =
             encodedQty + rarity + number + set

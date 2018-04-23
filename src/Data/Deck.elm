@@ -118,7 +118,7 @@ encoder : Deck -> String
 encoder deck =
     let
         toEncoder ( card, count ) =
-            ( CardUID.toString card.uid, Encode.int count )
+            ( Card.map (.uid >> CardUID.toString) card, Encode.int count )
     in
         List.map toEncoder (toList deck)
             |> Encode.object
