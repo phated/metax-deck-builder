@@ -12,49 +12,115 @@ module Data.Deck
         , sum
         , hash
         , foldl
+        , foldr
         )
 
-import Avl.Dict as Dict exposing (Dict)
+import Html exposing (Html, div)
+import Html.Attributes exposing (id, class)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Encode
 import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID
+import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
+import Component.Deck.CardList as DeckCardList exposing (CardList)
 
 
-type alias Deck =
-    Dict Card Int
+type Deck
+    = Deck
+        { characters : CardList
+        , events : CardList
+        , battles : CardList
+        }
 
 
 empty : Deck
 empty =
-    Dict.empty
+    Deck
+        { characters = DeckCardList.empty
+        , events = DeckCardList.empty
+        , battles = DeckCardList.empty
+        }
 
 
 toList : Deck -> List ( Card, Int )
-toList deck =
-    Dict.toList deck
+toList (Deck deck) =
+    List.concat
+        [ DeckCardList.toList deck.characters
+        , DeckCardList.toList deck.events
+        , DeckCardList.toList deck.battles
+        ]
 
 
 fromList : List ( Card, Int ) -> Deck
 fromList cards =
-    Dict.fromList Card.order cards
+    let
+        insertTuple ( card, count ) =
+            insert card count
+    in
+        List.foldr insertTuple empty cards
+
+
+insert : Card -> Int -> Deck -> Deck
+insert card count (Deck deck) =
+    case card.card_type of
+        Character ->
+            Deck { deck | characters = DeckCardList.insert card count deck.characters }
+
+        Event ->
+            Deck { deck | events = DeckCardList.insert card count deck.events }
+
+        Battle ->
+            Deck { deck | battles = DeckCardList.insert card count deck.battles }
 
 
 foldl : (Card -> Int -> a -> a) -> a -> Deck -> a
-foldl =
-    Dict.foldl
+foldl func acc1 (Deck deck) =
+    -- TODO: this should be in reverse?
+    let
+        acc2 =
+            DeckCardList.foldl func acc1 deck.characters
+
+        acc3 =
+            DeckCardList.foldl func acc2 deck.events
+
+        acc4 =
+            DeckCardList.foldl func acc3 deck.battles
+    in
+        acc4
+
+
+foldr : (Card -> Int -> a -> a) -> a -> Deck -> a
+foldr func acc1 (Deck deck) =
+    let
+        acc2 =
+            DeckCardList.foldr func acc1 deck.characters
+
+        acc3 =
+            DeckCardList.foldr func acc2 deck.events
+
+        acc4 =
+            DeckCardList.foldr func acc3 deck.battles
+    in
+        acc4
 
 
 count : Card -> Deck -> Int
-count card deck =
-    Dict.get Card.order card deck
-        |> Maybe.withDefault 0
+count card (Deck deck) =
+    case card.card_type of
+        Character ->
+            DeckCardList.count card deck.characters
+
+        Event ->
+            DeckCardList.count card deck.events
+
+        Battle ->
+            DeckCardList.count card deck.battles
 
 
 sum : Deck -> Int
-sum deck =
-    Dict.foldl (\_ count result -> result + count) 0 deck
+sum (Deck deck) =
+    DeckCardList.sum deck.characters + DeckCardList.sum deck.events + DeckCardList.sum deck.battles
 
 
 hash : Deck -> Maybe String
@@ -72,7 +138,7 @@ hash deck =
             }
 
         encodeResult =
-            Dict.foldr Encode.encodeCard result deck
+            foldr Encode.encodeCard result deck
 
         encodedDeck =
             encodedVersion ++ String.join "" encodeResult.cardHashes
@@ -91,17 +157,29 @@ hash deck =
 
 
 increment : Card -> Deck -> Deck
-increment card deck =
-    Dict.update Card.order card maybeIncrement deck
+increment card (Deck deck) =
+    case card.card_type of
+        Character ->
+            Deck { deck | characters = DeckCardList.increment card deck.characters }
+
+        Event ->
+            Deck { deck | events = DeckCardList.increment card deck.events }
+
+        Battle ->
+            Deck { deck | battles = DeckCardList.increment card deck.battles }
 
 
 decrement : Card -> Deck -> Deck
-decrement card deck =
-    let
-        updatedDeck =
-            Dict.update Card.order card maybeDecrement deck
-    in
-        Dict.filter Card.order notZero updatedDeck
+decrement card (Deck deck) =
+    case card.card_type of
+        Character ->
+            Deck { deck | characters = DeckCardList.decrement card deck.characters }
+
+        Event ->
+            Deck { deck | events = DeckCardList.decrement card deck.events }
+
+        Battle ->
+            Deck { deck | battles = DeckCardList.decrement card deck.battles }
 
 
 
@@ -125,44 +203,13 @@ encoder deck =
             |> encode 0
 
 
+toHtml : Deck -> Html msg
+toHtml (Deck deck) =
+    div [ id "deck-list-pane", class "pane" ]
+        -- (List.concat
+        [ DeckCardList.toHtml deck.characters
+        , DeckCardList.toHtml deck.events
+        , DeckCardList.toHtml deck.battles
 
--- Utils
-
-
-notZero : Card -> Int -> Bool
-notZero _ count =
-    count /= 0
-
-
-maybeIncrement : Maybe Int -> Maybe Int
-maybeIncrement value =
-    case value of
-        Just value ->
-            let
-                val =
-                    if value < 3 then
-                        value + 1
-                    else
-                        value
-            in
-                Just val
-
-        Nothing ->
-            Just 1
-
-
-maybeDecrement : Maybe Int -> Maybe Int
-maybeDecrement value =
-    case value of
-        Just value ->
-            let
-                val =
-                    if value > 0 then
-                        value - 1
-                    else
-                        value
-            in
-                Just val
-
-        Nothing ->
-            Just 0
+        -- )
+        ]
