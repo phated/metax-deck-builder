@@ -53,6 +53,7 @@ import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Rank as CardRank
 import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
 import Component.Card.Stats as CardStats exposing (Stats)
+import Component.Card.Trait as CardTrait exposing (Trait)
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
@@ -68,7 +69,7 @@ type alias Card =
     , title : String
     , subtitle : Maybe String
     , card_type : Type
-    , trait : String
+    , trait : Trait
     , mp : MP
     , effect : Effect
     , stats : Stats
@@ -83,15 +84,15 @@ decoder : Decoder Card
 decoder =
     decode Card
         |> required "uid" CardUID.decoder
-        |> custom (field "set" CardSet.decoder)
+        |> required "set" CardSet.decoder
         |> required "number" int
         |> required "rarity" CardRarity.decoder
         |> required "title" string
         |> optional "subtitle" (maybe string) Nothing
-        |> custom (field "type" CardType.decoder)
-        |> optionalAt [ "trait", "name" ] string ""
+        |> required "type" CardType.decoder
+        |> required "trait" CardTrait.decoder
         |> required "mp" CardMP.decoder
-        |> custom (field "effect" CardEffect.decoder)
+        |> required "effect" CardEffect.decoder
         |> custom CardStats.decoder
         |> required "imageUrl" string
         |> optional "preview" (maybe CardPreview.decoder) Nothing
@@ -104,7 +105,7 @@ toHtml card =
     div [ class "card-details" ]
         [ toTitle card
         , CardMP.toHtml card.mp
-        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
+        , CardTrait.toHtml card.trait
         , CardEffect.toHtmlLazy card.effect
         , CardStats.toHtml card.stats
         ]
@@ -198,11 +199,3 @@ toBattleCardRank stats =
         |> Maybe.map ((++) " - Rank ")
         |> Maybe.map text
         |> Maybe.withDefault Html.Helpers.nothing
-
-
-cardTrait : String -> String
-cardTrait trait =
-    if trait == "" then
-        ""
-    else
-        trait
