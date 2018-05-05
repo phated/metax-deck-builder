@@ -359,7 +359,6 @@ body {
   grid-area: b;
   flex-grow: 1;
   text-align: right;
-  margin-bottom: 4px;
 }
 .card-stat-icon {
   /* Using max-height instead of max-width to work with multi icons easier */
