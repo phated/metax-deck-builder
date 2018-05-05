@@ -34,6 +34,7 @@ multiple stat types but one rank (multi Battle cards), or none (Events)
 -}
 
 import Html exposing (Html, div)
+import Html.Attributes exposing (class)
 import Json.Decode exposing (Decoder, list, succeed, fail)
 import Json.Decode.Pipeline exposing (decode, required, resolve)
 import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
@@ -82,7 +83,7 @@ toHtml stats =
                     []
     in
         -- TODO: This needs better CSS and less wrappers
-        div [] children
+        div [ class "card-stats" ] children
 
 
 {-| Pulls a Rank from the Stats only if they are for a Battle Card.

@@ -101,8 +101,11 @@ decoder =
 toHtml : Card -> Html msg
 toHtml card =
     div [ class "card-details" ]
-        [ cardText card
-        , cardStats card
+        [ toTitle card
+        , mpView card.mp
+        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
+        , CardEffect.toHtmlLazy card.effect
+        , CardStats.toHtml card.stats
         ]
 
 
@@ -170,16 +173,12 @@ order =
 -- Internals - these might be pulled out
 
 
-cardText : Card -> Html msg
-cardText card =
-    div [ class "card-text" ]
-        [ div [ class "card-title" ]
-            [ text card.title
-            , toSubtitle card.subtitle
-            , toBattleCardRank card.stats
-            ]
-        , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
-        , CardEffect.toHtmlLazy card.effect
+toTitle : Card -> Html msg
+toTitle card =
+    div [ class "card-title" ]
+        [ text card.title
+        , toSubtitle card.subtitle
+        , toBattleCardRank card.stats
         ]
 
 
@@ -206,14 +205,6 @@ cardTrait trait =
         ""
     else
         trait
-
-
-cardStats : Card -> Html msg
-cardStats card =
-    div [ class "card-stats" ]
-        [ mpView card.mp
-        , CardStats.toHtml card.stats
-        ]
 
 
 mpView : Int -> Html msg
