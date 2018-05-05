@@ -11,7 +11,6 @@ import Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
-import Data.BattleType as BattleType exposing (BattleType)
 import Request.Deck
 import Util exposing (onNavigate)
 import Route exposing (fromLocation, toHref, Route)
@@ -29,6 +28,9 @@ import Component.Card.Preview as CardPreview
 import Component.CardList as CardList exposing (CardList)
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
+import Component.Card.Stats exposing (Stats(..))
+import Component.Card.StatType exposing (StatType(..))
+import Component.Card.Rank as Rank
 
 
 main : RouteUrlProgram Never Model Msg
@@ -594,28 +596,33 @@ addToRank item list =
 
 groupBattleCards : ( Card, Int ) -> BattleCardGroups -> BattleCardGroups
 groupBattleCards ( card, count ) result =
-    case card.card_type of
-        Battle ->
-            case BattleType.toBattleType card.stats of
-                Just (BattleType.Strength rank) ->
-                    { result | strength = Dict.update rank (addToRank ( card, count )) result.strength }
+    case card.stats of
+        Single { statType, rank } ->
+            let
+                rankVal =
+                    Rank.toInt rank
+            in
+                case statType of
+                    Strength ->
+                        { result | strength = Dict.update rankVal (addToRank ( card, count )) result.strength }
 
-                Just (BattleType.Intelligence rank) ->
-                    { result | intelligence = Dict.update rank (addToRank ( card, count )) result.intelligence }
+                    Intelligence ->
+                        { result | intelligence = Dict.update rankVal (addToRank ( card, count )) result.intelligence }
 
-                Just (BattleType.Special rank) ->
-                    { result | special = Dict.update rank (addToRank ( card, count )) result.special }
+                    Special ->
+                        { result | special = Dict.update rankVal (addToRank ( card, count )) result.special }
 
-                Just (BattleType.Multi rank) ->
-                    { result | multi = Dict.update rank (addToRank ( card, count )) result.multi }
+        Multi { rank } ->
+            let
+                rankVal =
+                    Rank.toInt rank
+            in
+                { result | multi = Dict.update rankVal (addToRank ( card, count )) result.multi }
 
-                Nothing ->
-                    result
-
-        Character ->
+        StatList _ ->
             result
 
-        Event ->
+        None ->
             result
 
 
