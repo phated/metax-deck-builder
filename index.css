@@ -357,7 +357,6 @@ body {
 }
 .card-stat-mp {
   grid-area: b;
-  flex-grow: 1;
   text-align: right;
 }
 .card-stat-icon {
