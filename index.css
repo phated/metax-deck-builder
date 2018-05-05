@@ -241,7 +241,13 @@ body {
 
 .card-details {
   grid-area: b;
-  display: flex;
+
+  display: grid;
+  grid-template-rows: max-content max-content 1fr;
+  grid-template-columns: 1fr max-content;
+  grid-template-areas: "a b" "c c" "d e";
+  grid-column-gap: 4px;
+  grid-row-gap: 4px;
 }
 
 .card-image-container {
@@ -304,8 +310,8 @@ body {
   transition: max-height 2s;
 }
 .card-title {
+  grid-area: a;
   font-weight: 700;
-  margin-bottom: 4px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -339,12 +345,18 @@ body {
 }
 
 .card-stats {
-  flex-direction: column;
+  grid-area: e;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
   white-space: nowrap;
-  text-align: right;
+}
+.card-trait {
+  grid-area: c;
 }
 .card-stat-mp {
+  grid-area: b;
   flex-grow: 1;
   text-align: right;
   margin-bottom: 4px;
