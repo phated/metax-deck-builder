@@ -57,6 +57,7 @@ import Component.Card.Trait as CardTrait exposing (Trait)
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
+import Component.Card.Subtitle as CardSubtitle exposing (Subtitle)
 
 
 {-| A full card.
@@ -67,7 +68,7 @@ type alias Card =
     , number : Int
     , rarity : Rarity
     , title : String
-    , subtitle : Maybe String
+    , subtitle : Subtitle
     , card_type : Type
     , trait : Trait
     , mp : MP
@@ -88,7 +89,7 @@ decoder =
         |> required "number" int
         |> required "rarity" CardRarity.decoder
         |> required "title" string
-        |> optional "subtitle" (maybe string) Nothing
+        |> required "subtitle" CardSubtitle.decoder
         |> required "type" CardType.decoder
         |> required "trait" CardTrait.decoder
         |> required "mp" CardMP.decoder
@@ -179,17 +180,9 @@ toTitle : Card -> Html msg
 toTitle card =
     div [ class "card-title" ]
         [ text card.title
-        , toSubtitle card.subtitle
+        , CardSubtitle.toHtml card.subtitle
         , toBattleCardRank card.stats
         ]
-
-
-toSubtitle : Maybe String -> Html msg
-toSubtitle subtitle =
-    subtitle
-        |> Maybe.map (String.append " - ")
-        |> Maybe.map text
-        |> Maybe.withDefault Html.Helpers.nothing
 
 
 toBattleCardRank : Stats -> Html msg
