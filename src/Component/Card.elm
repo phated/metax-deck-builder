@@ -46,19 +46,15 @@ import Json.Decode exposing (int, string, nullable, field, maybe, at, Decoder)
 import Json.Decode.Pipeline exposing (decode, required, custom, optional, optionalAt)
 import Compare exposing (Comparator)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
+import Html.Helpers
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set)
+import Component.Card.Rank as CardRank
 import Component.Card.Type as CardType exposing (Type(Character, Event, Battle))
+import Component.Card.Stats as CardStats exposing (Stats)
 import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
-import Component.Card.StatList as CardStatList exposing (StatList)
-import Component.Card.Stat exposing (Stat(Strength, Intelligence, Special))
-
-
-{- TODO: Combine this with Stats/StatList? -}
-
-import Data.BattleType as BattleType
 
 
 {-| A full card.
@@ -74,7 +70,7 @@ type alias Card =
     , trait : String
     , mp : Int
     , effect : Effect
-    , stats : StatList
+    , stats : Stats
     , image_url : String
     , preview : Maybe Preview
     }
@@ -95,7 +91,7 @@ decoder =
         |> optionalAt [ "trait", "name" ] string ""
         |> required "mp" int
         |> custom (field "effect" CardEffect.decoder)
-        |> custom (field "stats" CardStatList.decoder)
+        |> custom CardStats.decoder
         |> required "imageUrl" string
         |> optional "preview" (maybe CardPreview.decoder) Nothing
 
@@ -163,10 +159,10 @@ load query =
 order : Comparator Card
 order =
     Compare.concat
-        [ Compare.by (CardType.toInt << .card_type)
-        , Compare.by battleTypeOrder
+        [ Compare.by (.card_type >> CardType.toInt)
+        , Compare.by (.stats >> CardStats.order)
         , Compare.by .title
-        , Compare.by (.text << .effect)
+        , Compare.by (.effect >> .text)
         ]
 
 
@@ -174,60 +170,34 @@ order =
 -- Internals - these might be pulled out
 
 
-battleTypeOrder : Card -> Int
-battleTypeOrder { card_type, stats } =
-    case card_type of
-        Battle ->
-            BattleType.toInt stats
-
-        Character ->
-            0
-
-        Event ->
-            0
-
-
 cardText : Card -> Html msg
 cardText card =
     div [ class "card-text" ]
         [ div [ class "card-title" ]
             [ text card.title
-            , text <| Maybe.withDefault "" <| Maybe.map (\s -> " - " ++ s) card.subtitle
-            , text <| toBattleCardRank card
+            , toSubtitle card.subtitle
+            , toBattleCardRank card.stats
             ]
         , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
         , CardEffect.toHtmlLazy card.effect
         ]
 
 
-toRank : Stat -> Maybe Int -> Maybe Int
-toRank stat rank =
-    case stat of
-        Strength rank ->
-            Just rank
-
-        Intelligence rank ->
-            Just rank
-
-        Special rank ->
-            Just rank
+toSubtitle : Maybe String -> Html msg
+toSubtitle subtitle =
+    subtitle
+        |> Maybe.map (String.append " - ")
+        |> Maybe.map text
+        |> Maybe.withDefault Html.Helpers.nothing
 
 
-toBattleCardRank : Card -> String
-toBattleCardRank card =
-    let
-        rank =
-            if card.card_type == Battle then
-                List.foldr toRank Nothing card.stats
-            else
-                Nothing
-    in
-        case rank of
-            Just rank ->
-                " - Rank " ++ (toString rank)
-
-            Nothing ->
-                ""
+toBattleCardRank : Stats -> Html msg
+toBattleCardRank stats =
+    CardStats.toBattleRank stats
+        |> Maybe.map CardRank.toString
+        |> Maybe.map ((++) " - Rank ")
+        |> Maybe.map text
+        |> Maybe.withDefault Html.Helpers.nothing
 
 
 cardTrait : String -> String
@@ -241,7 +211,9 @@ cardTrait trait =
 cardStats : Card -> Html msg
 cardStats card =
     div [ class "card-stats" ]
-        (mpView card.mp :: CardStatList.toHtml card.stats)
+        [ mpView card.mp
+        , CardStats.toHtml card.stats
+        ]
 
 
 mpView : Int -> Html msg

@@ -350,7 +350,8 @@ body {
   margin-bottom: 4px;
 }
 .card-stat-icon {
-  max-width: 20px;
+  /* Using max-height instead of max-width to work with multi icons easier */
+  max-height: 20px;
   vertical-align: middle;
 }
 .card-stat-text {
@@ -358,6 +359,9 @@ body {
   font-size: 20px;
   display: inline-block;
   vertical-align: middle;
+}
+.multi-stat-icon {
+  max-height: 25px;
 }
 
 .stepper-container {
