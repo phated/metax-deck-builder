@@ -47,6 +47,7 @@ import Json.Decode.Pipeline exposing (decode, required, custom, optional, option
 import Compare exposing (Comparator)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
 import Html.Helpers
+import Component.Card.MP as CardMP exposing (MP)
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set)
 import Component.Card.Rank as CardRank
@@ -68,7 +69,7 @@ type alias Card =
     , subtitle : Maybe String
     , card_type : Type
     , trait : String
-    , mp : Int
+    , mp : MP
     , effect : Effect
     , stats : Stats
     , image_url : String
@@ -89,7 +90,7 @@ decoder =
         |> optional "subtitle" (maybe string) Nothing
         |> custom (field "type" CardType.decoder)
         |> optionalAt [ "trait", "name" ] string ""
-        |> required "mp" int
+        |> required "mp" CardMP.decoder
         |> custom (field "effect" CardEffect.decoder)
         |> custom CardStats.decoder
         |> required "imageUrl" string
@@ -102,7 +103,7 @@ toHtml : Card -> Html msg
 toHtml card =
     div [ class "card-details" ]
         [ toTitle card
-        , mpView card.mp
+        , CardMP.toHtml card.mp
         , div [ class "card-trait" ] [ text <| cardTrait card.trait ]
         , CardEffect.toHtmlLazy card.effect
         , CardStats.toHtml card.stats
@@ -205,15 +206,3 @@ cardTrait trait =
         ""
     else
         trait
-
-
-mpView : Int -> Html msg
-mpView stat =
-    let
-        prefix =
-            if stat >= 0 then
-                "+"
-            else
-                ""
-    in
-        div [ class "card-stat-mp" ] [ text ("MP" ++ ": " ++ prefix ++ toString stat) ]
