@@ -1,0 +1,92 @@
+module Component.Deck.Battles.Strength
+    exposing
+        ( StrengthBattles
+        , insert
+        , update
+        , count
+        , sum
+        , toList
+        , foldr
+        )
+
+import Avl.Dict as Dict exposing (Dict)
+import Component.Card as Card exposing (Card)
+import Component.Card.Rank as CardRank exposing (Rank)
+import Compare
+
+
+type alias StrengthBattles =
+    Dict Rank (Dict Card Int)
+
+
+toList : { a | strength : StrengthBattles } -> List ( Card, Int )
+toList deck =
+    let
+        lister rank dict list =
+            List.append list (Dict.toList dict)
+    in
+        Dict.foldr lister [] deck.strength
+
+
+foldr : (Rank -> Dict Card Int -> b -> b) -> b -> { a | strength : StrengthBattles } -> b
+foldr fn result deck =
+    -- let
+    --     subfold rank dict result =
+    --         Dict.foldr fn result dict
+    -- in
+    Dict.foldr fn result deck.strength
+
+
+insert : Rank -> ( Card, Int ) -> { a | strength : StrengthBattles } -> { a | strength : StrengthBattles }
+insert rank ( card, count ) deck =
+    let
+        inserter maybeDict =
+            case maybeDict of
+                Just dict ->
+                    Just (Dict.insert Card.order card count dict)
+
+                Nothing ->
+                    Just (Dict.singleton card count)
+
+        strength =
+            Dict.update byRank rank inserter deck.strength
+    in
+        { deck | strength = strength }
+
+
+update : Rank -> ( Card, Maybe Int -> Maybe Int ) -> { a | strength : StrengthBattles } -> { a | strength : StrengthBattles }
+update rank ( card, fn ) deck =
+    let
+        updater maybeDict =
+            case maybeDict of
+                Just dict ->
+                    Just (Dict.update Card.order card fn dict)
+
+                Nothing ->
+                    Just (Dict.update Card.order card fn Dict.empty)
+
+        strength =
+            Dict.update byRank rank updater deck.strength
+    in
+        { deck | strength = strength }
+
+
+count : Rank -> Card -> { a | strength : StrengthBattles } -> Int
+count rank card deck =
+    Dict.get byRank rank deck.strength
+        |> Maybe.map (Dict.get Card.order card >> Maybe.withDefault 0)
+        |> Maybe.withDefault 0
+
+
+sum : { a | strength : StrengthBattles } -> Int
+sum deck =
+    let
+        subfold rank dict result =
+            Dict.foldr (\_ count result -> result + count) result dict
+    in
+        Dict.foldr subfold 0 deck.strength
+
+
+byRank : Compare.Comparator Rank
+byRank =
+    Compare.by CardRank.order
