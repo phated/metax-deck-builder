@@ -169,6 +169,7 @@ order =
         , Compare.by (.stats >> CardStats.order)
         , Compare.by .title
         , Compare.by (.effect >> .text)
+        , Compare.by (.uid >> CardUID.toString)
         ]
 
 
