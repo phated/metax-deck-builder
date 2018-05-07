@@ -1,6 +1,9 @@
 module Component.Deck.Characters
     exposing
         ( Characters
+        , empty
+        , foldr
+        , filter
         , insert
         , update
         , count
@@ -16,9 +19,24 @@ type alias Characters =
     Dict Card Int
 
 
+empty : Characters
+empty =
+    Dict.empty
+
+
 toList : { a | characters : Characters } -> List ( Card, Int )
 toList deck =
     Dict.toList deck.characters
+
+
+foldr : (Card -> Int -> b -> b) -> b -> { a | characters : Characters } -> b
+foldr fn result deck =
+    Dict.foldr fn result deck.characters
+
+
+filter : (Card -> Int -> Bool) -> { a | characters : Characters } -> { a | characters : Characters }
+filter fn deck =
+    { deck | characters = Dict.filter Card.order fn deck.characters }
 
 
 insert : Card -> Int -> { a | characters : Characters } -> { a | characters : Characters }

@@ -1,12 +1,14 @@
 module Component.Deck.Battles.Special
     exposing
         ( SpecialBattles
+        , empty
+        , foldr
+        , filter
         , insert
         , update
         , count
         , sum
         , toList
-        , foldr
         )
 
 import Avl.Dict as Dict exposing (Dict)
@@ -17,6 +19,11 @@ import Compare
 
 type alias SpecialBattles =
     Dict Rank (Dict Card Int)
+
+
+empty : SpecialBattles
+empty =
+    Dict.empty
 
 
 toList : { a | special : SpecialBattles } -> List ( Card, Int )
@@ -30,11 +37,16 @@ toList deck =
 
 foldr : (Rank -> Dict Card Int -> b -> b) -> b -> { a | special : SpecialBattles } -> b
 foldr fn result deck =
-    -- let
-    --     subfold rank dict result =
-    --         Dict.foldr fn result dict
-    -- in
     Dict.foldr fn result deck.special
+
+
+filter : (Card -> Int -> Bool) -> { a | special : SpecialBattles } -> { a | special : SpecialBattles }
+filter fn deck =
+    let
+        subfilter rank dict result =
+            Dict.insert byRank rank (Dict.filter Card.order fn dict) result
+    in
+        { deck | special = Dict.foldr subfilter empty deck.special }
 
 
 insert : Rank -> ( Card, Int ) -> { a | special : SpecialBattles } -> { a | special : SpecialBattles }

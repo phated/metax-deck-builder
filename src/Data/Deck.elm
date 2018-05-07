@@ -13,14 +13,11 @@ module Data.Deck
         , hash
         )
 
-import Avl.Dict as Dict exposing (Dict)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
-import Compare
 import Encode
-import Component.Card as Card exposing (Card)
+import Component.Card exposing (Card)
 import Component.Card.UID as CardUID
-import Component.Card.Rank as CardRank exposing (Rank)
 import Component.Card.Type exposing (Type(Character, Event, Battle))
 import Component.Deck.Events as Events exposing (Events)
 import Component.Deck.Battles as Battles exposing (Battles)
@@ -43,12 +40,12 @@ type alias Deck =
 
 empty : Deck
 empty =
-    { characters = Dict.empty
-    , events = Dict.empty
-    , strength = Dict.empty
-    , intelligence = Dict.empty
-    , special = Dict.empty
-    , multi = Dict.empty
+    { characters = Characters.empty
+    , events = Events.empty
+    , strength = StrengthBattles.empty
+    , intelligence = IntelligenceBattles.empty
+    , special = SpecialBattles.empty
+    , multi = MultiBattles.empty
     }
 
 
@@ -94,43 +91,17 @@ update card fn deck =
 
 foldr : (Card -> Int -> a -> a) -> a -> Deck -> a
 foldr fn result deck =
-    let
-        subfold rank dict result =
-            Dict.foldr fn result dict
-    in
-        Dict.foldr fn result deck.characters
-            |> flip (Dict.foldr fn) deck.events
-            |> flip (Dict.foldr subfold) deck.strength
-            |> flip (Dict.foldr subfold) deck.intelligence
-            |> flip (Dict.foldr subfold) deck.special
-            |> flip (Dict.foldr subfold) deck.multi
-
-
-filterBattle : (Card -> Int -> Bool) -> Dict Rank (Dict Card Int) -> Dict Rank (Dict Card Int)
-filterBattle fn battles =
-    let
-        filterRanks rank cards result =
-            let
-                filtered =
-                    Dict.filter Card.order fn cards
-            in
-                if Dict.size filtered /= 0 then
-                    Dict.insert byRank rank filtered result
-                else
-                    result
-    in
-        Dict.foldr filterRanks Dict.empty battles
+    Characters.foldr fn result deck
+        |> flip (Events.foldr fn) deck
+        |> flip (Battles.foldr fn) deck
 
 
 filter : (Card -> Int -> Bool) -> Deck -> Deck
 filter fn deck =
-    { characters = Dict.filter Card.order fn deck.characters
-    , events = Dict.filter Card.order fn deck.events
-    , strength = filterBattle fn deck.strength
-    , intelligence = filterBattle fn deck.intelligence
-    , special = filterBattle fn deck.special
-    , multi = filterBattle fn deck.multi
-    }
+    deck
+        |> Characters.filter fn
+        |> Events.filter fn
+        |> Battles.filter fn
 
 
 count : Card -> Deck -> Int
@@ -260,7 +231,3 @@ maybeDecrement value =
 
         Nothing ->
             Just 0
-
-
-byRank =
-    Compare.by CardRank.order
