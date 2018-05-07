@@ -292,7 +292,7 @@ update msg model =
 
         LoadDeckFromHash hash ->
             ( model
-            , Http.get ("http://metax.toyboat.net/decodeDeck.php?output=metaxdb&hash=" ++ hash) Deck.decoder
+            , Http.get ("https://metax.toyboat.net/decodeDeck.php?output=metaxdb&hash=" ++ hash) Deck.decoder
                 |> Http.send (Result.withDefault [] >> ImportDeck)
             )
 
