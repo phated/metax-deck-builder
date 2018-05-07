@@ -7,7 +7,7 @@ import Html.Events exposing (onClick, onCheck)
 import Html.Helpers
 import GraphQl.Helpers as GqlHelpers
 import Navigation exposing (Location)
-import Dict exposing (Dict)
+import Avl.Dict as Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
@@ -22,15 +22,19 @@ import Fork.QueryString as QueryString
 import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
-import Component.Card.Type as CardType exposing (Type(Character, Battle, Event))
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Component.Card.Preview as CardPreview
 import Component.CardList as CardList exposing (CardList)
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
-import Component.Card.Stats exposing (Stats(..))
-import Component.Card.StatType exposing (StatType(..))
-import Component.Card.Rank as Rank
+import Component.Card.Rank as Rank exposing (Rank)
+import Component.Deck.Characters as Characters
+import Component.Deck.Events as Events
+import Component.Deck.Battles as Battles
+import Component.Deck.Battles.Strength as StrengthBattles exposing (StrengthBattles)
+import Component.Deck.Battles.Intelligence as IntelligenceBattles exposing (IntelligenceBattles)
+import Component.Deck.Battles.Special as SpecialBattles exposing (SpecialBattles)
+import Component.Deck.Battles.Multi as MultiBattles exposing (MultiBattles)
 
 
 main : RouteUrlProgram Never Model Msg
@@ -514,26 +518,20 @@ sum cards =
     (List.sum (List.map Tuple.second cards))
 
 
-charactersView : List ( Card, Int ) -> List (Html Msg)
-charactersView characters =
-    if List.length characters > 0 then
-        List.concat
-            [ sectionHeader "Characters" (sum characters)
-            , (List.map deckCardView characters)
-            ]
-    else
-        []
+charactersView : Deck -> List (Html Msg)
+charactersView deck =
+    List.concat
+        [ sectionHeader "Characters" (Characters.sum deck)
+        , Characters.toList deck |> List.map deckCardView
+        ]
 
 
-eventsView : List ( Card, Int ) -> List (Html Msg)
-eventsView events =
-    if List.length events > 0 then
-        List.concat
-            [ sectionHeader "Events" (sum events)
-            , (List.map deckCardView events)
-            ]
-    else
-        []
+eventsView : Deck -> List (Html Msg)
+eventsView deck =
+    List.concat
+        [ sectionHeader "Events" (Events.sum deck)
+        , Events.toList deck |> List.map deckCardView
+        ]
 
 
 bcWarningView : Int -> Maybe (Html Msg)
@@ -576,121 +574,45 @@ battleCardSubSection title cards =
         []
 
 
-type alias BattleCardGroups =
-    { strength : Dict Int (List ( Card, Int ))
-    , intelligence : Dict Int (List ( Card, Int ))
-    , special : Dict Int (List ( Card, Int ))
-    , multi : Dict Int (List ( Card, Int ))
-    }
+toRows : String -> Rank -> Dict Card Int -> List (Html Msg) -> List (Html Msg)
+toRows title rank battles result =
+    let
+        cards =
+            Dict.toList battles
+    in
+        List.append result (battleCardSubSection (title ++ " - Rank " ++ (Rank.toString rank)) cards)
 
 
-addToRank : ( Card, Int ) -> Maybe (List ( Card, Int )) -> Maybe (List ( Card, Int ))
-addToRank item list =
-    case list of
-        Just list ->
-            Just (item :: list)
+battleCardView : Deck -> List (Html Msg)
+battleCardView deck =
+    let
+        strRows =
+            StrengthBattles.foldr (toRows "Strength") [] deck
 
-        Nothing ->
-            Just [ item ]
+        intRows =
+            IntelligenceBattles.foldr (toRows "Intelligence") [] deck
 
+        spRows =
+            SpecialBattles.foldr (toRows "Special") [] deck
 
-groupBattleCards : ( Card, Int ) -> BattleCardGroups -> BattleCardGroups
-groupBattleCards ( card, count ) result =
-    case card.stats of
-        Single { statType, rank } ->
-            let
-                rankVal =
-                    Rank.toInt rank
-            in
-                case statType of
-                    Strength ->
-                        { result | strength = Dict.update rankVal (addToRank ( card, count )) result.strength }
-
-                    Intelligence ->
-                        { result | intelligence = Dict.update rankVal (addToRank ( card, count )) result.intelligence }
-
-                    Special ->
-                        { result | special = Dict.update rankVal (addToRank ( card, count )) result.special }
-
-        Multi { rank } ->
-            let
-                rankVal =
-                    Rank.toInt rank
-            in
-                { result | multi = Dict.update rankVal (addToRank ( card, count )) result.multi }
-
-        StatList _ ->
-            result
-
-        None ->
-            result
-
-
-toRows : String -> Int -> List ( Card, Int ) -> List (Html Msg) -> List (Html Msg)
-toRows title rank cards result =
-    List.append result (battleCardSubSection (title ++ " - Rank " ++ (toString rank)) cards)
-
-
-battleCardView : List ( Card, Int ) -> List (Html Msg)
-battleCardView battle =
-    if List.length battle > 0 then
-        let
-            rows =
-                List.foldl groupBattleCards (BattleCardGroups Dict.empty Dict.empty Dict.empty Dict.empty) battle
-
-            strRows =
-                Dict.foldl (toRows "Strength") [] rows.strength
-
-            intRows =
-                Dict.foldl (toRows "Intelligence") [] rows.intelligence
-
-            spRows =
-                Dict.foldl (toRows "Special") [] rows.special
-
-            multiRows =
-                Dict.foldl (toRows "Multi") [] rows.multi
-        in
-            (sectionHeader "Battle Cards" (sum battle))
-                ++ strRows
-                ++ intRows
-                ++ spRows
-                ++ multiRows
-    else
-        []
-
-
-type alias DeckGroups =
-    { characters : List ( Card, Int )
-    , events : List ( Card, Int )
-    , battle : List ( Card, Int )
-    }
-
-
-groupTypes : Card -> Int -> DeckGroups -> DeckGroups
-groupTypes card count result =
-    case card.card_type of
-        Character ->
-            { result | characters = ( card, count ) :: result.characters }
-
-        Event ->
-            { result | events = ( card, count ) :: result.events }
-
-        Battle ->
-            { result | battle = ( card, count ) :: result.battle }
+        multiRows =
+            MultiBattles.foldr (toRows "Multi") [] deck
+    in
+        (sectionHeader "Battle Cards" (Battles.sum deck))
+            ++ strRows
+            ++ intRows
+            ++ spRows
+            ++ multiRows
 
 
 deckSectionView : Deck -> List (Html Msg)
 deckSectionView deck =
-    let
-        rows =
-            Deck.foldl groupTypes (DeckGroups [] [] []) deck
-    in
-        (List.concat
-            [ charactersView rows.characters
-            , eventsView rows.events
-            , battleCardView rows.battle
-            ]
-        )
+    (List.concat
+        [ charactersView deck
+        , eventsView deck
+        , battleCardView deck
+        ]
+    )
 
 
 deckCardView : ( Card, Int ) -> Html Msg
