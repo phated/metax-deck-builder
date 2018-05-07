@@ -1,12 +1,14 @@
 module Component.Deck.Battles.Intelligence
     exposing
         ( IntelligenceBattles
+        , empty
+        , foldr
+        , filter
         , insert
         , update
         , count
         , sum
         , toList
-        , foldr
         )
 
 import Avl.Dict as Dict exposing (Dict)
@@ -17,6 +19,11 @@ import Compare
 
 type alias IntelligenceBattles =
     Dict Rank (Dict Card Int)
+
+
+empty : IntelligenceBattles
+empty =
+    Dict.empty
 
 
 toList : { a | intelligence : IntelligenceBattles } -> List ( Card, Int )
@@ -30,11 +37,16 @@ toList deck =
 
 foldr : (Rank -> Dict Card Int -> b -> b) -> b -> { a | intelligence : IntelligenceBattles } -> b
 foldr fn result deck =
-    -- let
-    --     subfold rank dict result =
-    --         Dict.foldr fn result dict
-    -- in
     Dict.foldr fn result deck.intelligence
+
+
+filter : (Card -> Int -> Bool) -> { a | intelligence : IntelligenceBattles } -> { a | intelligence : IntelligenceBattles }
+filter fn deck =
+    let
+        subfilter rank dict result =
+            Dict.insert byRank rank (Dict.filter Card.order fn dict) result
+    in
+        { deck | intelligence = Dict.foldr subfilter empty deck.intelligence }
 
 
 insert : Rank -> ( Card, Int ) -> { a | intelligence : IntelligenceBattles } -> { a | intelligence : IntelligenceBattles }

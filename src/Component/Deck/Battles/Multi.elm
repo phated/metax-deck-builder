@@ -1,12 +1,14 @@
 module Component.Deck.Battles.Multi
     exposing
         ( MultiBattles
+        , empty
+        , foldr
+        , filter
         , insert
         , update
         , count
         , sum
         , toList
-        , foldr
         )
 
 import Avl.Dict as Dict exposing (Dict)
@@ -17,6 +19,11 @@ import Compare
 
 type alias MultiBattles =
     Dict Rank (Dict Card Int)
+
+
+empty : MultiBattles
+empty =
+    Dict.empty
 
 
 toList : { a | multi : MultiBattles } -> List ( Card, Int )
@@ -30,11 +37,16 @@ toList deck =
 
 foldr : (Rank -> Dict Card Int -> b -> b) -> b -> { a | multi : MultiBattles } -> b
 foldr fn result deck =
-    -- let
-    --     subfold rank dict result =
-    --         Dict.foldr fn result dict
-    -- in
     Dict.foldr fn result deck.multi
+
+
+filter : (Card -> Int -> Bool) -> { a | multi : MultiBattles } -> { a | multi : MultiBattles }
+filter fn deck =
+    let
+        subfilter rank dict result =
+            Dict.insert byRank rank (Dict.filter Card.order fn dict) result
+    in
+        { deck | multi = Dict.foldr subfilter empty deck.multi }
 
 
 insert : Rank -> ( Card, Int ) -> { a | multi : MultiBattles } -> { a | multi : MultiBattles }

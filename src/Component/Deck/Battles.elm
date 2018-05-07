@@ -1,6 +1,8 @@
 module Component.Deck.Battles
     exposing
         ( Battles
+        , foldr
+        , filter
         , insert
         , update
         , count
@@ -8,7 +10,8 @@ module Component.Deck.Battles
         , toList
         )
 
-import Component.Card exposing (Card)
+import Avl.Dict as Dict
+import Component.Card as Card exposing (Card)
 import Component.Card.Stats exposing (Stats(Single, Multi))
 import Component.Card.StatType exposing (StatType(Strength, Intelligence, Special))
 import Component.Deck.Battles.Strength as StrengthBattles exposing (StrengthBattles)
@@ -34,6 +37,27 @@ toList deck =
         , SpecialBattles.toList deck
         , MultiBattles.toList deck
         ]
+
+
+foldr : (Card -> Int -> b -> b) -> b -> Battles a -> b
+foldr fn result deck =
+    let
+        subfold rank dict result =
+            Dict.foldr fn result dict
+    in
+        StrengthBattles.foldr subfold result deck
+            |> flip (IntelligenceBattles.foldr subfold) deck
+            |> flip (SpecialBattles.foldr subfold) deck
+            |> flip (MultiBattles.foldr subfold) deck
+
+
+filter : (Card -> Int -> Bool) -> Battles a -> Battles a
+filter fn deck =
+    deck
+        |> StrengthBattles.filter fn
+        |> IntelligenceBattles.filter fn
+        |> SpecialBattles.filter fn
+        |> MultiBattles.filter fn
 
 
 insert : Card -> Int -> Battles a -> Battles a

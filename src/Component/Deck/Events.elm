@@ -1,6 +1,9 @@
 module Component.Deck.Events
     exposing
         ( Events
+        , empty
+        , foldr
+        , filter
         , insert
         , update
         , count
@@ -16,9 +19,24 @@ type alias Events =
     Dict Card Int
 
 
+empty : Events
+empty =
+    Dict.empty
+
+
 toList : { a | events : Events } -> List ( Card, Int )
 toList deck =
     Dict.toList deck.events
+
+
+foldr : (Card -> Int -> b -> b) -> b -> { a | events : Events } -> b
+foldr fn result deck =
+    Dict.foldr fn result deck.events
+
+
+filter : (Card -> Int -> Bool) -> { a | events : Events } -> { a | events : Events }
+filter fn deck =
+    { deck | events = Dict.filter Card.order fn deck.events }
 
 
 insert : Card -> Int -> { a | events : Events } -> { a | events : Events }
