@@ -623,15 +623,17 @@ deckCardView ( card, count ) =
         [ id ("deck_" ++ (CardUID.toString card.uid))
         , class "list-item"
         ]
-        [ div [ class "card-image-container" ]
-            [ linkTo (Route.Card (CardUID.toString card.uid))
-                [ class "card-thumbnail" ]
-                [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-                , previewBanner card
+        [ div [ class "card-contents" ]
+            [ div [ class "card-image-container" ]
+                [ linkTo (Route.Card (CardUID.toString card.uid))
+                    [ class "card-thumbnail" ]
+                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                    , previewBanner card
+                    ]
+                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
                 ]
-            , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+            , Card.toHtml card
             ]
-        , Card.toHtml card
         , stepper ( card, count )
         ]
 
