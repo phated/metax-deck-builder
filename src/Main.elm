@@ -587,24 +587,21 @@ toRows title rank battles result =
 
 battleCardView : Deck -> List (Html Msg)
 battleCardView deck =
-    let
-        strRows =
-            StrengthBattles.foldr (toRows "Strength") [] deck
-
-        intRows =
-            IntelligenceBattles.foldr (toRows "Intelligence") [] deck
-
-        spRows =
-            SpecialBattles.foldr (toRows "Special") [] deck
-
-        multiRows =
-            MultiBattles.foldr (toRows "Multi") [] deck
-    in
-        (sectionHeader "Battle Cards" (Battles.sum deck))
-            ++ strRows
-            ++ intRows
-            ++ spRows
-            ++ multiRows
+    -- let
+    --     strRows =
+    --         StrengthBattles.foldr (toRows "Strength") [] deck
+    --     intRows =
+    --         IntelligenceBattles.foldr (toRows "Intelligence") [] deck
+    --     spRows =
+    --         SpecialBattles.foldr (toRows "Special") [] deck
+    --     multiRows =
+    --         MultiBattles.foldr (toRows "Multi") [] deck
+    -- in
+    -- ++ strRows
+    -- ++ intRows
+    -- ++ spRows
+    -- ++ multiRows
+    (sectionHeader "Battle Cards" (Battles.sum deck))
 
 
 deckSectionView : Deck -> List (Html Msg)
@@ -636,15 +633,6 @@ deckCardView ( card, count ) =
             ]
         , stepper ( card, count )
         ]
-
-
-deckListPane : Model -> Html Msg
-deckListPane model =
-    div
-        [ id "deck-list-pane"
-        , class "pane"
-        ]
-        (deckSectionView model.deck)
 
 
 largeImg : Card -> Html Msg
@@ -791,7 +779,7 @@ paneContainer model =
         div [ classList containerClasses ]
             [ searchPane model
             , cardListPane model
-            , deckListPane model
+            , Deck.toHtml model.deck
             , infoPane
             , cardPane model
             ]
