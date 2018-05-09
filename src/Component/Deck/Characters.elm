@@ -9,10 +9,14 @@ module Component.Deck.Characters
         , count
         , sum
         , toList
+        , toHtml
         )
 
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (id, class)
 import Avl.Dict as Dict exposing (Dict)
 import Component.Card as Card exposing (Card)
+import Component.Card.UID as CardUID
 
 
 type alias Characters =
@@ -39,6 +43,15 @@ filter fn deck =
     { deck | characters = Dict.filter Card.order fn deck.characters }
 
 
+map : (Card -> Int -> b) -> { a | characters : Characters } -> List b
+map fn deck =
+    let
+        append card count result =
+            (fn card count) :: result
+    in
+        foldr append [] deck
+
+
 insert : Card -> Int -> { a | characters : Characters } -> { a | characters : Characters }
 insert card count deck =
     { deck | characters = Dict.insert Card.order card count deck.characters }
@@ -58,3 +71,47 @@ count card deck =
 sum : { a | characters : Characters } -> Int
 sum deck =
     Dict.foldr (\_ count result -> result + count) 0 deck.characters
+
+
+toHtml : { a | characters : Characters } -> Html msg
+toHtml deck =
+    let
+        cards =
+            map cardView deck
+
+        title =
+            sum deck
+                |> toString
+                |> (++) "Characters ("
+                |> flip (++) ")"
+
+        children =
+            (div [ class "list-item-header" ] [ text title ])
+                :: cards
+    in
+        div [] children
+
+
+
+-- Internals
+
+
+cardView : Card -> Int -> Html msg
+cardView card count =
+    div
+        [ id ("deck_" ++ (CardUID.toString card.uid))
+        , class "list-item"
+        ]
+        [ div [ class "card-image-container" ] []
+
+        -- [ linkTo (Route.Card (CardUID.toString card.uid))
+        --     [ class "card-thumbnail" ]
+        --     [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+        --     , previewBanner card
+        --     ]
+        -- , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+        -- ]
+        , Card.toHtml card
+
+        -- , stepper ( card, count )
+        ]
