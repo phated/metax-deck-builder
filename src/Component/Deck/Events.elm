@@ -9,10 +9,14 @@ module Component.Deck.Events
         , count
         , sum
         , toList
+        , toHtml
         )
 
+import Html exposing (Html, div)
+import Html.Attributes exposing (id, class)
 import Avl.Dict as Dict exposing (Dict)
 import Component.Card as Card exposing (Card)
+import Component.Card.UID as CardUID
 
 
 type alias Events =
@@ -39,6 +43,15 @@ filter fn deck =
     { deck | events = Dict.filter Card.order fn deck.events }
 
 
+map : (Card -> Int -> b) -> { a | events : Events } -> List b
+map fn deck =
+    let
+        append card count result =
+            (fn card count) :: result
+    in
+        foldr append [] deck
+
+
 insert : Card -> Int -> { a | events : Events } -> { a | events : Events }
 insert card count deck =
     { deck | events = Dict.insert Card.order card count deck.events }
@@ -58,3 +71,33 @@ count card deck =
 sum : { a | events : Events } -> Int
 sum deck =
     Dict.foldr (\_ count result -> result + count) 0 deck.events
+
+
+toHtml : { a | events : Events } -> Html msg
+toHtml deck =
+    div [] (map cardView deck)
+
+
+
+-- Internals
+
+
+cardView : Card -> Int -> Html msg
+cardView card count =
+    div
+        [ id ("deck_" ++ (CardUID.toString card.uid))
+        , class "list-item"
+        ]
+        [ div [ class "card-image-container" ] []
+
+        -- [ linkTo (Route.Card (CardUID.toString card.uid))
+        --     [ class "card-thumbnail" ]
+        --     [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+        --     , previewBanner card
+        --     ]
+        -- , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+        -- ]
+        , Card.toHtml card
+
+        -- , stepper ( card, count )
+        ]

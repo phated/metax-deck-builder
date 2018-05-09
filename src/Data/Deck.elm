@@ -11,8 +11,11 @@ module Data.Deck
         , count
         , sum
         , hash
+        , toHtml
         )
 
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class, id)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
 import Json.Encode as Encode exposing (encode)
 import Encode
@@ -22,19 +25,23 @@ import Component.Card.Type exposing (Type(Character, Event, Battle))
 import Component.Deck.Events as Events exposing (Events)
 import Component.Deck.Battles as Battles exposing (Battles)
 import Component.Deck.Characters as Characters exposing (Characters)
-import Component.Deck.Battles.Strength as StrengthBattles exposing (StrengthBattles)
-import Component.Deck.Battles.Intelligence as IntelligenceBattles exposing (IntelligenceBattles)
-import Component.Deck.Battles.Special as SpecialBattles exposing (SpecialBattles)
-import Component.Deck.Battles.Multi as MultiBattles exposing (MultiBattles)
+
+
+-- import Component.Deck.Battles.Strength as StrengthBattles exposing (StrengthBattles)
+-- import Component.Deck.Battles.Intelligence as IntelligenceBattles exposing (IntelligenceBattles)
+-- import Component.Deck.Battles.Special as SpecialBattles exposing (SpecialBattles)
+-- import Component.Deck.Battles.Multi as MultiBattles exposing (MultiBattles)
 
 
 type alias Deck =
     { characters : Characters
     , events : Events
-    , strength : StrengthBattles
-    , intelligence : IntelligenceBattles
-    , special : SpecialBattles
-    , multi : MultiBattles
+    , battles : Battles
+
+    -- , strength : StrengthBattles
+    -- , intelligence : IntelligenceBattles
+    -- , special : SpecialBattles
+    -- , multi : MultiBattles
     }
 
 
@@ -42,10 +49,12 @@ empty : Deck
 empty =
     { characters = Characters.empty
     , events = Events.empty
-    , strength = StrengthBattles.empty
-    , intelligence = IntelligenceBattles.empty
-    , special = SpecialBattles.empty
-    , multi = MultiBattles.empty
+    , battles = Battles.empty
+
+    -- , strength = StrengthBattles.empty
+    -- , intelligence = IntelligenceBattles.empty
+    -- , special = SpecialBattles.empty
+    -- , multi = MultiBattles.empty
     }
 
 
@@ -91,9 +100,13 @@ update card fn deck =
 
 foldr : (Card -> Int -> a -> a) -> a -> Deck -> a
 foldr fn result deck =
-    Characters.foldr fn result deck
-        |> flip (Events.foldr fn) deck
-        |> flip (Battles.foldr fn) deck
+    let
+        logFn =
+            Debug.log "foldr" >> fn
+    in
+        Characters.foldr fn result deck
+            |> flip (Events.foldr fn) deck
+            |> flip (Battles.foldr logFn) deck
 
 
 filter : (Card -> Int -> Bool) -> Deck -> Deck
@@ -188,6 +201,15 @@ encoder deck =
         List.map toEncoder (toList deck)
             |> Encode.object
             |> encode 0
+
+
+toHtml : Deck -> Html msg
+toHtml deck =
+    div [ id "deck-list-pane", class "pane" ]
+        [ Characters.toHtml deck
+        , Events.toHtml deck
+        , Battles.toHtml deck
+        ]
 
 
 
