@@ -104,11 +104,15 @@ decoder =
 toHtml : Card -> Html msg
 toHtml card =
     div [ class "card-details" ]
-        [ toTitle card
-        , CardMP.toHtml card.mp
-        , CardTrait.toHtml card.trait
-        , CardEffect.toHtmlLazy card.effect
-        , CardStats.toHtml card.stats
+        [ div [ class "card-header" ]
+            [ toTitle card
+            , CardMP.toHtml card.mp
+            , CardTrait.toHtml card.trait
+            ]
+        , div [ class "card-body" ]
+            [ CardEffect.toHtmlLazy card.effect
+            , CardStats.toHtml card.stats
+            ]
         ]
 
 
