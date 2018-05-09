@@ -4,10 +4,10 @@ import Http
 import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, br, Html)
 import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
+import Html.Lazy exposing (lazy)
 import Html.Helpers
 import GraphQl.Helpers as GqlHelpers
 import Navigation exposing (Location)
-import Avl.Dict as Dict exposing (Dict)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
@@ -27,14 +27,6 @@ import Component.Card.Preview as CardPreview
 import Component.CardList as CardList exposing (CardList)
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
-import Component.Card.Rank as Rank exposing (Rank)
-import Component.Deck.Characters as Characters
-import Component.Deck.Events as Events
-import Component.Deck.Battles as Battles
-import Component.Deck.Battles.Strength as StrengthBattles exposing (StrengthBattles)
-import Component.Deck.Battles.Intelligence as IntelligenceBattles exposing (IntelligenceBattles)
-import Component.Deck.Battles.Special as SpecialBattles exposing (SpecialBattles)
-import Component.Deck.Battles.Multi as MultiBattles exposing (MultiBattles)
 
 
 main : RouteUrlProgram Never Model Msg
@@ -447,9 +439,7 @@ navbarBottom model =
 cardListPane : Model -> Html Msg
 cardListPane model =
     div
-        [ id "card-list-pane"
-        , class "pane"
-        ]
+        [ id "card-list-pane", class "pane list-item-grid" ]
         (CardList.map (cardView model) model.cards)
 
 
@@ -499,140 +489,10 @@ cardView model card =
                         ]
                     , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
                     ]
-                , Card.toHtml card
+                , lazy Card.toHtml card
                 ]
             , stepper ( card, count )
             ]
-
-
-sectionHeader : String -> Int -> List (Html Msg)
-sectionHeader title count =
-    List.singleton (div [ class "list-item-header" ] [ text <| title ++ " (" ++ (toString count) ++ ")" ])
-
-
-sectionSubHeader : Html Msg -> List (Html Msg)
-sectionSubHeader content =
-    List.singleton (div [ class "list-item-sub-header" ] [ content ])
-
-
-sum : List ( Card, Int ) -> Int
-sum cards =
-    (List.sum (List.map Tuple.second cards))
-
-
-charactersView : Deck -> List (Html Msg)
-charactersView deck =
-    List.concat
-        [ sectionHeader "Characters" (Characters.sum deck)
-        , Characters.toList deck |> List.map deckCardView
-        ]
-
-
-eventsView : Deck -> List (Html Msg)
-eventsView deck =
-    List.concat
-        [ sectionHeader "Events" (Events.sum deck)
-        , Events.toList deck |> List.map deckCardView
-        ]
-
-
-bcWarningView : Int -> Maybe (Html Msg)
-bcWarningView count =
-    if count > 3 then
-        Just <| div [ class "warning-message" ] [ text "You have too many Battle Cards at this Type/Rank" ]
-    else
-        Nothing
-
-
-battleCardSubSection : String -> List ( Card, Int ) -> List (Html Msg)
-battleCardSubSection title cards =
-    if List.length cards > 0 then
-        let
-            count =
-                sum cards
-
-            warning =
-                bcWarningView count
-
-            countString =
-                toString count
-
-            titleText =
-                div [ class "subheader-title" ] [ text <| title ++ " (" ++ countString ++ ")" ]
-        in
-            case warning of
-                Just warning ->
-                    List.concat
-                        [ List.singleton <| div [ class "list-item-sub-header with-warning" ] [ titleText, warning ]
-                        , (List.map deckCardView cards)
-                        ]
-
-                Nothing ->
-                    List.concat
-                        [ List.singleton <| div [ class "list-item-sub-header" ] [ titleText ]
-                        , (List.map deckCardView cards)
-                        ]
-    else
-        []
-
-
-toRows : String -> Rank -> Dict Card Int -> List (Html Msg) -> List (Html Msg)
-toRows title rank battles result =
-    let
-        cards =
-            Dict.toList battles
-    in
-        List.append result (battleCardSubSection (title ++ " - Rank " ++ (Rank.toString rank)) cards)
-
-
-battleCardView : Deck -> List (Html Msg)
-battleCardView deck =
-    -- let
-    --     strRows =
-    --         StrengthBattles.foldr (toRows "Strength") [] deck
-    --     intRows =
-    --         IntelligenceBattles.foldr (toRows "Intelligence") [] deck
-    --     spRows =
-    --         SpecialBattles.foldr (toRows "Special") [] deck
-    --     multiRows =
-    --         MultiBattles.foldr (toRows "Multi") [] deck
-    -- in
-    -- ++ strRows
-    -- ++ intRows
-    -- ++ spRows
-    -- ++ multiRows
-    (sectionHeader "Battle Cards" (Battles.sum deck))
-
-
-deckSectionView : Deck -> List (Html Msg)
-deckSectionView deck =
-    (List.concat
-        [ charactersView deck
-        , eventsView deck
-        , battleCardView deck
-        ]
-    )
-
-
-deckCardView : ( Card, Int ) -> Html Msg
-deckCardView ( card, count ) =
-    div
-        [ id ("deck_" ++ (CardUID.toString card.uid))
-        , class "list-item"
-        ]
-        [ div [ class "card-contents" ]
-            [ div [ class "card-image-container" ]
-                [ linkTo (Route.Card (CardUID.toString card.uid))
-                    [ class "card-thumbnail" ]
-                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-                    , previewBanner card
-                    ]
-                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
-                ]
-            , Card.toHtml card
-            ]
-        , stepper ( card, count )
-        ]
 
 
 largeImg : Card -> Html Msg
