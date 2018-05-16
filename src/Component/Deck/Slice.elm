@@ -15,12 +15,11 @@ module Component.Deck.Slice
         , toHtml
         )
 
-import Html exposing (Html, div, text, img)
-import Html.Attributes exposing (id, class, src)
-import Regex
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
+import Html.Helpers
 import Avl.Dict as Dict exposing (Dict)
 import Component.Card as Card exposing (Card)
-import Component.Card.UID as CardUID
 
 
 type alias DeckSlice =
@@ -87,33 +86,11 @@ sum deck =
     Dict.foldr (\_ count result -> result + count) 0 deck
 
 
-toHtml : DeckSlice -> Html msg
-toHtml deck =
-    div [ class "list-item-grid" ] (map cardView deck)
+toHtml : (Card -> Int -> Html msg) -> DeckSlice -> Html msg
+toHtml renderChild deck =
+    case isEmpty deck of
+        True ->
+            Html.Helpers.nothing
 
-
-
--- Internals
-
-
-cardView : Card -> Int -> Html msg
-cardView card count =
-    div
-        [ id ("deck_" ++ (CardUID.toString card.uid))
-        , class "list-item"
-        ]
-        [ div [ class "card-contents" ]
-            [ div [ class "card-image-container" ]
-                [ -- [ linkTo (Route.Card (CardUID.toString card.uid))
-                  div [ class "card-thumbnail" ]
-                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-
-                    --     , previewBanner card
-                    ]
-                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
-                ]
-            , Card.toHtml card
-            ]
-
-        -- , stepper ( card, count )
-        ]
+        False ->
+            div [ class "list-item-grid" ] (map renderChild deck)

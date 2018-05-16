@@ -7,6 +7,7 @@ module Component.Deck.BattleSlice
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Html.Helpers
+import Component.Card exposing (Card)
 import Component.Deck.Slice as DeckSlice exposing (DeckSlice)
 
 
@@ -107,8 +108,8 @@ sum deck =
         + DeckSlice.sum deck.multi7
 
 
-toHtml : BattleSlice a -> Html msg
-toHtml deck =
+toHtml : (Card -> Int -> Html msg) -> BattleSlice a -> Html msg
+toHtml renderChild deck =
     case isEmpty deck of
         True ->
             Html.Helpers.nothing
@@ -126,34 +127,62 @@ toHtml deck =
             in
                 div [ class "deck-section" ]
                     [ header
-                    , statRankSection "Strength - Rank 1" deck.strength1
-                    , statRankSection "Strength - Rank 2" deck.strength2
-                    , statRankSection "Strength - Rank 3" deck.strength3
-                    , statRankSection "Strength - Rank 4" deck.strength4
-                    , statRankSection "Strength - Rank 5" deck.strength5
-                    , statRankSection "Strength - Rank 6" deck.strength6
-                    , statRankSection "Strength - Rank 7" deck.strength7
-                    , statRankSection "Intelligence - Rank 1" deck.intelligence1
-                    , statRankSection "Intelligence - Rank 2" deck.intelligence2
-                    , statRankSection "Intelligence - Rank 3" deck.intelligence3
-                    , statRankSection "Intelligence - Rank 4" deck.intelligence4
-                    , statRankSection "Intelligence - Rank 5" deck.intelligence5
-                    , statRankSection "Intelligence - Rank 6" deck.intelligence6
-                    , statRankSection "Intelligence - Rank 7" deck.intelligence7
-                    , statRankSection "Special - Rank 1" deck.special1
-                    , statRankSection "Special - Rank 2" deck.special2
-                    , statRankSection "Special - Rank 3" deck.special3
-                    , statRankSection "Special - Rank 4" deck.special4
-                    , statRankSection "Special - Rank 5" deck.special5
-                    , statRankSection "Special - Rank 6" deck.special6
-                    , statRankSection "Special - Rank 7" deck.special7
-                    , statRankSection "Multi - Rank 1" deck.multi1
-                    , statRankSection "Multi - Rank 2" deck.multi2
-                    , statRankSection "Multi - Rank 3" deck.multi3
-                    , statRankSection "Multi - Rank 4" deck.multi4
-                    , statRankSection "Multi - Rank 5" deck.multi5
-                    , statRankSection "Multi - Rank 6" deck.multi6
-                    , statRankSection "Multi - Rank 7" deck.multi7
+                    , statRankHeader "Strength - Rank 1" deck.strength1
+                    , DeckSlice.toHtml renderChild deck.strength1
+                    , statRankHeader "Strength - Rank 2" deck.strength2
+                    , DeckSlice.toHtml renderChild deck.strength2
+                    , statRankHeader "Strength - Rank 3" deck.strength3
+                    , DeckSlice.toHtml renderChild deck.strength3
+                    , statRankHeader "Strength - Rank 4" deck.strength4
+                    , DeckSlice.toHtml renderChild deck.strength4
+                    , statRankHeader "Strength - Rank 5" deck.strength5
+                    , DeckSlice.toHtml renderChild deck.strength5
+                    , statRankHeader "Strength - Rank 6" deck.strength6
+                    , DeckSlice.toHtml renderChild deck.strength6
+                    , statRankHeader "Strength - Rank 7" deck.strength7
+                    , DeckSlice.toHtml renderChild deck.strength7
+                    , statRankHeader "Intelligence - Rank 1" deck.intelligence1
+                    , DeckSlice.toHtml renderChild deck.intelligence1
+                    , statRankHeader "Intelligence - Rank 2" deck.intelligence2
+                    , DeckSlice.toHtml renderChild deck.intelligence2
+                    , statRankHeader "Intelligence - Rank 3" deck.intelligence3
+                    , DeckSlice.toHtml renderChild deck.intelligence3
+                    , statRankHeader "Intelligence - Rank 4" deck.intelligence4
+                    , DeckSlice.toHtml renderChild deck.intelligence4
+                    , statRankHeader "Intelligence - Rank 5" deck.intelligence5
+                    , DeckSlice.toHtml renderChild deck.intelligence5
+                    , statRankHeader "Intelligence - Rank 6" deck.intelligence6
+                    , DeckSlice.toHtml renderChild deck.intelligence6
+                    , statRankHeader "Intelligence - Rank 7" deck.intelligence7
+                    , DeckSlice.toHtml renderChild deck.intelligence7
+                    , statRankHeader "Special - Rank 1" deck.special1
+                    , DeckSlice.toHtml renderChild deck.special1
+                    , statRankHeader "Special - Rank 2" deck.special2
+                    , DeckSlice.toHtml renderChild deck.special2
+                    , statRankHeader "Special - Rank 3" deck.special3
+                    , DeckSlice.toHtml renderChild deck.special3
+                    , statRankHeader "Special - Rank 4" deck.special4
+                    , DeckSlice.toHtml renderChild deck.special4
+                    , statRankHeader "Special - Rank 5" deck.special5
+                    , DeckSlice.toHtml renderChild deck.special5
+                    , statRankHeader "Special - Rank 6" deck.special6
+                    , DeckSlice.toHtml renderChild deck.special6
+                    , statRankHeader "Special - Rank 7" deck.special7
+                    , DeckSlice.toHtml renderChild deck.special7
+                    , statRankHeader "Multi - Rank 1" deck.multi1
+                    , DeckSlice.toHtml renderChild deck.multi1
+                    , statRankHeader "Multi - Rank 2" deck.multi2
+                    , DeckSlice.toHtml renderChild deck.multi2
+                    , statRankHeader "Multi - Rank 3" deck.multi3
+                    , DeckSlice.toHtml renderChild deck.multi3
+                    , statRankHeader "Multi - Rank 4" deck.multi4
+                    , DeckSlice.toHtml renderChild deck.multi4
+                    , statRankHeader "Multi - Rank 5" deck.multi5
+                    , DeckSlice.toHtml renderChild deck.multi5
+                    , statRankHeader "Multi - Rank 6" deck.multi6
+                    , DeckSlice.toHtml renderChild deck.multi6
+                    , statRankHeader "Multi - Rank 7" deck.multi7
+                    , DeckSlice.toHtml renderChild deck.multi7
                     ]
 
 
@@ -161,8 +190,8 @@ toHtml deck =
 -- Internals
 
 
-statRankSection : String -> DeckSlice -> Html msg
-statRankSection title deck =
+statRankHeader : String -> DeckSlice -> Html msg
+statRankHeader title deck =
     case DeckSlice.isEmpty deck of
         True ->
             Html.Helpers.nothing
@@ -181,19 +210,13 @@ statRankSection title deck =
                         |> (++) " ("
                         |> (++) title
                         |> flip (++) ")"
-
-                header =
-                    case warning of
-                        Just warning ->
-                            div [ class "deck-section-sub-header with-warning" ] [ text headerText, warning ]
-
-                        Nothing ->
-                            div [ class "deck-section-sub-header" ] [ text headerText ]
             in
-                div []
-                    [ header
-                    , DeckSlice.toHtml deck
-                    ]
+                case warning of
+                    Just warning ->
+                        div [ class "deck-section-sub-header with-warning" ] [ text headerText, warning ]
+
+                    Nothing ->
+                        div [ class "deck-section-sub-header" ] [ text headerText ]
 
 
 warningMessage : Int -> Maybe (Html msg)
