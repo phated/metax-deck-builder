@@ -1,8 +1,8 @@
 module Main exposing (Model, Msg, update, view, subscriptions, init)
 
 import Http
-import Html exposing (header, nav, div, img, text, button, a, span, label, input, li, ul, br, Html)
-import Html.Attributes exposing (href, class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
+import Html exposing (header, nav, div, img, text, button, span, label, input, li, ul, br, Html)
+import Html.Attributes exposing (class, classList, id, src, alt, disabled, type_, placeholder, value, checked)
 import Html.Events exposing (onClick, onCheck)
 import Html.Lazy exposing (lazy)
 import Html.Helpers
@@ -13,7 +13,7 @@ import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
 import Request.Deck
 import Util exposing (onNavigate)
-import Route exposing (fromLocation, toHref, Route)
+import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
 import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
@@ -301,21 +301,10 @@ buildQuery filters =
         |> CardList.load
 
 
-linkTo : Route -> (List (Html.Attribute Msg) -> List (Html Msg) -> Html Msg)
-linkTo route =
-    let
-        linkAttrs =
-            [ href <| toHref route
-            , onNavigate (SetRoute route)
-            ]
-    in
-        (\attrs contents -> a (List.append attrs linkAttrs) contents)
-
-
 logo : String -> Html Msg
 logo title =
-    linkTo Route.Home
-        [ class "navitem logo" ]
+    Route.link Route.Home
+        [ class "navitem logo", onNavigate SetRoute ]
         [ img [ src "/icons/logo.png" ] []
         , text title
         ]
@@ -375,7 +364,7 @@ searchIcon model =
                 _ ->
                     "navitem navitem-search"
     in
-        linkTo Route.Search [ class classes ] [ img [ class "navbar-icon", src "/icons/search.final.svg" ] [] ]
+        Route.link Route.Search [ class classes, onNavigate SetRoute ] [ img [ class "navbar-icon", src "/icons/search.final.svg" ] [] ]
 
 
 cardListIcon : Model -> Html Msg
@@ -389,7 +378,7 @@ cardListIcon model =
                 _ ->
                     "navitem navitem-cards"
     in
-        linkTo Route.Home [ class classes ] [ img [ class "navbar-icon", src "/icons/cards.final.svg" ] [] ]
+        Route.link Route.Home [ class classes, onNavigate SetRoute ] [ img [ class "navbar-icon", src "/icons/cards.final.svg" ] [] ]
 
 
 deckIcon : Model -> Html Msg
@@ -403,8 +392,8 @@ deckIcon model =
                 _ ->
                     "navitem navitem-deck"
     in
-        linkTo Route.Deck
-            [ class classes ]
+        Route.link Route.Deck
+            [ class classes, onNavigate SetRoute ]
             [ img [ class "navbar-icon", src "/icons/deck.final.svg" ] []
             , span [ class "deck-size" ] [ decklistText model ]
             ]
@@ -421,7 +410,7 @@ infoIcon model =
                 _ ->
                     "navitem navitem-info"
     in
-        linkTo Route.Info [ class classes ] [ img [ class "navbar-icon", src "/icons/info.final.svg" ] [] ]
+        Route.link Route.Info [ class classes, onNavigate SetRoute ] [ img [ class "navbar-icon", src "/icons/info.final.svg" ] [] ]
 
 
 navbarBottom : Model -> Html Msg
@@ -666,8 +655,8 @@ cardView card count =
     div [ class "list-item" ]
         [ div [ class "card-contents" ]
             [ div [ class "card-image-container" ]
-                [ linkTo (Route.Card (CardUID.toString card.uid))
-                    [ class "card-thumbnail" ]
+                [ Route.link (Route.Card (CardUID.toString card.uid))
+                    [ class "card-thumbnail", onNavigate SetRoute ]
                     [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
                     , previewBanner card
                     ]
