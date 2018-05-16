@@ -16,10 +16,12 @@ module Component.Deck.Slice
         )
 
 import Html exposing (Html, div)
+import Html.Keyed as Keyed
 import Html.Attributes exposing (class)
 import Html.Helpers
 import Avl.Dict as Dict exposing (Dict)
 import Component.Card as Card exposing (Card)
+import Component.Card.UID as UID
 
 
 type alias DeckSlice =
@@ -93,4 +95,8 @@ toHtml renderChild deck =
             Html.Helpers.nothing
 
         False ->
-            div [ class "list-item-grid" ] (map renderChild deck)
+            let
+                renderChildKeyed card count =
+                    ( UID.toString card.uid, renderChild card count )
+            in
+                Keyed.node "div" [ class "list-item-grid" ] (map renderChildKeyed deck)
