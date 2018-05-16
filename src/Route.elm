@@ -1,5 +1,7 @@
-module Route exposing (Route(..), route, fromLocation, toHref, toClassString)
+module Route exposing (Route(..), link, route, fromLocation, toHref, toClassString)
 
+import Html exposing (Html, Attribute, a)
+import Html.Attributes as Attributes exposing (href)
 import Navigation exposing (Location)
 import UrlParser as Url exposing ((</>), Parser, oneOf, parsePath, s, string)
 
@@ -10,6 +12,21 @@ type Route
     | Card String
     | Search
     | Info
+
+
+link : Route -> List (Attribute (Route -> msg)) -> List (Html msg) -> Html msg
+link route extraAttrs children =
+    let
+        mapTagger =
+            Attributes.map (\tagger -> tagger route)
+
+        attrsWithTagger =
+            List.map mapTagger extraAttrs
+
+        attrs =
+            href (toHref route) :: attrsWithTagger
+    in
+        a attrs children
 
 
 route : Parser (Route -> a) a
