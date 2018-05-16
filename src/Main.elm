@@ -495,6 +495,28 @@ cardView model card =
             ]
 
 
+deckCardView : Card -> Int -> Html Msg
+deckCardView card count =
+    -- TODO: Use this everywhere
+    div
+        [ id (CardUID.toString card.uid)
+        , class "list-item"
+        ]
+        [ div [ class "card-contents" ]
+            [ div [ class "card-image-container" ]
+                [ linkTo (Route.Card (CardUID.toString card.uid))
+                    [ class "card-thumbnail" ]
+                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                    , previewBanner card
+                    ]
+                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+                ]
+            , lazy Card.toHtml card
+            ]
+        , stepper ( card, count )
+        ]
+
+
 largeImg : Card -> Html Msg
 largeImg card =
     div [ class "card-full-wrapper" ]
@@ -639,7 +661,7 @@ paneContainer model =
         div [ classList containerClasses ]
             [ searchPane model
             , cardListPane model
-            , Deck.toHtml model.deck
+            , Deck.toHtml deckCardView model.deck
             , infoPane
             , cardPane model
             ]

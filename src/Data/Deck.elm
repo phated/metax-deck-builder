@@ -570,12 +570,12 @@ encoder deck =
             |> encode 0
 
 
-toHtml : Deck -> Html msg
-toHtml deck =
+toHtml : (Card -> Int -> Html msg) -> Deck -> Html msg
+toHtml renderChild deck =
     div [ id "deck-list-pane", class "pane" ]
-        [ CharacterSlice.toHtml deck
-        , EventSlice.toHtml deck
-        , BattleSlice.toHtml deck
+        [ CharacterSlice.toHtml renderChild deck
+        , EventSlice.toHtml renderChild deck
+        , BattleSlice.toHtml renderChild deck
         ]
 
 
