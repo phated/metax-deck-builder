@@ -436,22 +436,6 @@ navbarBottom model =
         ]
 
 
-stepper : ( Card, Int ) -> Html Msg
-stepper ( card, count ) =
-    let
-        decrementDisabled =
-            (count == 0)
-
-        incrementDisabled =
-            (count == 3)
-    in
-        div [ class "stepper-container" ]
-            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card) ] [ text "-" ]
-            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card) ] [ text "+" ]
-            , div [ class "count-container" ] [ text (toString count) ]
-            ]
-
-
 previewBanner : Card -> Html Msg
 previewBanner card =
     -- TODO: How can we embed this into Component.CardPreview
@@ -461,34 +445,6 @@ previewBanner card =
 
         Nothing ->
             Html.Helpers.nothing
-
-
-cardView : Card -> Int -> Html Msg
-cardView card count =
-    div [ class "list-item" ]
-        [ div [ class "card-contents" ]
-            [ div [ class "card-image-container" ]
-                [ linkTo (Route.Card (CardUID.toString card.uid))
-                    [ class "card-thumbnail" ]
-                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-                    , previewBanner card
-                    ]
-                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
-                ]
-            , lazy Card.toHtml card
-            ]
-        , stepper ( card, count )
-        ]
-
-
-cardViewLookupCount : Deck -> Card -> Html Msg
-cardViewLookupCount deck card =
-    -- TODO: would be nice to use functional constructs instead of a view wrapper
-    let
-        count =
-            Deck.count card deck
-    in
-        cardView card count
 
 
 largeImg : Card -> Html Msg
@@ -512,7 +468,7 @@ cardPane model =
                         [ div [ class "card-full-container" ]
                             [ largeImg card
                             , Card.toHtml card
-                            , stepper ( card, Deck.count card model.deck )
+                            , stepper card (Deck.count card model.deck)
                             ]
                         ]
 
@@ -690,3 +646,60 @@ init =
             }
     in
         ( model, Cmd.none )
+
+
+
+{- Composite Views
+
+   These views live in the Main.elm because Elm makes Msg terrible to work with when trying to
+   create separate files for things (Html.map is depressing).
+
+   The non-Msg emitting views can reside in their Component as `toHtml` producing `Html msg`
+   and the composite views can be passed into render methods as "child render" methods which produce `Html Msg`
+
+   Did I mention Elm sucks??
+-}
+
+
+cardView : Card -> Int -> Html Msg
+cardView card count =
+    div [ class "list-item" ]
+        [ div [ class "card-contents" ]
+            [ div [ class "card-image-container" ]
+                [ linkTo (Route.Card (CardUID.toString card.uid))
+                    [ class "card-thumbnail" ]
+                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                    , previewBanner card
+                    ]
+                , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
+                ]
+            , lazy Card.toHtml card
+            ]
+        , stepper card count
+        ]
+
+
+cardViewLookupCount : Deck -> Card -> Html Msg
+cardViewLookupCount deck card =
+    -- TODO: would be nice to use functional constructs instead of a view wrapper
+    let
+        count =
+            Deck.count card deck
+    in
+        cardView card count
+
+
+stepper : Card -> Int -> Html Msg
+stepper card count =
+    let
+        decrementDisabled =
+            (count == 0)
+
+        incrementDisabled =
+            (count == 3)
+    in
+        div [ class "stepper-container" ]
+            [ button [ class "stepper-button stepper-decrement ripple", disabled decrementDisabled, onClick (Decrement card) ] [ text "-" ]
+            , button [ class "stepper-button stepper-increment ripple", disabled incrementDisabled, onClick (Increment card) ] [ text "+" ]
+            , div [ class "count-container" ] [ text (toString count) ]
+            ]
