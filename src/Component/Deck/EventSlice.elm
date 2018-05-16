@@ -7,6 +7,7 @@ module Component.Deck.EventSlice
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Html.Helpers
+import Component.Card exposing (Card)
 import Component.Deck.Slice as DeckSlice exposing (DeckSlice)
 
 
@@ -15,8 +16,8 @@ sum deck =
     DeckSlice.sum deck.events
 
 
-toHtml : { a | events : DeckSlice } -> Html msg
-toHtml deck =
+toHtml : (Card -> Int -> Html msg) -> { a | events : DeckSlice } -> Html msg
+toHtml renderChild deck =
     case DeckSlice.isEmpty deck.events of
         True ->
             Html.Helpers.nothing
@@ -24,7 +25,7 @@ toHtml deck =
         False ->
             let
                 cards =
-                    DeckSlice.toHtml deck.events
+                    DeckSlice.toHtml renderChild deck.events
 
                 headerText =
                     DeckSlice.sum deck.events
