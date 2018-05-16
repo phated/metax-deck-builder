@@ -499,7 +499,7 @@ deckCardView : Card -> Int -> Html Msg
 deckCardView card count =
     -- TODO: Use this everywhere
     div
-        [ id (CardUID.toString card.uid)
+        [ id ("deck_" ++ (CardUID.toString card.uid))
         , class "list-item"
         ]
         [ div [ class "card-contents" ]
