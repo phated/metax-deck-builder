@@ -6,7 +6,7 @@ module Component.CardList
         , map
         , find
         , decoder
-        , toList
+        , toHtml
         , query
         , load
         )
@@ -36,7 +36,7 @@ module Component.CardList
 
 # Views
 
-@docs toList
+@docs toHtml
 
 
 # Query
@@ -45,11 +45,15 @@ module Component.CardList
 
 -}
 
+import Html exposing (Html, div)
+import Html.Keyed as Keyed
+import Html.Attributes exposing (id, class)
 import Avl.Set as Set exposing (Set)
 import GraphQl as Gql exposing (Value, Query, Anonymous, Request)
 import Json.Decode exposing (Decoder, list, at, andThen, succeed)
 import Util exposing (finder)
 import Component.Card as Card exposing (Card)
+import Component.Card.UID as UID
 
 
 {-| A unique list of cards.
@@ -93,11 +97,15 @@ decoder =
     list Card.decoder |> andThen (fromList >> succeed)
 
 
-{-| Turn a CardList into a List of Cards.
+{-| Render a CardList as an Html view.
 -}
-toList : CardList -> List Card
-toList cards =
-    Set.toList cards
+toHtml : (Card -> Html msg) -> CardList -> Html msg
+toHtml renderChild cards =
+    let
+        renderChildKeyed card =
+            ( UID.toString card.uid, renderChild card )
+    in
+        Keyed.node "div" [ id "card-list-pane", class "pane list-item-grid" ] (map renderChildKeyed cards)
 
 
 {-| Generate a GraphQl query for a CardList of all cards.

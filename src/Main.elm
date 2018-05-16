@@ -436,13 +436,6 @@ navbarBottom model =
         ]
 
 
-cardListPane : Model -> Html Msg
-cardListPane model =
-    div
-        [ id "card-list-pane", class "pane list-item-grid" ]
-        (CardList.map (cardView model) model.cards)
-
-
 stepper : ( Card, Int ) -> Html Msg
 stepper ( card, count ) =
     let
@@ -470,38 +463,9 @@ previewBanner card =
             Html.Helpers.nothing
 
 
-cardView : Model -> Card -> Html Msg
-cardView model card =
-    let
-        count =
-            Deck.count card model.deck
-    in
-        div
-            [ id (CardUID.toString card.uid)
-            , class "list-item"
-            ]
-            [ div [ class "card-contents" ]
-                [ div [ class "card-image-container" ]
-                    [ linkTo (Route.Card (CardUID.toString card.uid))
-                        [ class "card-thumbnail" ]
-                        [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
-                        , previewBanner card
-                        ]
-                    , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]
-                    ]
-                , lazy Card.toHtml card
-                ]
-            , stepper ( card, count )
-            ]
-
-
-deckCardView : Card -> Int -> Html Msg
-deckCardView card count =
-    -- TODO: Use this everywhere
-    div
-        [ id ("deck_" ++ (CardUID.toString card.uid))
-        , class "list-item"
-        ]
+cardView : Card -> Int -> Html Msg
+cardView card count =
+    div [ class "list-item" ]
         [ div [ class "card-contents" ]
             [ div [ class "card-image-container" ]
                 [ linkTo (Route.Card (CardUID.toString card.uid))
@@ -515,6 +479,16 @@ deckCardView card count =
             ]
         , stepper ( card, count )
         ]
+
+
+cardViewLookupCount : Deck -> Card -> Html Msg
+cardViewLookupCount deck card =
+    -- TODO: would be nice to use functional constructs instead of a view wrapper
+    let
+        count =
+            Deck.count card deck
+    in
+        cardView card count
 
 
 largeImg : Card -> Html Msg
@@ -660,8 +634,8 @@ paneContainer model =
     in
         div [ classList containerClasses ]
             [ searchPane model
-            , cardListPane model
-            , Deck.toHtml deckCardView model.deck
+            , CardList.toHtml (cardViewLookupCount model.deck) model.cards
+            , Deck.toHtml cardView model.deck
             , infoPane
             , cardPane model
             ]
