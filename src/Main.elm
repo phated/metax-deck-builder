@@ -11,7 +11,6 @@ import Navigation exposing (Location)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
 import Data.Deck as Deck exposing (Deck)
-import Request.Deck
 import Util exposing (onNavigate)
 import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
@@ -245,7 +244,7 @@ update msg model =
                 ( { model | deck = deck }, Cmd.none )
 
         ExportDeck ->
-            ( model, Request.Deck.export model.deck )
+            ( model, Deck.export model.deck )
 
         AddFilter filter ->
             let

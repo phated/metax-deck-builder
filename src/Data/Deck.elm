@@ -6,18 +6,18 @@ module Data.Deck
         , increment
         , decrement
         , empty
-        , toList
         , fromList
         , count
         , sum
         , hash
         , toHtml
+        , export
         )
 
 import Html exposing (Html, div, text, img)
 import Html.Attributes exposing (class, id, src)
 import Json.Decode as Decode exposing (decodeValue, decodeString, Decoder, Value)
-import Json.Encode as Encode exposing (encode)
+import Json.Encode as Encode exposing (encode, object, int, string, list)
 import Encode
 import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID
@@ -29,6 +29,7 @@ import Component.Deck.Slice as DeckSlice exposing (DeckSlice)
 import Component.Deck.CharacterSlice as CharacterSlice
 import Component.Deck.EventSlice as EventSlice
 import Component.Deck.BattleSlice as BattleSlice
+import Ports
 
 
 type alias Deck =
@@ -98,42 +99,6 @@ empty =
     , multi6 = DeckSlice.empty
     , multi7 = DeckSlice.empty
     }
-
-
-toList : Deck -> List ( Card, Int )
-toList deck =
-    List.concat
-        [ DeckSlice.toList deck.characters
-        , DeckSlice.toList deck.events
-        , DeckSlice.toList deck.strength1
-        , DeckSlice.toList deck.strength2
-        , DeckSlice.toList deck.strength3
-        , DeckSlice.toList deck.strength4
-        , DeckSlice.toList deck.strength5
-        , DeckSlice.toList deck.strength6
-        , DeckSlice.toList deck.strength7
-        , DeckSlice.toList deck.intelligence1
-        , DeckSlice.toList deck.intelligence2
-        , DeckSlice.toList deck.intelligence3
-        , DeckSlice.toList deck.intelligence4
-        , DeckSlice.toList deck.intelligence5
-        , DeckSlice.toList deck.intelligence6
-        , DeckSlice.toList deck.intelligence7
-        , DeckSlice.toList deck.special1
-        , DeckSlice.toList deck.special2
-        , DeckSlice.toList deck.special3
-        , DeckSlice.toList deck.special4
-        , DeckSlice.toList deck.special5
-        , DeckSlice.toList deck.special6
-        , DeckSlice.toList deck.special7
-        , DeckSlice.toList deck.multi1
-        , DeckSlice.toList deck.multi2
-        , DeckSlice.toList deck.multi3
-        , DeckSlice.toList deck.multi4
-        , DeckSlice.toList deck.multi5
-        , DeckSlice.toList deck.multi6
-        , DeckSlice.toList deck.multi7
-        ]
 
 
 fromList : List ( Card, Int ) -> Deck
@@ -562,10 +527,10 @@ decoder =
 encoder : Deck -> String
 encoder deck =
     let
-        toEncoder ( card, count ) =
-            ( CardUID.toString card.uid, Encode.int count )
+        toEncoder card count result =
+            ( CardUID.toString card.uid, Encode.int count ) :: result
     in
-        List.map toEncoder (toList deck)
+        foldr toEncoder [] deck
             |> Encode.object
             |> encode 0
 
@@ -577,6 +542,34 @@ toHtml renderChild deck =
         , EventSlice.toHtml renderChild deck
         , BattleSlice.toHtml renderChild deck
         ]
+
+
+save : Deck -> Cmd msg
+save deck =
+    -- Currently unused because we don't save right now
+    encoder deck
+        |> Just
+        |> Ports.storeSession
+
+
+export : Deck -> Cmd msg
+export deck =
+    let
+        toExport card quantity result =
+            object
+                [ ( "quantity", int quantity )
+                , ( "id", string (CardUID.toString card.uid) )
+                , ( "title", string <| .title card )
+                , ( "card_type", string (CardType.toString <| .card_type card) )
+                ]
+                :: result
+
+        exportDeck =
+            foldr toExport [] deck
+    in
+        encode 0 (list exportDeck)
+            |> Just
+            |> Ports.exportSession
 
 
 
