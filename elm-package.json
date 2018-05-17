@@ -1,15 +1,12 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
+    "summary": "metaxdb.com",
     "repository": "https://github.com/user/project.git",
-    "license": "BSD3",
+    "license": "MIT",
     "source-directories": [
         "src"
     ],
-    "exposed-modules": [
-        "Component.CardEffect",
-        "Component.Attribution"
-    ],
+    "exposed-modules": [],
     "dependencies": {
         "Bogdanp/elm-combine": "3.1.1 <= v < 4.0.0",
         "NoRedInk/elm-compare": "1.0.0 <= v < 2.0.0",
