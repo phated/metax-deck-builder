@@ -10,7 +10,6 @@ import GraphQl.Helpers as GqlHelpers
 import Navigation exposing (Location)
 import Regex exposing (regex, contains, replace, Regex)
 import Json.Decode as Decode exposing (decodeValue, decodeString)
-import Data.Deck as Deck exposing (Deck)
 import Util exposing (onNavigate)
 import Route exposing (fromLocation, Route)
 import Ports exposing (onSessionLoaded, loadSession)
@@ -18,6 +17,7 @@ import GraphQl as Gql
 import RouteUrl exposing (RouteUrlProgram, UrlChange, HistoryEntry(NewEntry, ModifyEntry))
 import Data.Filters as Filters exposing (Filters, Filter(FilterRarity, FilterSet, FilterUID))
 import Fork.QueryString as QueryString
+import Component.Deck as Deck exposing (Deck)
 import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID exposing (UID)
 import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))

@@ -1,4 +1,4 @@
-module Data.Deck
+module Component.Deck
     exposing
         ( Deck
         , decoder
