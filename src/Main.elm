@@ -26,6 +26,7 @@ import Component.Card.Preview as CardPreview
 import Component.CardList as CardList exposing (CardList)
 import Component.IconAttributions as IconAttributions
 import Component.Patrons as Patrons
+import Component.Navbar as Navbar
 
 
 main : RouteUrlProgram Never Model Msg
@@ -412,16 +413,29 @@ infoIcon model =
         Route.link Route.Info [ class classes, onNavigate SetRoute ] [ img [ class "navbar-icon", src "/icons/info.final.svg" ] [] ]
 
 
+navLink : Model -> Navbar.RouteDetails -> Html Msg
+navLink model routeDetails =
+    let
+        classes =
+            [ ( "navitem", True )
+            , ( routeDetails.class, True )
+            , ( "active", model.locationTo == Just routeDetails.route )
+            ]
+    in
+        Route.link routeDetails.route [ classList classes, onNavigate SetRoute ] [ img [ class "navbar-icon", src routeDetails.icon ] [] ]
+
+
 navbarBottom : Model -> Html Msg
 navbarBottom model =
-    nav [ class "navbar" ]
-        [ logo ""
-        , searchIcon model
-        , cardListIcon model
-        , deckIcon model
-        , infoIcon model
-        , downloadButton
-        ]
+    -- nav [ class "navbar" ]
+    --     [ logo ""
+    --     , searchIcon model
+    --     , cardListIcon model
+    --     , deckIcon model
+    --     , infoIcon model
+    --     , downloadButton
+    --     ]
+    Navbar.toHtml (navLink model) Navbar.defaults
 
 
 previewBanner : Card -> Html Msg
