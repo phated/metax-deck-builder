@@ -146,6 +146,7 @@ query =
                     , Gql.field "thumbnail"
                     ]
             , Gql.field "preview"
+                |> Gql.withArgument "filter" (Gql.queryArgs [ ( "isActive", Gql.bool True ) ])
                 |> Gql.withSelectors
                     [ Gql.field "previewer"
                     , Gql.field "previewUrl"
