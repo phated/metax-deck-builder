@@ -17,7 +17,7 @@ module Data.Filters
 import GraphQl as Gql exposing (Value, Query, Argument)
 import Fork.QueryString as QueryString exposing (QueryString)
 import Component.Card.UID as CardUID exposing (UID)
-import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
+import Component.Card.Set as CardSet exposing (Set(JL, GL, AT, BM))
 import Component.Card.Rarity as CardRarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 
 
@@ -45,7 +45,7 @@ default : Filters
 default =
     Filters
         [ Common, Uncommon, Rare, XRare, URare ]
-        [ AT, GL, JL ]
+        [ AT, GL, JL, BM ]
         []
 
 

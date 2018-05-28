@@ -44,6 +44,7 @@ type Set
     = JL
     | GL
     | AT
+    | BM
 
 
 {-| Create a Set from a String. Will be Nothing if the string is an invalid value.
@@ -59,6 +60,9 @@ fromString value =
 
         "AT" ->
             Just AT
+
+        "BM" ->
+            Just BM
 
         _ ->
             Nothing
@@ -85,6 +89,9 @@ toString cardSet =
         AT ->
             "AT"
 
+        BM ->
+            "BM"
+
 
 {-| Renders the Set as an Int. Also known as an enumeration.
 -}
@@ -99,3 +106,6 @@ toInt set =
 
         AT ->
             2
+
+        BM ->
+            3
