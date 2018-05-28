@@ -20,7 +20,7 @@ import Fork.QueryString as QueryString
 import Component.Deck as Deck exposing (Deck)
 import Component.Card as Card exposing (Card)
 import Component.Card.UID as CardUID exposing (UID)
-import Component.Card.Set as CardSet exposing (Set(JL, GL, AT))
+import Component.Card.Set as CardSet exposing (Set(JL, GL, AT, BM))
 import Component.Card.Rarity exposing (Rarity(Common, Uncommon, Rare, XRare, URare, Promo, Starter))
 import Component.Card.Preview as CardPreview
 import Component.CardList as CardList exposing (CardList)
@@ -542,7 +542,8 @@ searchPane model =
         , div [ classList [ ( "option-container", True ), ( "is-open", model.setOpen ) ] ]
             [ div [ class "option-title", onClick ToggleOpenSet ] [ text "Set" ]
             , div [ class "option-body" ]
-                [ checkbox "Attack on Titan" (Filters.member (FilterSet AT) model.filters) (toggleFilter <| FilterSet AT)
+                [ checkbox "Batman" (Filters.member (FilterSet BM) model.filters) (toggleFilter <| FilterSet BM)
+                , checkbox "Attack on Titan" (Filters.member (FilterSet AT) model.filters) (toggleFilter <| FilterSet AT)
                 , checkbox "Green Lantern" (Filters.member (FilterSet GL) model.filters) (toggleFilter <| FilterSet GL)
                 , checkbox "Justice Leauge" (Filters.member (FilterSet JL) model.filters) (toggleFilter <| FilterSet JL)
                 ]
