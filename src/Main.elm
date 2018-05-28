@@ -599,7 +599,6 @@ applicationShell : Model -> Html Msg
 applicationShell model =
     div [ class "pane-root" ]
         [ navbarTop model
-        , noSaveWarning
         , paneContainer model
         , navbarBottom model
         ]
