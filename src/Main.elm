@@ -650,6 +650,17 @@ init =
 -}
 
 
+cardThumbnail : Card -> Html Msg
+cardThumbnail card =
+    case card.image of
+        Just { thumbnail } ->
+            img [ src thumbnail ] []
+
+        Nothing ->
+            -- TODO: Remove once everything has an "image" property
+            img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/images/thumbnail/") card.image_url) ] []
+
+
 cardView : Card -> Int -> Html Msg
 cardView card count =
     div [ class "list-item" ]
@@ -657,7 +668,7 @@ cardView card count =
             [ div [ class "card-image-container" ]
                 [ Route.link (Route.Card (CardUID.toString card.uid))
                     [ class "card-thumbnail", onNavigate SetRoute ]
-                    [ img [ src (Regex.replace Regex.All (Regex.regex "/images/") (\_ -> "/thumbnails/") card.image_url) ] []
+                    [ cardThumbnail card
                     , previewBanner card
                     ]
                 , div [ class "card-number" ] [ text (CardUID.toString card.uid) ]

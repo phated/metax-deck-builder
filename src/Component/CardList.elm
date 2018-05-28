@@ -137,6 +137,14 @@ query =
                     , Gql.field "rank"
                     ]
             , Gql.field "imageUrl"
+            , Gql.field "image"
+                |> Gql.withSelectors
+                    [ Gql.field "original"
+                    , Gql.field "large"
+                    , Gql.field "medium"
+                    , Gql.field "small"
+                    , Gql.field "thumbnail"
+                    ]
             , Gql.field "preview"
                 |> Gql.withSelectors
                     [ Gql.field "previewer"

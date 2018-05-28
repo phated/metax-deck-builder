@@ -58,6 +58,7 @@ import Component.Card.Effect as CardEffect exposing (Effect)
 import Component.Card.Rarity as CardRarity exposing (Rarity)
 import Component.Card.Preview as CardPreview exposing (Preview)
 import Component.Card.Subtitle as CardSubtitle exposing (Subtitle)
+import Component.Card.Image as CardImage exposing (Image)
 
 
 {-| A full card.
@@ -75,6 +76,7 @@ type alias Card =
     , effect : Effect
     , stats : Stats
     , image_url : String
+    , image : Maybe Image
     , preview : Maybe Preview
     }
 
@@ -96,6 +98,7 @@ decoder =
         |> required "effect" CardEffect.decoder
         |> custom CardStats.decoder
         |> required "imageUrl" string
+        |> required "image" (nullable CardImage.decoder)
         |> optional "preview" (maybe CardPreview.decoder) Nothing
 
 
@@ -146,6 +149,14 @@ query uid =
                     , Gql.field "rank"
                     ]
             , Gql.field "imageUrl"
+            , Gql.field "image"
+                |> Gql.withSelectors
+                    [ Gql.field "original"
+                    , Gql.field "large"
+                    , Gql.field "medium"
+                    , Gql.field "small"
+                    , Gql.field "thumbnail"
+                    ]
             , Gql.field "preview"
                 |> Gql.withSelectors
                     [ Gql.field "previewer"
