@@ -333,6 +333,45 @@ foldr fn result deck =
             |> flippedFoldr deck.multi7
 
 
+foldl : (Card -> Int -> a -> a) -> a -> Deck -> a
+foldl fn result deck =
+    let
+        flippedFoldl =
+            flip (DeckSlice.foldr fn)
+    in
+        result
+            |> flippedFoldl deck.multi7
+            |> flippedFoldl deck.multi6
+            |> flippedFoldl deck.multi5
+            |> flippedFoldl deck.multi4
+            |> flippedFoldl deck.multi3
+            |> flippedFoldl deck.multi2
+            |> flippedFoldl deck.multi1
+            |> flippedFoldl deck.special7
+            |> flippedFoldl deck.special6
+            |> flippedFoldl deck.special5
+            |> flippedFoldl deck.special4
+            |> flippedFoldl deck.special3
+            |> flippedFoldl deck.special2
+            |> flippedFoldl deck.special1
+            |> flippedFoldl deck.intelligence7
+            |> flippedFoldl deck.intelligence6
+            |> flippedFoldl deck.intelligence5
+            |> flippedFoldl deck.intelligence4
+            |> flippedFoldl deck.intelligence3
+            |> flippedFoldl deck.intelligence2
+            |> flippedFoldl deck.intelligence1
+            |> flippedFoldl deck.strength7
+            |> flippedFoldl deck.strength6
+            |> flippedFoldl deck.strength5
+            |> flippedFoldl deck.strength4
+            |> flippedFoldl deck.strength3
+            |> flippedFoldl deck.strength2
+            |> flippedFoldl deck.strength1
+            |> flippedFoldl deck.events
+            |> flippedFoldl deck.characters
+
+
 filter : (Card -> Int -> Bool) -> Deck -> Deck
 filter fn deck =
     { characters = DeckSlice.filter fn deck.characters
@@ -482,7 +521,7 @@ hash deck =
             }
 
         encodeResult =
-            foldr Encode.encodeCard result deck
+            foldl Encode.encodeCard result deck
 
         encodedDeck =
             encodedVersion ++ String.join "" encodeResult.cardHashes
