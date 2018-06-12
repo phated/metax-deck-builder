@@ -287,7 +287,8 @@ body {
 
   /* Ensure the sizing looks good before images load */
   min-height: 100px;
-  min-width: 72px;
+  /* This was causing an annoying 1px gap on some thumbs so drop it 1px */
+  min-width: 71px;
   /* Don't grow to large */
   max-width: 100%;
   max-height: 100px;
